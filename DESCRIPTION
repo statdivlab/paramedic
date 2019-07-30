@@ -1,0 +1,36 @@
+Package: paramedic
+Title: Predicting Absolute and Relative Abundance by Modeling Efficiency to Derive Intervals and Concentrations
+Version: 0.0.0.9000
+Authors@R: 
+    c(person(given = "Brian",
+           family = "Williamson",
+           role = c("aut", "cre"),
+           email = "brianw26@uw.edu"),
+           person(given = "James",
+           family = "Hughes",
+           role = "aut"),
+           person(given = "Amy",
+           family = "Willis",
+           role = "aut"))
+Description: We estimate microbial abundances by combining compositional 16S data and observed absolute abundance obtained using quantitative PCR. We have two fully Bayesian hierarchical models allowing for varying efficiencies: the first uses a centered parameterization, while the second uses a noncentered parameterization. There may be differences in speed and accuracy of each hierarchical model, depending on the dataset and initial values chosen. Please read any warning messages returned by the algorithm carefully, as these can help diagnose convergence issues. We return credible intervals and point estimates for the true concentrations, and point estimates and prediction intervals for the unobserved qPCR abundances.
+License: GPL (>=3)
+Depends: 
+    methods,
+    R (>= 3.4.0),
+    Rcpp (>= 1.0.0)
+Imports: 
+    rstan (>= 2.18.2),
+    rstantools (>= 1.5.1)
+LinkingTo: 
+    BH (>= 1.69.0-1),
+    Rcpp (>= 1.0.0),
+    RcppEigen (>= 0.3.3.5.0),
+    rstan (>= 2.18.2),
+    StanHeaders (>= 2.18.1)
+Encoding: UTF-8
+LazyData: true
+NeedsCompilation: yes
+SystemRequirements: GNU make
+RoxygenNote: 6.1.1
+Suggests: 
+    testthat (>= 2.1.0)

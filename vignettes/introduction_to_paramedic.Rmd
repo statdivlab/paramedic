@@ -1,0 +1,113 @@
+---
+title: "Introduction to paramedic"
+author: "Brian D. Williamson"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    keep_md: true
+vignette: >
+  %\VignetteIndexEntry{Introduction to paramedic}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE, include = FALSE}
+library(knitr)
+opts_knit$set(cache = FALSE, verbose = TRUE, global.par = TRUE)
+```
+
+```{r echo = FALSE}
+par(mar = c(5, 12, 4, 2) + 0.1)
+```
+
+## Introduction
+
+`paramedic` is a package that computes estimates of microbial concentration based on partially observed qPCR and fully observed br16S data. We jointly model these two data sources using a Bayesian hierarchical model. The package allows for varying efficiency between the br16S and qPCR data, and provides point estimates of and interval estimates for concentration, as well as point estimates of and prediction interval estimates of qPCR for the unobserved taxa.
+
+The author of the `paramedic` package is Brian Williamson.
+
+## Installation
+
+Currently, the package may only be downloaded and installed from GitHub using the `devtools` package. Type the following command in your R console:
+
+```{r, eval = FALSE}
+# only run if you don't have devtools
+# previously installed
+# install.packages("devtools")
+devtools::install_github("bdwilliamson/paramedic")
+```
+
+## Quick Start
+
+This section should serve as a quick guide to using the `paramedic` package -- we will cover the main functions using a simulated data example. More details are given in the next section.
+
+First, load the `paramedic` and `rstan` packages:
+```{r}
+library("rstan")
+library("paramedic")
+```
+
+Next, we load in some example data:
+```r
+## -------------------------------------------------------------
+## problem setup
+## -------------------------------------------------------------
+data(simple_example_data)
+q <- 3
+q_obs <- 2
+```
+
+The example data are a matrix of `q = 3` taxa where br16S is observed and `q_obs = 2` taxa where qPCR is additionally observed for a sample of `n = 10` participants.
+
+Prior to estimating concentrations, we must pre-process the data to pass to Stan. If you do not already have separate qPCR and br16S matrices, we must create them. Additionally, we need to pre-process the qPCR matrix to create valid `R` integers (for passing to Stan). The following code pre-processes the `full_data` object created above, by defining the columns in the full data matrix that correspond to br16S and qPCR, respectively. Additionally, we: (i) use a lower limit of detection of 0; (ii) throw out observations with fewer than 1000 reads; and (iii) divide each qPCR value by 1000 (this ensures that the resulting matrix consists of valid `R` integers).
+
+```{r
+## -------------------------------------------------------------
+## preliminary step: process the data
+## -------------------------------------------------------------
+processed_data <- paramedic::process_data(full_data = simple_example_data,
+    br_inds = 1:q, qpcr_inds = (q + 1):(q + q_obs),
+    pcr_plus_br_inds = 1:q_obs,
+    regex_thr = "", regex_cps = "_cps", llod = 0,
+    m_min = 1000, div_num = 1)
+qpcr <- processed_data$qpcr
+br16s <- processed_data$br16s
+```
+
+Now that the data are pre-processed and we have the separate qPCR and br16S data matrices, we are ready to estimate concentrations. We pass the data to `paramedic`, the workhorse function of the package:
+
+```{r
+## -------------------------------------------------------------
+## Run the Stan algorithm that models varying efficiency
+## -------------------------------------------------------------
+## this is a small number of iterations, only for illustration
+## also, shows how to use control parameters for rstan::stan
+mod <- paramedic::paramedic(W = processed_data$br, V = processed_data$qpcr,
+    q = q, q_obs = q_obs,
+    stan_model = "src/stan_files/variable_efficiency.stan", n_iter = 30,
+    n_burnin = 25, n_chains = 1, stan_seed = 4747,
+    params_to_save = c("mu", "Sigma", "beta", "e"))
+mod_summ <- summary(stan_mod, probs = c(0.025, 0.975))$summary
+mod_samps <- extract(stan_mod)
+```
+
+The output from `paramedic` may be manipulated as any output from `rstan::stan` might; however, there are certain posterior summaries that are of particular interest in this problem, namely the posterior mean estimates of concentrations and efficiencies, along with interval estimates for these quantities. The next function extracts these point and interval estimators:
+```{r
+## -------------------------------------------------------------
+## Extract posterior estimates for the taxon missing qPCR
+## -------------------------------------------------------------
+summs <- extract_posterior_summaries(stan_mod = mod_summ,
+    stan_samps = mod_samps, q = q,
+    taxa_of_interest = 1:3, mult_num = 1, level = 0.95,
+    interval_type = "wald")
+```
+and we may finally print them out:
+```{r
+## -------------------------------------------------------------
+## Print out the posterior mean efficiencies and concentrations
+## -------------------------------------------------------------
+posterior_summaries$estimates
+posterior_summaries$est_efficiency
+```
+
+This output shows that we have point estimates for the true concentration of each taxon within each participant, and the efficiencies of each taxon comparing br16S to qPCR.
