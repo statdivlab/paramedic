@@ -4,15 +4,13 @@
 \alias{extract_posterior_summaries}
 \title{Extract posterior summaries from a hierarchical model fit}
 \usage{
-extract_posterior_summaries(stan_mod, stan_samps, q, taxa_of_interest,
+extract_posterior_summaries(stan_mod, stan_samps, taxa_of_interest,
   mult_num = 1, level = 0.95, interval_type = "wald")
 }
 \arguments{
 \item{stan_mod}{the model summary object from Stan.}
 
 \item{stan_samps}{the list of MCMC samples from Stan.}
-
-\item{q}{the total number of taxa.}
 
 \item{taxa_of_interest}{the taxa to return estimates and posterior summaries for.}
 
@@ -45,14 +43,14 @@ data(simple_example_data)
 ## process the example data
 q <- 3
 q_obs <- 2
-processed_data <- process_data(full_data = simple_example_data, br_inds = 1:q,
-qpcr_inds = (q + 1):(q + 1 + q_obs),
-pcr_plus_br_inds = 1:q_obs,
-regex_thr = NA, regex_cps = "", llod = 0,
-m_min = 1000, div_num = 1000)
+processed_data <- process_data(full_data = simple_example_data, rel_inds = 1:q,
+abs_inds = (q + 1):(q + 1 + q_obs),
+abs_plus_rel_inds = 1:q_obs,
+regex_thr = NA, regex_abs = "", llod = 0,
+m_min = 1000, div_num = 1)
 
 ## run paramedic (with an extremely small number of iterations, for illustration only)
-mod <- paramedic(W = processed_data$br, V = processed_data$qpcr, q = q, q_obs = q_obs,
+mod <- run_paramedic(W = processed_data$relative, V = processed_data$absolute,
 stan_model = "src/stan_files/variable_efficiency.stan", n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
 params_to_save = c("mu", "Sigma", "beta", "e"))
 
@@ -61,7 +59,7 @@ mod_summ <- rstan::summary(mod, probs = c(0.025, 0.975))$summary
 mod_samps <- rstan::extract(mod)
 
 ## extract relevant summaries
-summs <- extract_posterior_summaries(stan_mod = mod_summ, stan_samps = mod_samps, q = q, taxa_of_interest = 1:3,
+summs <- extract_posterior_summaries(stan_mod = mod_summ, stan_samps = mod_samps, taxa_of_interest = 1:3,
 mult_num = 1, level = 0.95, interval_type = "wald")
 
 }

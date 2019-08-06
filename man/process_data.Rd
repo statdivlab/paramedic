@@ -2,36 +2,36 @@
 % Please edit documentation in R/process_data.R
 \name{process_data}
 \alias{process_data}
-\title{Process a dataset, returning qPCR and br16S matrices}
+\title{Process a dataset, returning observed abolute and relative abundance matrices}
 \usage{
-process_data(full_data, br_inds, qpcr_inds, pcr_plus_br_inds,
-  regex_thr = "_t", regex_cps = "_cps", llod = 0, m_min = 1000,
+process_data(full_data, rel_inds, abs_inds, abs_plus_rel_inds,
+  regex_thr = "_t", regex_abs = "_cps", llod = 0, m_min = 1000,
   div_num = 100)
 }
 \arguments{
-\item{full_data}{the full dataset, containing both qPCR and br16S abundances}
+\item{full_data}{the full dataset, containing both absolute and relative abundances}
 
-\item{br_inds}{the indices marking the br16S measurements in \code{full_data}}
+\item{rel_inds}{the indices marking the relative abundance measurements in \code{full_data}}
 
-\item{qpcr_inds}{the indices marking the qPCR measurements in \code{full_data}}
+\item{abs_inds}{the indices marking the absolute abundance measurements in \code{full_data}}
 
-\item{pcr_plus_br_inds}{the indices that have both br16S and qPCR measurements}
+\item{abs_plus_rel_inds}{the indices that have both absolute and relative abundance measurements}
 
-\item{regex_thr}{the regular expression to identify qPCR threshold for each taxon-specific qPCR (e.g., "_t" appended to each threshold)}
+\item{regex_thr}{the regular expression to identify absolute abundance threshold for each taxon-specific measurement (e.g., "_t" appended to each threshold)}
 
-\item{regex_cps}{the regular expression to identify qPCR measurement for each taxon-specific qPCR (e.g., "_cps" appended to each measurement of copies per swab)}
+\item{regex_abs}{the regular expression to identify absolute abundance measurement for each taxon-specific measurement (e.g., "_cps" appended to each measurement of copies per swab)}
 
-\item{llod}{the lower limit of detection for qPCR}
+\item{llod}{the lower limit of detection for absolute abundance measurements}
 
 \item{m_min}{the minimum number of reads to consider}
 
-\item{div_num}{the number to divide qPCR by (to create valid R integers for use in Stan)}
+\item{div_num}{the number to divide absolute abundance measurements by (to create valid R integers for use in Stan)}
 }
 \value{
-a list containing two matrices: one with the observed qPCR, and the other with the observed br16S.
+a list containing two matrices: one with the observed absolute abundances, and the other with the observed relative abundances.
 }
 \description{
-Return matrices of observed qPCR and br16S abundances, given a single dataset and a set of indices.
+Return matrices of observed absolute and relative abundances, given a single dataset and a set of indices.
 }
 \details{
 
@@ -44,10 +44,10 @@ data(simple_example_data)
 ## process the example data
 q <- 3
 q_obs <- 2
-processed_data <- process_data(full_data = simple_example_data, br_inds = 1:q,
-qpcr_inds = (q + 1):(q + 1 + q_obs),
-pcr_plus_br_inds = 1:q_obs,
-regex_thr = NA, regex_cps = "", llod = 0,
+processed_data <- process_data(full_data = simple_example_data, rel_inds = 1:q,
+abs_inds = (q + 1):(q + 1 + q_obs),
+abs_plus_rel_inds = 1:q_obs,
+regex_thr = NA, regex_abs = "", llod = 0,
 m_min = 1000, div_num = 1)
 
 }
