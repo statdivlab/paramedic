@@ -95,7 +95,7 @@ br16s <- processed_data$relative
 ## this is a small number of iterations, only for illustration
 ## also, shows how to use control parameters for rstan::stan
 stan_mod <- run_paramedic(W = br16s, V = qpcr,
-                      stan_model = "../stan/predict_qpcr_with_varying_efficiency.stan",
+                      stan_model = "src/stan_files/variable_efficiency.stan",
                       n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
                       params_to_save = c("mu", "Sigma", "beta", "e"),
                       control = list(adapt_delta = 0.85, max_treedepth = 15),
