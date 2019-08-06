@@ -9,8 +9,8 @@ parameters{
     vector[q] log_mu_tilde[N];
     vector[q] beta;
     vector<lower=0>[q] Sigma;
-    vector<lower=0>[q] e; 
-    real<lower=0> sigma; 
+    vector<lower=0>[q] e;
+    real<lower=0> sigma_e;
 }
 transformed parameters{
     vector<lower=0>[q] mu[N];
@@ -19,16 +19,22 @@ transformed parameters{
     }
 }
 model {
-    beta ~ normal(0, sqrt(50.0));
-    Sigma ~ lognormal(0, sqrt(50.0));
+    ## hyperparameters
+    sigma_beta = sqrt(50.0);
+    sigma_Sigma = sqrt(50.0);
+    alpha_sigma = 2;
+    kappa_sigma = 1;
 
-    sigma ~ inv_gamma(2,1);
-    e ~ lognormal(0, sqrt(sigma));
-    
+    ## hierarchical model
+    beta ~ normal(0, sigma_beta);
+    Sigma ~ lognormal(0, sigma_Sigma);
+
+    sigma_e ~ inv_gamma(alpha_sigma, kappa_sigma);
+    e ~ lognormal(0, sqrt(sigma_e));
+
     for (j in 1:N){
         log_mu_tilde[j] ~ normal(0, 1);
         V[j] ~ poisson(mu[j,1:q_obs]);
         W[j] ~ multinomial((e .* mu[j])/sum(e .* mu[j]));
     }
 }
-
