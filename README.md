@@ -11,7 +11,7 @@
 
 ## Issues
 
-If you encounter any bugs or have any specific feature requests, please [file an issue](https://github.com/bdwilliamson/paramedic/issues).
+If you encounter any bugs or have any specific feature requests, please [file an issue](https://github.com/statdivlab/paramedic/issues).
 
 ------------------------------
 
@@ -21,14 +21,14 @@ You may install a stable release of `paramedic` from GitHub via  [`devtools`](ht
 
 ```r
 ## install.packages("devtools") # only run this line if necessary
-devtools::install_github(repo = "bdwilliamson/paramedic@v0.0.1")
+devtools::install_github(repo = "statdivlab/paramedic@v0.0.1")
 ```
 
 You may install a development release of `paramedic` from GitHub via [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) by running the following code:
 
 ```r
 ## install.packages("devtools") # only run this line if necessary
-devtools::install_github(repo = "bdwilliamson/paramedic")
+devtools::install_github(repo = "statdivlab/paramedic")
 ```
 
 ------------------------------
