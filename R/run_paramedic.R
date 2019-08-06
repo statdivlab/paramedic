@@ -1,18 +1,18 @@
-#' Run a Stan algorithm to estimate concentrations from combined qPCR and br16S data
+absolute#' Run a Stan algorithm to estimate concentrations from combined absolute and relative abundance data
 #'
-#' Estimate concentrations (and efficiencies, if applicable) using the specified Stan algorithm to combine qPCR and br16S data.
+#' Estimate concentrations (and efficiencies, if applicable) using the specified Stan algorithm to combine absolute and relative abundance data.
 #'
 #' @param W The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers.
-#' @param V The absolute abundance data, e.g., from taxon-specific qPCR primers. 
+#' @param V The absolute abundance data, e.g., from taxon-specific absolute primers.
 #' @param N Optional. The number of samples. Defaults to the row-length of W.
-#' @param q Optional. The number of taxa observed with the relative abundance technology. Defaults to the column-length of W. 
-#' @param q_obs Optional. The number of taxa observed with the absolute abundance technology. Defaults to the column-length of V. 
+#' @param q Optional. The number of taxa observed with the relative abundance technology. Defaults to the column-length of W.
+#' @param q_obs Optional. The number of taxa observed with the absolute abundance technology. Defaults to the column-length of V.
 #' @param stan_model The Stan algorithm to fit to the data. Expects a file path.
 #' @param n_iter The total number of iterations per chain to be run by the Stan algorithm. Defaults to 10500.
-#' @param n_burnin The total number of warmups per chain to be run by the Stan algorithm. Defaults to 10000. 
+#' @param n_burnin The total number of warmups per chain to be run by the Stan algorithm. Defaults to 10000.
 #' @param n_chains The total number of chains to be run by the Stan algorithm. Defaults to 4.
 #' @param stan_seed The random number seed to initialize.
-#' @param params_to_save A character vector of the parameters to save. Defaults to "mu", "Sigma", "beta", "e". TODO(Amy): clarify. 
+#' @param params_to_save A character vector of the parameters to save. Defaults to "mu", "Sigma", "beta", "e". TODO(Amy): clarify.
 #' @param ... other arguments to pass to \code{\link[rstan]{stan}}.
 #'
 #' @return An object of class \code{stanfit}.
@@ -27,45 +27,45 @@
 #' ## process the example data
 #' q <- 3
 #' q_obs <- 2
-#' processed_data <- process_data(full_data = simple_example_data, br_inds = 1:q,
-#' qpcr_inds = (q + 1):(q + 1 + q_obs),
-#' pcr_plus_br_inds = 1:q_obs,
-#' regex_thr = NA, regex_cps = "", llod = 0,
+#' processed_data <- process_data(full_data = simple_example_data, rel_inds = 1:q,
+#' abs_inds = (q + 1):(q + 1 + q_obs),
+#' abs_plus_rel_inds = 1:q_obs,
+#' regex_thr = NA, regex_abs = "", llod = 0,
 #' m_min = 1000, div_num = 1000)
 #'
 #' ## run paramedic (with an extremely small number of iterations, for illustration only)
-#' mod <- paramedic(W = processed_data$br, V = processed_data$qpcr, q = q, q_obs = q_obs,
+#' mod <- run_paramedic(W = processed_data$br, V = processed_data$absolute,
 #' stan_model = "src/stan_files/variable_efficiency.stan", n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
 #' params_to_save = c("mu", "Sigma", "beta", "e"))
 #'
 #' @seealso \code{\link[rstan]{stan}} for specific usage of the \code{stan} function.
 #'
 #' @export
-paramedic <- function(W, V, N = dim(W)[1], q = dim(W)[2], q_obs = dim(V)[2],
+run_paramedic <- function(W, V,
                       stan_model = "src/stan_files/variable_efficiency.stan",
                       n_iter = 10500, n_burnin = 10000, n_chains = 4, stan_seed = 4747,
                       params_to_save = c("mu", "Sigma", "beta", "e"),
                       inits_lst = NULL,
                       ...) {
+    N <- dim(W)[1]
+    q <- dim(W)[2]
+    q_obs <- dim(V)[2]
     ## error messages
     if (dim(W)[1] != dim(V)[1]) stop("The number of rows in W and V must match.")
-    if (dim(W)[1] != N) stop("The number of rows in W and V must be equal to the sample size N.")
-    if (dim(W)[2] != q) stop("The number of columns in W must be equal to the total number of taxa q.")
-    if (dim(V)[2] != q_obs) stop("The number of columns in V must be equal to the number of taxa with observed qPCR, q_obs.")
     ## set up the data list
     data_lst <- list(W = W, V = V, N = N, q = q, q_obs = q_obs)
     ## get inits from the naive estimator
-    naive_estimator <- function(idx, brs, qpcrs, known_qpcr) {
-      ## get the sum of the br16s's
-      sum_br16s <- rowSums(brs[, known_qpcr, drop = FALSE])
-      ## get the sum of the qpcr's
-      sum_qpcr <- rowSums(qpcrs)
+    naive_estimator <- function(idx, relatives, absolutes, known_absolute) {
+      ## get the sum of the relative abundances
+      sum_relative <- rowSums(relatives[, known_absolute, drop = FALSE])
+      ## get the sum of the absolutes
+      sum_absolute <- rowSums(absolutes)
 
       ## naive estimator
-      qpcr <- brs[, idx]*sum_qpcr/sum_br16s
-      ## if sum_br16s was zero, predict zero (?)
-      qpcr <- ifelse (sum_br16s == 0, 0, qpcr)
-      return(qpcr)
+      absolute <- relatives[, idx]*sum_absolute/sum_relative
+      ## if sum_relative was zero, predict zero (?)
+      absolute <- ifelse (sum_relative == 0, 0, absolute)
+      return(absolute)
     }
     naive_est <- cbind(as.matrix(V), apply(matrix((q_obs + 1):q), 1, naive_estimator, W, V, 1:q_obs))
     colnames(naive_est) <- colnames(W)
