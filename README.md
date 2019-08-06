@@ -1,5 +1,7 @@
 # paramedic: Predicting Absolute and Relative Abundance by Modeling Efficiency to Derive Intervals and Concentrations
 
+[![License: BSD-3](https://img.shields.io/badge/License-BSD-3-Clause-yellow.svg)](https://opensource.org/licenses/BSD-3-Clause)
+
 **Author:** Brian Williamson
 
 ------------------------------
