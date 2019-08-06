@@ -106,7 +106,7 @@ stan_mod_summ <- summary(stan_mod, probs = c(0.025, 0.975))$summary
 stan_mod_samps <- extract(stan_mod)
 
 ## -------------------------------------------------------------
-## Extract posterior estimates for the taxon missing qPCR
+## Extract posterior estimates for the taxon missing abolute abundance data
 ## -------------------------------------------------------------
 posterior_summaries <- extract_posterior_summaries(stan_mod_summ, stan_mod_samps,
                                                    taxa_of_interest = q, mult_num = 1,
