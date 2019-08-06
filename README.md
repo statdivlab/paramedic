@@ -81,20 +81,20 @@ full_data <- cbind(W, V)
 ## -------------------------------------------------------------
 ## preliminary step: process the data
 ## -------------------------------------------------------------
-processed_data <- process_data(full_data = full_data, br_inds = 1:q,
-                                qpcr_inds = (q + 1):(q + 1 + q_obs),
-                                pcr_plus_br_inds = 1:q_obs,
-                                regex_thr = NA, regex_cps = "", llod = 0,
+processed_data <- process_data(full_data = full_data, rel_inds = 1:q,
+                                abs_inds = (q + 1):(q + 1 + q_obs),
+                                abs_plus_rel_inds = 1:q_obs,
+                                regex_thr = NA, regex_abs = "", llod = 0,
                                 m_min = 1000, div_num = 1000)
-qpcr <- processed_data$qpcr
-br16s <- processed_data$br16s
+qpcr <- processed_data$absolute
+br16s <- processed_data$relative
 
 ## -------------------------------------------------------------
 ## Run the Stan algorithm that models varying efficiency
 ## -------------------------------------------------------------
 ## this is a small number of iterations, only for illustration
 ## also, shows how to use control parameters for rstan::stan
-stan_mod <- paramedic(W = br16s, V = qpcr, N = n, q = q, q_obs = q_obs,
+stan_mod <- run_paramedic(W = br16s, V = qpcr,
                       stan_model = "../stan/predict_qpcr_with_varying_efficiency.stan",
                       n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
                       params_to_save = c("mu", "Sigma", "beta", "e"),
@@ -106,7 +106,7 @@ stan_mod_samps <- extract(stan_mod)
 ## -------------------------------------------------------------
 ## Extract posterior estimates for the taxon missing qPCR
 ## -------------------------------------------------------------
-posterior_summaries <- extract_posterior_summaries(stan_mod_summ, stan_mod_samps, q = q,
+posterior_summaries <- extract_posterior_summaries(stan_mod_summ, stan_mod_samps,
                                                    taxa_of_interest = q, mult_num = 1,
                                                    level = 0.95, interval_type = "wald")
 
