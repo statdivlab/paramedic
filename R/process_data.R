@@ -1,18 +1,18 @@
-#' Process a dataset, returning qPCR and br16S matrices
+#' Process a dataset, returning observed abolute and relative abundance matrices
 #'
-#' Return matrices of observed qPCR and br16S abundances, given a single dataset and a set of indices.
+#' Return matrices of observed absolute and relative abundances, given a single dataset and a set of indices.
 #'
-#' @param full_data the full dataset, containing both qPCR and br16S abundances
-#' @param br_inds the indices marking the br16S measurements in \code{full_data}
-#' @param qpcr_inds the indices marking the qPCR measurements in \code{full_data}
-#' @param pcr_plus_br_inds the indices that have both br16S and qPCR measurements
-#' @param regex_thr the regular expression to identify qPCR threshold for each taxon-specific qPCR (e.g., "_t" appended to each threshold)
-#' @param regex_cps the regular expression to identify qPCR measurement for each taxon-specific qPCR (e.g., "_cps" appended to each measurement of copies per swab)
-#' @param llod the lower limit of detection for qPCR
+#' @param full_data the full dataset, containing both absolute and relative abundances
+#' @param rel_inds the indices marking the relative abundance measurements in \code{full_data}
+#' @param abs_inds the indices marking the absolute abundance measurements in \code{full_data}
+#' @param abs_plus_rel_inds the indices that have both absolute and relative abundance measurements
+#' @param regex_thr the regular expression to identify absolute abundance threshold for each taxon-specific measurement (e.g., "_t" appended to each threshold)
+#' @param regex_abs the regular expression to identify absolute abundance measurement for each taxon-specific measurement (e.g., "_cps" appended to each measurement of copies per swab)
+#' @param llod the lower limit of detection for absolute abundance measurements
 #' @param m_min the minimum number of reads to consider
-#' @param div_num the number to divide qPCR by (to create valid R integers for use in Stan)
+#' @param div_num the number to divide absolute abundance measurements by (to create valid R integers for use in Stan)
 #'
-#' @return a list containing two matrices: one with the observed qPCR, and the other with the observed br16S.
+#' @return a list containing two matrices: one with the observed absolute abundances, and the other with the observed relative abundances.
 #'
 #' @details
 #'
@@ -24,22 +24,22 @@
 #' ## process the example data
 #' q <- 3
 #' q_obs <- 2
-#' processed_data <- process_data(full_data = simple_example_data, br_inds = 1:q,
-#' qpcr_inds = (q + 1):(q + 1 + q_obs),
-#' pcr_plus_br_inds = 1:q_obs,
-#' regex_thr = NA, regex_cps = "", llod = 0,
+#' processed_data <- process_data(full_data = simple_example_data, rel_inds = 1:q,
+#' abs_inds = (q + 1):(q + 1 + q_obs),
+#' abs_plus_rel_inds = 1:q_obs,
+#' regex_thr = NA, regex_abs = "", llod = 0,
 #' m_min = 1000, div_num = 1)
 #'
 #' @export
-process_data <- function(full_data, br_inds, qpcr_inds, pcr_plus_br_inds, regex_thr = "_t", regex_cps = "_cps", llod = 0, m_min = 1000, div_num = 100) {
-  ## helper function to process qPCR
-  process_qpcr <- function(qpcr, llod_inds, qpcr_inds, llod = 0, div_num = 100) {
-    ## subset with qpcr values
-    sub_qpcr <- qpcr[, qpcr_inds]/div_num
-    sub_llod <- qpcr[, llod_inds]/div_num
+process_data <- function(full_data, rel_inds, abs_inds, abs_plus_rel_inds, regex_thr = "_t", regex_abs = "_cps", llod = 0, m_min = 1000, div_num = 100) {
+  ## helper function to process absolute abundance data
+  process_absolute <- function(absolute, llod_inds, abs_inds, llod = 0, div_num = 100) {
+    ## subset with absolute abundance values
+    sub_absolute <- absolute[, abs_inds]/div_num
+    sub_llod <- absolute[, llod_inds]/div_num
     ## clean up with llod
-    clean_qpcr <- mapply(function(x, y) ifelse(x < y, llod, x), sub_qpcr, sub_llod)
-    return(clean_qpcr)
+    clean_absolute <- mapply(function(x, y) ifelse(x < y, llod, x), sub_absolute, sub_llod)
+    return(clean_absolute)
   }
   ## if full_data is a matrix, make it a data.frame
   if (is.matrix(full_data)) {
@@ -47,27 +47,27 @@ process_data <- function(full_data, br_inds, qpcr_inds, pcr_plus_br_inds, regex_
     full_data <- tmp
   }
 
-  ## subset the qpcr data; set counts at lower limit of detection to llod
-  sub_qpcr <- full_data[, qpcr_inds]
-  clean_qpcr <- process_qpcr(sub_qpcr, grepl(regex_thr, names(sub_qpcr), fixed = TRUE), grepl(regex_cps, names(sub_qpcr), fixed = TRUE), llod, div_num)
-  tmp_qpcr <- data.frame(clean_qpcr)
+  ## subset the absolute abundance data; set counts at lower limit of detection to llod
+  sub_absolute <- full_data[, abs_inds]
+  clean_absolute <- process_absolute(sub_absolute, grepl(regex_thr, names(sub_absolute), fixed = TRUE), grepl(regex_abs, names(sub_absolute), fixed = TRUE), llod, div_num)
+  tmp_absolute <- data.frame(clean_absolute)
 
-  ## subset the br16s data
-  subset_br <- full_data[, br_inds]
-  ## re-order so that the bugs with qpcr are first
-  all_br <- cbind(subset_br[, pcr_plus_br_inds], subset_br[, -c(pcr_plus_br_inds)])
+  ## subset the relative abundance data
+  subset_relative <- full_data[, rel_inds]
+  ## re-order so that the bugs with absolute abundance are first
+  all_relative <- cbind(subset_relative[, abs_plus_rel_inds], subset_relative[, -c(abs_plus_rel_inds)])
   ## check whether or not any have a nonzero count
-  nonzero_counts <- apply(all_br > 0, 2, sum) > 0
-  tmp_br <- data.frame(all_br[, nonzero_counts])
-  names(tmp_br) <- names(full_data)[br_inds]
+  nonzero_counts <- apply(all_relative > 0, 2, sum) > 0
+  tmp_relative <- data.frame(all_relative[, nonzero_counts])
+  names(tmp_relative) <- names(full_data)[rel_inds]
 
   ## remove any rows that have less than m_min reads
-  m <- apply(tmp_br, 1, sum)
-  qpcr_m <- tmp_qpcr[m >= m_min, ]
-  br_m <- tmp_br[m >= m_min, ]
-  ## remove any rows that have missing qpcr
-  na_qpcr <- apply(qpcr_m, 1, function(x) any(is.na(x)))
-  qpcr <- qpcr_m[!na_qpcr, ]
-  br <- br_m[!na_qpcr, ]
-  return(list(qpcr = qpcr, br = br))
+  m <- apply(tmp_relative, 1, sum)
+  absolute_m <- tmp_absolute[m >= m_min, ]
+  relative_m <- tmp_relative[m >= m_min, ]
+  ## remove any rows that have missing absolute abundances
+  na_absolute <- apply(absolute_m, 1, function(x) any(is.na(x)))
+  absolute <- absolute_m[!na_absolute, ]
+  relative <- relative_m[!na_absolute, ]
+  return(list(absolute = absolute, relative = relative))
 }
