@@ -31,7 +31,7 @@
 #' ## get samples
 #' mod_samps <- rstan::extract(mod)
 #' ## extract relevant summaries
-#' summs <- extract_posterior_summaries(stan_mod = mod_summ, stan_samps = mod_samps, q = q, taxa_of_interest = 1:3,
+#' summs <- extract_posterior_summaries(stan_mod = mod_summ, stan_samps = mod_samps, taxa_of_interest = 1:3,
 #' mult_num = 1, level = 0.95, interval_type = "wald")
 #'
 #' @export
