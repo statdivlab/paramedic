@@ -11,27 +11,27 @@ paramedic(W, V, N = dim(W)[1], q = dim(W)[2], q_obs = dim(V)[2],
   ...)
 }
 \arguments{
-\item{W}{the br16S data.}
+\item{W}{The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers.}
 
-\item{V}{the qPCR data.}
+\item{V}{The absolute abundance data, e.g., from taxon-specific qPCR primers.}
 
-\item{N}{the sample size.}
+\item{N}{Optional. The number of samples. Defaults to the row-length of W.}
 
-\item{q}{the total number of taxa.}
+\item{q}{Optional. The number of taxa observed with the relative abundance technology. Defaults to the column-length of W.}
 
-\item{q_obs}{the number of taxa with observed qPCR.}
+\item{q_obs}{Optional. The number of taxa observed with the absolute abundance technology. Defaults to the column-length of V.}
 
-\item{stan_model}{the Stan algorithm to fit to the data.}
+\item{stan_model}{The Stan algorithm to fit to the data. Expects a file path.}
 
-\item{n_iter}{the total number of iterations per chain.}
+\item{n_iter}{The total number of iterations per chain to be run by the Stan algorithm. Defaults to 10500.}
 
-\item{n_burnin}{the total number of warmups per chain.}
+\item{n_burnin}{The total number of warmups per chain to be run by the Stan algorithm. Defaults to 10000.}
 
-\item{n_chains}{the total number of chains.}
+\item{n_chains}{The total number of chains to be run by the Stan algorithm. Defaults to 4.}
 
-\item{stan_seed}{the random number seed to initialize.}
+\item{stan_seed}{The random number seed to initialize.}
 
-\item{params_to_save}{a character vector of the parameters to save.}
+\item{params_to_save}{A character vector of the parameters to save. Defaults to "mu", "Sigma", "beta", "e". TODO(Amy): clarify.}
 
 \item{...}{other arguments to pass to \code{\link[rstan]{stan}}.}
 }

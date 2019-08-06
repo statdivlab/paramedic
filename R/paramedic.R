@@ -2,17 +2,17 @@
 #'
 #' Estimate concentrations (and efficiencies, if applicable) using the specified Stan algorithm to combine qPCR and br16S data.
 #'
-#' @param W the br16S data.
-#' @param V the qPCR data.
-#' @param N the sample size.
-#' @param q the total number of taxa.
-#' @param q_obs the number of taxa with observed qPCR.
-#' @param stan_model the Stan algorithm to fit to the data.
-#' @param n_iter the total number of iterations per chain.
-#' @param n_burnin the total number of warmups per chain.
-#' @param n_chains the total number of chains.
-#' @param stan_seed the random number seed to initialize.
-#' @param params_to_save a character vector of the parameters to save.
+#' @param W The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers.
+#' @param V The absolute abundance data, e.g., from taxon-specific qPCR primers. 
+#' @param N Optional. The number of samples. Defaults to the row-length of W.
+#' @param q Optional. The number of taxa observed with the relative abundance technology. Defaults to the column-length of W. 
+#' @param q_obs Optional. The number of taxa observed with the absolute abundance technology. Defaults to the column-length of V. 
+#' @param stan_model The Stan algorithm to fit to the data. Expects a file path.
+#' @param n_iter The total number of iterations per chain to be run by the Stan algorithm. Defaults to 10500.
+#' @param n_burnin The total number of warmups per chain to be run by the Stan algorithm. Defaults to 10000. 
+#' @param n_chains The total number of chains to be run by the Stan algorithm. Defaults to 4.
+#' @param stan_seed The random number seed to initialize.
+#' @param params_to_save A character vector of the parameters to save. Defaults to "mu", "Sigma", "beta", "e". TODO(Amy): clarify. 
 #' @param ... other arguments to pass to \code{\link[rstan]{stan}}.
 #'
 #' @return An object of class \code{stanfit}.

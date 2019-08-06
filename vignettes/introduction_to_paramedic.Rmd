@@ -1,6 +1,6 @@
 ---
 title: "Introduction to paramedic"
-author: "Brian D. Williamson"
+author: "Brian D. Williamson and Amy D. Willis"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
@@ -22,19 +22,17 @@ par(mar = c(5, 12, 4, 2) + 0.1)
 
 ## Introduction
 
-`paramedic` is a package that computes estimates of microbial concentration based on partially observed qPCR and fully observed br16S data. We jointly model these two data sources using a Bayesian hierarchical model. The package allows for varying efficiency between the br16S and qPCR data, and provides point estimates of and interval estimates for concentration, as well as point estimates of and prediction interval estimates of qPCR for the unobserved taxa.
+`paramedic` is a `R` package for estimating microbial concentration. `paramedic` uses information from 16S count data (compositional data on all taxa) and absolute data on a subset of taxa (e.g., qPCR or flow cytometry) to estimate the absolute abundance of all taxa. The method accounts for differing taxon detection efficiencies between the two methods, and produces prediction and confidence intervals as well as point estimates of the absolute abundance of all taxa. 
 
-The author of the `paramedic` package is Brian Williamson.
+The author and maintainer of the `paramedic` package is [Brian Williamson](https://bdwilliamson.github.io/). For details on the method, check out our preprint (coming soon!). 
 
 ## Installation
 
-Currently, the package may only be downloaded and installed from GitHub using the `devtools` package. Type the following command in your R console:
+Currently, the package may only be downloaded and installed from GitHub using the `devtools` package. Type the following commands in your R console to install `devtools` and `paramedic` as needed:
 
 ```{r, eval = FALSE}
-# only run if you don't have devtools
-# previously installed
 # install.packages("devtools")
-devtools::install_github("bdwilliamson/paramedic")
+# devtools::install_github("bdwilliamson/paramedic")
 ```
 
 ## Quick Start
