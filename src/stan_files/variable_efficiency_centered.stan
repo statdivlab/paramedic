@@ -21,13 +21,18 @@ transformed parameters{
     }
 }
 model {
-    ## hyperparameters
+    // hyperparameters
+    real sigma_beta;
+    real sigma_Sigma;
+    real alpha_sigma;
+    real kappa_sigma;
+
     sigma_beta = sqrt(50.0);
     sigma_Sigma = sqrt(50.0);
     alpha_sigma = 2;
     kappa_sigma = 1;
 
-    ## model
+    // model
     beta ~ normal(0, sigma_beta);
     Sigma ~ lognormal(0, sigma_Sigma);
 

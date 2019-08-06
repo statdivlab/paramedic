@@ -1,12 +1,9 @@
-absolute#' Run a Stan algorithm to estimate concentrations from combined absolute and relative abundance data
+#' Run a Stan algorithm to estimate concentrations from combined absolute and relative abundance data
 #'
 #' Estimate concentrations (and efficiencies, if applicable) using the specified Stan algorithm to combine absolute and relative abundance data.
 #'
 #' @param W The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers.
 #' @param V The absolute abundance data, e.g., from taxon-specific absolute primers.
-#' @param N Optional. The number of samples. Defaults to the row-length of W.
-#' @param q Optional. The number of taxa observed with the relative abundance technology. Defaults to the column-length of W.
-#' @param q_obs Optional. The number of taxa observed with the absolute abundance technology. Defaults to the column-length of V.
 #' @param stan_model The Stan algorithm to fit to the data. Expects a file path.
 #' @param n_iter The total number of iterations per chain to be run by the Stan algorithm. Defaults to 10500.
 #' @param n_burnin The total number of warmups per chain to be run by the Stan algorithm. Defaults to 10000.

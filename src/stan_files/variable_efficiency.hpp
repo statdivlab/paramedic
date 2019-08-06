@@ -36,7 +36,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_variable_efficiency");
-    reader.add_event(35, 33, "end", "model_variable_efficiency");
+    reader.add_event(47, 45, "end", "model_variable_efficiency");
     return reader;
 }
 
@@ -260,17 +260,17 @@ public:
             throw std::runtime_error(std::string("Error transforming variable e: ") + e.what());
         }
 
-        if (!(context__.contains_r("sigma")))
-            throw std::runtime_error("variable sigma missing");
-        vals_r__ = context__.vals_r("sigma");
+        if (!(context__.contains_r("sigma_e")))
+            throw std::runtime_error("variable sigma_e missing");
+        vals_r__ = context__.vals_r("sigma_e");
         pos__ = 0U;
-        context__.validate_dims("initialization", "sigma", "double", context__.to_vec());
-        double sigma(0);
-        sigma = vals_r__[pos__++];
+        context__.validate_dims("initialization", "sigma_e", "double", context__.to_vec());
+        double sigma_e(0);
+        sigma_e = vals_r__[pos__++];
         try {
-            writer__.scalar_lb_unconstrain(0,sigma);
+            writer__.scalar_lb_unconstrain(0,sigma_e);
         } catch (const std::exception& e) { 
-            throw std::runtime_error(std::string("Error transforming variable sigma: ") + e.what());
+            throw std::runtime_error(std::string("Error transforming variable sigma_e: ") + e.what());
         }
 
         params_r__ = writer__.data_r();
@@ -337,12 +337,12 @@ public:
             else
                 e = in__.vector_lb_constrain(0,q);
 
-            local_scalar_t__ sigma;
-            (void) sigma;  // dummy to suppress unused var warning
+            local_scalar_t__ sigma_e;
+            (void) sigma_e;  // dummy to suppress unused var warning
             if (jacobian__)
-                sigma = in__.scalar_lb_constrain(0,lp__);
+                sigma_e = in__.scalar_lb_constrain(0,lp__);
             else
-                sigma = in__.scalar_lb_constrain(0);
+                sigma_e = in__.scalar_lb_constrain(0);
 
 
             // transformed parameters
@@ -383,24 +383,59 @@ public:
             }
 
             // model body
-
-            current_statement_begin__ = 22;
-            lp_accum__.add(normal_log<propto__>(beta, 0, stan::math::sqrt(50.0)));
+            {
             current_statement_begin__ = 23;
-            lp_accum__.add(lognormal_log<propto__>(Sigma, 0, stan::math::sqrt(50.0)));
+            local_scalar_t__ sigma_beta;
+            (void) sigma_beta;  // dummy to suppress unused var warning
+
+            stan::math::initialize(sigma_beta, DUMMY_VAR__);
+            stan::math::fill(sigma_beta,DUMMY_VAR__);
+            current_statement_begin__ = 24;
+            local_scalar_t__ sigma_Sigma;
+            (void) sigma_Sigma;  // dummy to suppress unused var warning
+
+            stan::math::initialize(sigma_Sigma, DUMMY_VAR__);
+            stan::math::fill(sigma_Sigma,DUMMY_VAR__);
             current_statement_begin__ = 25;
-            lp_accum__.add(inv_gamma_log<propto__>(sigma, 2, 1));
+            local_scalar_t__ alpha_sigma;
+            (void) alpha_sigma;  // dummy to suppress unused var warning
+
+            stan::math::initialize(alpha_sigma, DUMMY_VAR__);
+            stan::math::fill(alpha_sigma,DUMMY_VAR__);
             current_statement_begin__ = 26;
-            lp_accum__.add(lognormal_log<propto__>(e, 0, stan::math::sqrt(sigma)));
+            local_scalar_t__ kappa_sigma;
+            (void) kappa_sigma;  // dummy to suppress unused var warning
+
+            stan::math::initialize(kappa_sigma, DUMMY_VAR__);
+            stan::math::fill(kappa_sigma,DUMMY_VAR__);
+
+
             current_statement_begin__ = 28;
+            stan::math::assign(sigma_beta, stan::math::sqrt(50.0));
+            current_statement_begin__ = 29;
+            stan::math::assign(sigma_Sigma, stan::math::sqrt(50.0));
+            current_statement_begin__ = 30;
+            stan::math::assign(alpha_sigma, 2);
+            current_statement_begin__ = 31;
+            stan::math::assign(kappa_sigma, 1);
+            current_statement_begin__ = 34;
+            lp_accum__.add(normal_log<propto__>(beta, 0, sigma_beta));
+            current_statement_begin__ = 35;
+            lp_accum__.add(lognormal_log<propto__>(Sigma, 0, sigma_Sigma));
+            current_statement_begin__ = 37;
+            lp_accum__.add(inv_gamma_log<propto__>(sigma_e, alpha_sigma, kappa_sigma));
+            current_statement_begin__ = 38;
+            lp_accum__.add(lognormal_log<propto__>(e, 0, stan::math::sqrt(sigma_e)));
+            current_statement_begin__ = 40;
             for (int j = 1; j <= N; ++j) {
 
-                current_statement_begin__ = 29;
+                current_statement_begin__ = 41;
                 lp_accum__.add(normal_log<propto__>(get_base1(log_mu_tilde,j,"log_mu_tilde",1), 0, 1));
-                current_statement_begin__ = 30;
+                current_statement_begin__ = 42;
                 lp_accum__.add(poisson_log<propto__>(get_base1(V,j,"V",1), stan::model::rvalue(mu, stan::model::cons_list(stan::model::index_uni(j), stan::model::cons_list(stan::model::index_min_max(1, q_obs), stan::model::nil_index_list())), "mu")));
-                current_statement_begin__ = 31;
+                current_statement_begin__ = 43;
                 lp_accum__.add(multinomial_log<propto__>(get_base1(W,j,"W",1), divide(elt_multiply(e,get_base1(mu,j,"mu",1)),sum(elt_multiply(e,get_base1(mu,j,"mu",1))))));
+            }
             }
 
         } catch (const std::exception& e) {
@@ -432,7 +467,7 @@ public:
         names__.push_back("beta");
         names__.push_back("Sigma");
         names__.push_back("e");
-        names__.push_back("sigma");
+        names__.push_back("sigma_e");
         names__.push_back("mu");
     }
 
@@ -484,7 +519,7 @@ public:
         vector_d beta = in__.vector_constrain(q);
         vector_d Sigma = in__.vector_lb_constrain(0,q);
         vector_d e = in__.vector_lb_constrain(0,q);
-        double sigma = in__.scalar_lb_constrain(0);
+        double sigma_e = in__.scalar_lb_constrain(0);
             for (int k_1__ = 0; k_1__ < q; ++k_1__) {
                 for (int k_0__ = 0; k_0__ < N; ++k_0__) {
                 vars__.push_back(log_mu_tilde[k_0__][k_1__]);
@@ -499,7 +534,7 @@ public:
             for (int k_0__ = 0; k_0__ < q; ++k_0__) {
             vars__.push_back(e[k_0__]);
             }
-        vars__.push_back(sigma);
+        vars__.push_back(sigma_e);
 
         // declare and define transformed parameters
         double lp__ = 0.0;
@@ -607,7 +642,7 @@ public:
             param_names__.push_back(param_name_stream__.str());
         }
         param_name_stream__.str(std::string());
-        param_name_stream__ << "sigma";
+        param_name_stream__ << "sigma_e";
         param_names__.push_back(param_name_stream__.str());
 
         if (!include_gqs__ && !include_tparams__) return;
@@ -654,7 +689,7 @@ public:
             param_names__.push_back(param_name_stream__.str());
         }
         param_name_stream__.str(std::string());
-        param_name_stream__ << "sigma";
+        param_name_stream__ << "sigma_e";
         param_names__.push_back(param_name_stream__.str());
 
         if (!include_gqs__ && !include_tparams__) return;
