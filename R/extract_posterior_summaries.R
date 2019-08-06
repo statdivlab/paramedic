@@ -4,7 +4,6 @@
 #'
 #' @param stan_mod the model summary object from Stan.
 #' @param stan_samps the list of MCMC samples from Stan.
-#' @param q the total number of taxa.
 #' @param taxa_of_interest the taxa to return estimates and posterior summaries for.
 #' @param mult_num the number to multiply the resulting estimates and standard deviations by (defaults to 1).
 #' @param level the \code{alpha} level for prediction intervals (defaults to 0.95, for a nominal 95\% prediction interval).
@@ -28,14 +27,14 @@
 #' ## process the example data
 #' q <- 3
 #' q_obs <- 2
-#' processed_data <- process_data(full_data = simple_example_data, br_inds = 1:q,
-#' qpcr_inds = (q + 1):(q + 1 + q_obs),
-#' pcr_plus_br_inds = 1:q_obs,
-#' regex_thr = NA, regex_cps = "", llod = 0,
-#' m_min = 1000, div_num = 1000)
+#' processed_data <- process_data(full_data = simple_example_data, rel_inds = 1:q,
+#' abs_inds = (q + 1):(q + 1 + q_obs),
+#' abs_plus_rel_inds = 1:q_obs,
+#' regex_thr = NA, regex_abs = "", llod = 0,
+#' m_min = 1000, div_num = 1)
 #'
 #' ## run paramedic (with an extremely small number of iterations, for illustration only)
-#' mod <- paramedic(W = processed_data$br, V = processed_data$qpcr, q = q, q_obs = q_obs,
+#' mod <- run_paramedic(W = processed_data$relative, V = processed_data$absolute,
 #' stan_model = "src/stan_files/variable_efficiency.stan", n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
 #' params_to_save = c("mu", "Sigma", "beta", "e"))
 #'
@@ -48,7 +47,7 @@
 #' mult_num = 1, level = 0.95, interval_type = "wald")
 #'
 #' @export
-extract_posterior_summaries <- function(stan_mod, stan_samps, q, taxa_of_interest, mult_num = 1, level = 0.95, interval_type = "wald") {
+extract_posterior_summaries <- function(stan_mod, stan_samps, taxa_of_interest, mult_num = 1, level = 0.95, interval_type = "wald") {
   ## get the posterior estimates
   mu_summ_lst <- lapply(as.list(taxa_of_interest), function(x) stan_mod[grepl("mu", rownames(stan_mod)) & !grepl("log", rownames(stan_mod)) & grepl(paste0(",", x, "]"), rownames(stan_mod), fixed = TRUE), c(1, 3, 4, 5)]*mult_num)
   est_lst <- lapply(mu_summ_lst, function(x) x[, 1])
