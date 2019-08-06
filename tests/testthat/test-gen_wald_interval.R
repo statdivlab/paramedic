@@ -7,13 +7,13 @@ data(simple_example_data)
 q <- 3
 q_obs <- 2
 ## process the data
-processed_data <- paramedic::process_data(full_data = simple_example_data, br_inds = 1:q,
-                                          qpcr_inds = (q + 1):(q + q_obs),
-                                          pcr_plus_br_inds = 1:q_obs,
-                                          regex_thr = "", regex_cps = "_cps", llod = 0,
-                                          m_min = 1000, div_num = 1)
+processed_data <- paramedic::process_data(full_data = simple_example_data, rel_inds = 1:q,
+                               abs_inds = (q + 1):(q + q_obs),
+                               abs_plus_rel_inds = 1:q_obs,
+                               regex_thr = "", regex_abs = "_cps", llod = 0,
+                               m_min = 1000, div_num = 1)
 ## run paramedic (with a *very* small number of iterations, for illustration only)
-mod <- paramedic::paramedic(W = processed_data$br, V = processed_data$qpcr, q = q, q_obs = q_obs,
+mod <- paramedic::run_paramedic(W = processed_data$br, V = processed_data$qpcr,
                             stan_model = "src/stan_files/variable_efficiency.stan", n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
                             params_to_save = c("mu", "Sigma", "beta", "e"))
 ## get model summary
@@ -27,4 +27,3 @@ test_that("wald intervals work", {
   ## check that the intervals cover the observed qPCR for taxon 1
   expect_equal(mean(summs$pred_intervals[,,1][,1] <= processed_data$qpcr[, 1] & summs$pred_intervals[,,1][,2] >= processed_data$qpcr[, 1]), 0.95, tolerance = 0.1)
 })
-
