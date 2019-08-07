@@ -4,7 +4,7 @@
 #'
 #' @param W The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers.
 #' @param V The absolute abundance data, e.g., from taxon-specific absolute primers.
-#' @param stan_model The Stan algorithm to fit to the data. Expects a file path.
+#' @param stan_model The Stan algorithm to fit to the data. Expects an R object of class `stanmodel` corresponding to a pre-compiled Stan file (either \code{stanmodels$variable_efficiency} or \code{stanmodels$variable_efficiency_centered}).
 #' @param n_iter The total number of iterations per chain to be run by the Stan algorithm. Defaults to 10500.
 #' @param n_burnin The total number of warmups per chain to be run by the Stan algorithm. Defaults to 10000.
 #' @param n_chains The total number of chains to be run by the Stan algorithm. Defaults to 4.
@@ -26,14 +26,14 @@
 #'
 #' ## run paramedic (with an extremely small number of iterations, for illustration only)
 #' mod <- run_paramedic(W = example_16S_data, V = example_qPCR_data,
-#' stan_model = "src/stan_files/variable_efficiency.stan", n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
+#' stan_model = stanmodels$variable_efficiency, n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
 #' params_to_save = c("mu", "Sigma", "beta", "e"))
 #'
 #' @seealso \code{\link[rstan]{stan}} for specific usage of the \code{stan} function.
 #'
 #' @export
 run_paramedic <- function(W, V,
-                      stan_model = "src/stan_files/variable_efficiency.stan",
+                      stan_model = stanmodels$variable_efficiency,
                       n_iter = 10500, n_burnin = 10000, n_chains = 4, stan_seed = 4747,
                       params_to_save = c("mu", "Sigma", "beta", "e"),
                       inits_lst = NULL,
@@ -85,7 +85,7 @@ run_paramedic <- function(W, V,
     }
 
     ## run the Stan algorithm
-    mod <- rstan::stan(file = stan_model, data = data_lst, iter = n_iter,
+    mod <- rstan::stan(model_name = stan_model@model_name, model_code = stan_model@model_code, data = data_lst, iter = n_iter,
     warmup = n_burnin, chains = n_chains, seed = stan_seed,
     pars = params_to_save, init = inits_lst, ...)
     return(mod)
