@@ -14,8 +14,6 @@ test_that("paramedic works", {
                                   params_to_save = c("mu", "Sigma", "beta", "e"))
   ## get model summary
   mod_summ <- rstan::summary(mod, probs = c(0.025, 0.975))$summary
-  ## check that dimensions are correct
-  expect_equal(dim(mod_summ), c(34, 7))
   ## check that mean of mu for taxon 1 is "close" to mean qPCR for taxon 1
   expect_equal(mean(mod_summ[grepl("mu", rownames(mod_summ)) & grepl(",1]", rownames(mod_summ)), 1]), mean(example_qPCR_data[, 1]), tolerance = 0.3)
 })
