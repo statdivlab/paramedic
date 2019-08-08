@@ -25,7 +25,8 @@
 #' data(example_qPCR_data)
 #'
 #' ## run paramedic (with an extremely small number of iterations, for illustration only)
-#' mod <- run_paramedic(W = example_16S_data, V = example_qPCR_data,
+#' ## on only the first 10 taxa
+#' mod <- run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data,
 #' stan_model = stanmodels$variable_efficiency, n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
 #' params_to_save = c("mu", "Sigma", "beta", "e"))
 #'
@@ -70,13 +71,13 @@ run_paramedic <- function(W, V,
     log_naive_tilde <- tmp
     if (is.null(inits_lst)) { # create inits if not passed in
         if (n_chains > 1) {
-            if (grepl("centered", stan_model)) {
+            if (grepl("centered", stan_model@model_name)) {
                 inits_lst <- list(list(log_mu = log_naive), rep(list(init = "random"), n_chains - 1))
             } else {
                 inits_lst <- list(list(log_mu_tilde = log_naive_tilde), rep(list(init = "random"), n_chains - 1))
             }
         } else {
-            if (grepl("centered", stan_model)) {
+            if (grepl("centered", stan_model@model_name)) {
                 inits_lst <- list(list(log_mu = log_naive, beta = naive_beta, Sigma = naive_Sigma))
             } else {
                 inits_lst <- list(list(log_mu_tilde = log_naive_tilde, beta = naive_beta, Sigma = naive_Sigma))

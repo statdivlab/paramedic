@@ -37,7 +37,7 @@ Currently, the package may only be downloaded and installed from GitHub using th
 
 ## Quick Start
 
-This section should serve as a quick guide to using the `paramedic` package -- we will cover the main functions using a simulated data example. More details are given in the next section.
+This section should serve as a quick guide to using the `paramedic` package -- we will cover the main functions using a data example.
 
 First, load the `paramedic` and `rstan` packages:
 ```{r}
@@ -48,50 +48,33 @@ library("paramedic")
 Next, we load in some example data:
 ```r
 ## -------------------------------------------------------------
-## problem setup
+## read in the data
 ## -------------------------------------------------------------
-data(simple_example_data)
-q <- 3
-q_obs <- 2
+data(example_16S_data)
+data(example_qPCR_data)
 ```
 
-The example data are a matrix of `q = 3` taxa where br16S is observed and `q_obs = 2` taxa where qPCR is additionally observed for a sample of `n = 10` participants.
-
-Prior to estimating concentrations, we must pre-process the data to pass to Stan. If you do not already have separate qPCR and br16S matrices, we must create them. Additionally, we need to pre-process the qPCR matrix to create valid `R` integers (for passing to Stan). The following code pre-processes the `full_data` object created above, by defining the columns in the full data matrix that correspond to br16S and qPCR, respectively. Additionally, we: (i) use a lower limit of detection of 0; (ii) throw out observations with fewer than 1000 reads; and (iii) divide each qPCR value by 1000 (this ensures that the resulting matrix consists of valid `R` integers).
+The example data are a matrix of `q = 433` taxa where br16S is observed and `q_obs = 7` taxa where qPCR is additionally observed for a sample of `n = 20` participants. These data are inspired by the  University of Washington (UW) Sexually Transmitted Infections Cooperative Research Center (STICRC). We are now ready to estimate concentrations. We pass the data to `run_paramedic`, the workhorse function of the package:
 
 ```{r
 ## -------------------------------------------------------------
-## preliminary step: process the data
-## -------------------------------------------------------------
-processed_data <- paramedic::process_data(full_data = simple_example_data, rel_inds = 1:q,
- abs_inds = (q + 1):(q + 1 + q_obs),
- abs_plus_rel_inds = 1:q_obs,
- regex_thr = NA, regex_abs = "", llod = 0,
- m_min = 1000, div_num = 1)
-qpcr <- processed_data$absolute
-br16s <- processed_data$relative
-```
-
-Now that the data are pre-processed and we have the separate qPCR and br16S data matrices, we are ready to estimate concentrations. We pass the data to `paramedic`, the workhorse function of the package:
-
-```{r
-## -------------------------------------------------------------
-## Run the Stan algorithm that models varying efficiency
+## Obtain estimates of concentration for the first seven taxa
 ## -------------------------------------------------------------
 ## this is a small number of iterations, only for illustration
 ## also, shows how to use control parameters for rstan::stan
-mod <- paramedic::run_paramedic(W = processed_data$relative, V = processed_data$abolute,
-    stan_model = "src/stan_files/variable_efficiency.stan", n_iter = 30,
+mod <- paramedic::run_paramedic(W = example_16S_data[, 1:7], V = example_qPCR_data,
+    stan_model = stanmodels$variable_efficiency, n_iter = 30,
     n_burnin = 25, n_chains = 1, stan_seed = 4747,
-    params_to_save = c("mu", "Sigma", "beta", "e"))
+    params_to_save = c("mu", "Sigma", "beta", "e"),
+    control = list(max_treedepth = 15))
 mod_summ <- summary(stan_mod, probs = c(0.025, 0.975))$summary
 mod_samps <- extract(stan_mod)
 ```
 
-The output from `paramedic` may be manipulated as any output from `rstan::stan` might; however, there are certain posterior summaries that are of particular interest in this problem, namely the posterior mean estimates of concentrations and efficiencies, along with interval estimates for these quantities. The next function extracts these point and interval estimators:
+The output from `run_paramedic` may be manipulated as any output from `rstan::stan` might; however, there are certain posterior summaries that are of particular interest in this problem, namely the posterior mean estimates of concentrations and efficiencies, along with interval estimates for these quantities. The next function extracts these point and interval estimators:
 ```{r
 ## -------------------------------------------------------------
-## Extract posterior estimates for the taxon missing qPCR
+## Extract posterior estimates for the first three taxa
 ## -------------------------------------------------------------
 summs <- paramedic::extract_posterior_summaries(stan_mod = mod_summ,
     stan_samps = mod_samps,

@@ -17,8 +17,9 @@
 #' data(example_qPCR_data)
 #'
 #' ## run paramedic (with an extremely small number of iterations, for illustration only)
-#' mod <- run_paramedic(W = example_16S_data, V = example_qPCR_data,
-#' stan_model = "src/stan_files/variable_efficiency.stan", n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
+#' on only the first 10 taxa
+#' mod <- run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data,
+#' stan_model = stanmodels$variable_efficiency, n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
 #' params_to_save = c("mu", "Sigma", "beta", "e"))
 #' ## get model summary
 #' mod_summ <- rstan::summary(mod, probs = c(0.025, 0.975))$summary
