@@ -6,8 +6,7 @@
 \usage{
 run_paramedic(W, V, stan_model = stanmodels$variable_efficiency,
   n_iter = 10500, n_burnin = 10000, n_chains = 4, stan_seed = 4747,
-  params_to_save = c("mu", "Sigma", "beta", "e"), inits_lst = NULL,
-  ...)
+  inits_lst = NULL, ...)
 }
 \arguments{
 \item{W}{The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers.}
@@ -24,9 +23,9 @@ run_paramedic(W, V, stan_model = stanmodels$variable_efficiency,
 
 \item{stan_seed}{The random number seed to initialize.}
 
-\item{params_to_save}{A character vector of the parameters to save. Defaults to "mu", "Sigma", "beta", "e". TODO(Amy): clarify.}
+\item{inits_lst}{An optional list of initial values of the parameters. Must be a named list; see \code{\link[rstan]{stan}}.}
 
-\item{...}{other arguments to pass to \code{\link[rstan]{stan}}.}
+\item{...}{other arguments to pass to \code{\link[rstan]{sampling}}.}
 }
 \value{
 An object of class \code{stanfit}.
@@ -47,10 +46,10 @@ data(example_qPCR_data)
 ## run paramedic (with an extremely small number of iterations, for illustration only)
 ## on only the first 10 taxa
 mod <- run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data,
-stan_model = stanmodels$variable_efficiency, n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
-params_to_save = c("mu", "Sigma", "beta", "e"))
+stan_model = stanmodels$variable_efficiency, n_iter = 30, n_burnin = 25, 
+n_chains = 1, stan_seed = 4747)
 
 }
 \seealso{
-\code{\link[rstan]{stan}} for specific usage of the \code{stan} function.
+\code{\link[rstan]{stan}} and \code{\link[rstan]{sampling}} for specific usage of the \code{stan} and \code{sampling} functions.
 }

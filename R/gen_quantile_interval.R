@@ -17,16 +17,17 @@
 #' data(example_qPCR_data)
 #'
 #' ## run paramedic (with an extremely small number of iterations, for illustration only)
-#' on only the first 10 taxa
+#' ## on only the first 10 taxa
 #' mod <- run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data,
-#' stan_model = stanmodels$variable_efficiency, n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
-#' params_to_save = c("mu", "Sigma", "beta", "e"))
+#' stan_model = stanmodels$variable_efficiency, n_iter = 30, n_burnin = 25, 
+#' n_chains = 1, stan_seed = 4747)
 #' ## get model summary
 #' mod_summ <- rstan::summary(mod, probs = c(0.025, 0.975))$summary
 #' ## get samples
 #' mod_samps <- rstan::extract(mod)
 #' ## extract relevant summaries
-#' summs <- extract_posterior_summaries(stan_mod = mod_summ, stan_samps = mod_samps, taxa_of_interest = 1:3,
+#' summs <- extract_posterior_summaries(stan_mod = mod_summ, stan_samps = mod_samps, 
+#' taxa_of_interest = 1:3,
 #' mult_num = 1, level = 0.95, interval_type = "quantile")
 #'
 #' @export
@@ -34,18 +35,18 @@ gen_quantile_interval <- function(mu_quantiles, mu_samps, alpha = 0.05, type = "
   if (type == "credible_quantiles") {
     if (is.null(dim(mu_quantiles))) mu_quantiles <- matrix(mu_quantiles, ncol = 2)
 
-    lower_limits <- qpois(p = alpha/2, lambda = mu_quantiles[, 1])
-    upper_limits <- qpois(p = 1 - alpha/2, lambda = mu_quantiles[, 2])
+    lower_limits <- stats::qpois(p = alpha/2, lambda = mu_quantiles[, 1])
+    upper_limits <- stats::qpois(p = 1 - alpha/2, lambda = mu_quantiles[, 2])
     pred_intervals <- cbind(lower_limits, upper_limits)
   } else if (type == "sample_quantiles") {
     ## check to make sure it's an array of dimension 3
     if (length(dim(mu_samps)) != 3) mu_samps <- array(mu_samps, dim = c(dim(mu_samps), 1))
 
     ## sample from Poisson
-    v_samps <- apply(mu_samps, c(1, 2, 3), function(x) rpois(1, x))
+    v_samps <- apply(mu_samps, c(1, 2, 3), function(x) stats::rpois(1, x))
 
     ## compute quantiles for each (i,j) pair
-    quantiles <- apply(v_samps, c(2, 3), function(x) quantile(x, probs = c(alpha/2, 1 - alpha/2)))
+    quantiles <- apply(v_samps, c(2, 3), function(x) stats::quantile(x, probs = c(alpha/2, 1 - alpha/2)))
 
     pred_intervals <- matrix(quantiles, nrow = dim(quantiles)[2]*dim(quantiles)[3], ncol = 2, byrow = TRUE)
   }

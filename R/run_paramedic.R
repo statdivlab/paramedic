@@ -10,7 +10,7 @@
 #' @param n_chains The total number of chains to be run by the Stan algorithm. Defaults to 4.
 #' @param stan_seed The random number seed to initialize.
 #' @param inits_lst An optional list of initial values of the parameters. Must be a named list; see \code{\link[rstan]{stan}}.
-#' @param ... other arguments to pass to \code{\link[rstan]{stan}}.
+#' @param ... other arguments to pass to \code{\link[rstan]{sampling}}.
 #'
 #' @return An object of class \code{stanfit}.
 #'
@@ -27,10 +27,10 @@
 #' ## run paramedic (with an extremely small number of iterations, for illustration only)
 #' ## on only the first 10 taxa
 #' mod <- run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data,
-#' stan_model = stanmodels$variable_efficiency, n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
-#' params_to_save = c("mu", "Sigma", "beta", "e"))
+#' stan_model = stanmodels$variable_efficiency, n_iter = 30, n_burnin = 25, 
+#' n_chains = 1, stan_seed = 4747)
 #'
-#' @seealso \code{\link[rstan]{stan}} for specific usage of the \code{stan} function.
+#' @seealso \code{\link[rstan]{stan}} and \code{\link[rstan]{sampling}} for specific usage of the \code{stan} and \code{sampling} functions.
 #'
 #' @export
 run_paramedic <- function(W, V,
@@ -62,7 +62,7 @@ run_paramedic <- function(W, V,
     colnames(naive_est) <- colnames(W)
     log_naive <- ifelse(is.infinite(log(naive_est)), 0, log(naive_est))
     naive_beta <- colMeans(log_naive, na.rm = TRUE)
-    naive_Sigma <- diag(var(log_naive, na.rm = TRUE))
+    naive_Sigma <- diag(stats::var(log_naive, na.rm = TRUE))
     tmp <- ifelse(naive_Sigma < 1e-3, 1e-3, naive_Sigma)
     naive_Sigma <- tmp
     log_naive_tilde <- sweep(sweep(log_naive, 2, naive_beta, FUN = "-"), 2, naive_Sigma, FUN = "/")
@@ -85,8 +85,8 @@ run_paramedic <- function(W, V,
     }
 
     ## run the Stan algorithm
-    mod <- rstan::stan(model_name = stan_model@model_name, model_code = stan_model@model_code, data = data_lst, iter = n_iter,
-    warmup = n_burnin, chains = n_chains, seed = stan_seed,
-    pars = c("mu", "Sigma", "beta", "e"), init = inits_lst, ...)
+    mod <- rstan::sampling(stan_model, data = data_lst, pars = c("mu", "e", "beta", "Sigma"),
+                           chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
+                           init = inits_lst, ...)
     return(mod)
 }

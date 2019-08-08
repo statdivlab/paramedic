@@ -14,8 +14,6 @@
 #'
 #' @return a list containing two matrices: one with the observed absolute abundances, and the other with the observed relative abundances.
 #'
-#' @details
-#'
 #' @examples
 #' ## load the package, read in example data
 #' library("paramedic")

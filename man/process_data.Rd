@@ -33,9 +33,6 @@ a list containing two matrices: one with the observed absolute abundances, and t
 \description{
 Return matrices of observed absolute and relative abundances, given a single dataset and a set of indices.
 }
-\details{
-
-}
 \examples{
 ## load the package, read in example data
 library("paramedic")
