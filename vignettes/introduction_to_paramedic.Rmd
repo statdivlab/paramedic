@@ -6,9 +6,9 @@ output:
   rmarkdown::html_vignette:
     keep_md: true
 vignette: >
-  %\VignetteIndexEntry{Introduction to paramedic}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  \VignetteIndexEntry{Introduction to paramedic}
+  \VignetteEngine{knitr::rmarkdown}
+  \VignetteEncoding{UTF-8}
 ---
 
 ```{r, echo = FALSE, include = FALSE}
