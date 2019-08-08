@@ -13,7 +13,7 @@ Authors@R:
            family = "Willis",
            role = "aut"))
 Description: We estimate microbial abundances by combining compositional abundance data and observed absolute abundance data. We have two fully Bayesian hierarchical models allowing for varying efficiencies. The two models only differ in the way that the true concentration is parameterized: the first uses a centered parameterization, while the second uses a noncentered parameterization. There may be differences in speed and accuracy of each hierarchical model, depending on the dataset and initial values chosen. Please read any warning messages returned by the algorithm carefully, as these can help diagnose convergence issues. We return credible intervals and point estimates for the true concentrations, and point estimates and prediction intervals for the unobserved absolute abundances.
-License: GPL (>=3)
+License: BSD_3_clause + file LICENSE
 Depends:
     methods,
     R (>= 3.4.0),
@@ -33,4 +33,7 @@ NeedsCompilation: yes
 SystemRequirements: GNU make
 RoxygenNote: 6.1.1
 Suggests:
-    testthat (>= 2.1.0)
+    testthat (>= 2.1.0),
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
