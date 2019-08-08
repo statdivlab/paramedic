@@ -25,7 +25,7 @@ run_paramedic(W, V, stan_model = stanmodels$variable_efficiency,
 
 \item{inits_lst}{An optional list of initial values of the parameters. Must be a named list; see \code{\link[rstan]{stan}}.}
 
-\item{...}{other arguments to pass to \code{\link[rstan]{sampling}}.}
+\item{...}{other arguments to pass to \code{\link[rstan]{sampling}} (e.g., control).}
 }
 \value{
 An object of class \code{stanfit}.
