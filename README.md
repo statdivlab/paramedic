@@ -54,9 +54,7 @@ data(example_qPCR_data)
 ## this is a small number of iterations, only for illustration
 ## also, shows how to use control parameters for rstan::stan
 stan_mod <- run_paramedic(W = example_16S_data[, 1:7], V = example_qPCR_data,
-                      stan_model = stanmodels$variable_efficiency,
                       n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
-                      params_to_save = c("mu", "Sigma", "beta", "e"),
                       control = list(adapt_delta = 0.85, max_treedepth = 15),
                       verbose = FALSE)
 stan_mod_summ <- summary(stan_mod, probs = c(0.025, 0.975))$summary
