@@ -44,7 +44,7 @@ data(example_qPCR_data)
 ## run paramedic (with an extremely small number of iterations, for illustration only)
 ## on only the first 10 taxa
 mod <- run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data,
-stan_model = stanmodels$variable_efficiency, n_iter = 30, n_burnin = 25, 
+n_iter = 30, n_burnin = 25, 
 n_chains = 1, stan_seed = 4747)
 
 ## get summary, samples
