@@ -4,8 +4,7 @@
 \alias{run_paramedic}
 \title{Run a Stan algorithm to estimate concentrations from combined absolute and relative abundance data}
 \usage{
-run_paramedic(W, V,
-  stan_model = "src/stan_files/variable_efficiency.stan",
+run_paramedic(W, V, stan_model = stanmodels$variable_efficiency,
   n_iter = 10500, n_burnin = 10000, n_chains = 4, stan_seed = 4747,
   params_to_save = c("mu", "Sigma", "beta", "e"), inits_lst = NULL,
   ...)
@@ -15,7 +14,7 @@ run_paramedic(W, V,
 
 \item{V}{The absolute abundance data, e.g., from taxon-specific absolute primers.}
 
-\item{stan_model}{The Stan algorithm to fit to the data. Expects a file path.}
+\item{stan_model}{The Stan algorithm to fit to the data. Expects an R object of class `stanmodel` corresponding to a pre-compiled Stan file (either \code{stanmodels$variable_efficiency} or \code{stanmodels$variable_efficiency_centered}).}
 
 \item{n_iter}{The total number of iterations per chain to be run by the Stan algorithm. Defaults to 10500.}
 
@@ -46,8 +45,9 @@ data(example_16S_data)
 data(example_qPCR_data)
 
 ## run paramedic (with an extremely small number of iterations, for illustration only)
-mod <- run_paramedic(W = example_16S_data, V = example_qPCR_data,
-stan_model = "src/stan_files/variable_efficiency.stan", n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
+## on only the first 10 taxa
+mod <- run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data,
+stan_model = stanmodels$variable_efficiency, n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
 params_to_save = c("mu", "Sigma", "beta", "e"))
 
 }

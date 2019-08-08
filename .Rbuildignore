@@ -1,2 +1,9 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^appveyor\.yml$
+^\.travis\.yml$
+^codecov\.yml$
+cran-comments.md
+LICENSE.md
+README.md
+NEWS.md

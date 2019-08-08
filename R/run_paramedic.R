@@ -9,7 +9,7 @@
 #' @param n_burnin The total number of warmups per chain to be run by the Stan algorithm. Defaults to 10000.
 #' @param n_chains The total number of chains to be run by the Stan algorithm. Defaults to 4.
 #' @param stan_seed The random number seed to initialize.
-#' @param params_to_save A character vector of the parameters to save. Defaults to "mu", "Sigma", "beta", "e". TODO(Amy): clarify.
+#' @param inits_lst An optional list of initial values of the parameters. Must be a named list; see \code{\link[rstan]{stan}}.
 #' @param ... other arguments to pass to \code{\link[rstan]{stan}}.
 #'
 #' @return An object of class \code{stanfit}.
@@ -36,7 +36,6 @@
 run_paramedic <- function(W, V,
                       stan_model = stanmodels$variable_efficiency,
                       n_iter = 10500, n_burnin = 10000, n_chains = 4, stan_seed = 4747,
-                      params_to_save = c("mu", "Sigma", "beta", "e"),
                       inits_lst = NULL,
                       ...) {
     N <- dim(W)[1]
@@ -88,6 +87,6 @@ run_paramedic <- function(W, V,
     ## run the Stan algorithm
     mod <- rstan::stan(model_name = stan_model@model_name, model_code = stan_model@model_code, data = data_lst, iter = n_iter,
     warmup = n_burnin, chains = n_chains, seed = stan_seed,
-    pars = params_to_save, init = inits_lst, ...)
+    pars = c("mu", "Sigma", "beta", "e"), init = inits_lst, ...)
     return(mod)
 }
