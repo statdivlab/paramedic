@@ -41,10 +41,10 @@ data(simple_example_data)
 ## process the example data
 q <- 3
 q_obs <- 2
-processed_data <- process_data(full_data = simple_example_data, rel_inds = 1:q,
-abs_inds = (q + 1):(q + 1 + q_obs),
+processed_data <- paramedic::process_data(full_data = simple_example_data, rel_inds = 1:q,
+abs_inds = (q + 1):(q + q_obs),
 abs_plus_rel_inds = 1:q_obs,
-regex_thr = "", regex_abs = "", llod = 0,
+regex_thr = "", regex_abs = "_cps", llod = 0,
 m_min = 1000, div_num = 1)
 
 }
