@@ -13,8 +13,7 @@ Predicting Absolute and Relative Abundance by Modeling Efficiency to Derive Inte
 
 ## Introduction
 
-`paramedic` estimates microbial abundances by combining compositional data and absolute abundance data. We return credible intervals and point estimates for the absolute abundance of all taxa, point estimates and prediction intervals for the unobserved absolute abundances, and credible intervals for the taxon-specific detection efficiencies. 
-Check out [the paper](TBD) for more details. 
+`paramedic` is a R package for estimating microbial concentration. paramedic uses information from 16S count data (compositional data on all taxa) and absolute data on a subset of taxa (e.g., qPCR or flow cytometry) to estimate the absolute abundance of all taxa. The method accounts for differing taxon detection efficiencies between the two methods, and produces prediction and confidence intervals as well as point estimates of the absolute abundance of all taxa. Check out [the paper](TBD) for more details. 
 
 ------------------------------
 

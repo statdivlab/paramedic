@@ -46,15 +46,14 @@ library("paramedic")
 ```
 
 Next, we load in some example data:
-```r
-## -------------------------------------------------------------
-## read in the data
-## -------------------------------------------------------------
+```{r}
 data(example_16S_data)
 data(example_qPCR_data)
 ```
 
-The example data are a matrix of `q = 433` taxa where br16S is observed and `q_obs = 7` taxa where qPCR is additionally observed for a sample of `n = 20` participants. These data are inspired by the  University of Washington (UW) Sexually Transmitted Infections Cooperative Research Center (STICRC). We are now ready to estimate concentrations. We pass the data to `run_paramedic`, the workhorse function of the package:
+`example_16S_data` is a matrix of `q = 433` taxa observed from 16S sequencing in `n = 20` samples. We do not have primers to observe the concentration of all taxa, but we can do this for `q_obs = 7` taxa. The observed concentration of the 7 taxa in the 20 samples (in 16S gene copies per unit volume) is in `example_qPCR_data`. These data mimic data observed by the University of Washington (UW) Sexually Transmitted Infections Cooperative Research Center (STICRC). 
+
+We are now ready to estimate concentrations. We pass the data to `run_paramedic`, the workhorse function of the package:
 
 ```{r
 ## -------------------------------------------------------------
