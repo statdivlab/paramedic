@@ -63,9 +63,7 @@ The example data are a matrix of `q = 433` taxa where br16S is observed and `q_o
 ## this is a small number of iterations, only for illustration
 ## also, shows how to use control parameters for rstan::stan
 mod <- paramedic::run_paramedic(W = example_16S_data[, 1:7], V = example_qPCR_data,
-    stan_model = stanmodels$variable_efficiency, n_iter = 30,
-    n_burnin = 25, n_chains = 1, stan_seed = 4747,
-    params_to_save = c("mu", "Sigma", "beta", "e"),
+    n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
     control = list(max_treedepth = 15))
 mod_summ <- summary(stan_mod, probs = c(0.025, 0.975))$summary
 mod_samps <- extract(stan_mod)

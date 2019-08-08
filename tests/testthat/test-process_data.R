@@ -15,7 +15,7 @@ Sigma <- diag(1, nrow = q, ncol = q)
 m_min <- 10000
 m_max <- 100000
 set.seed(4747)
-beta_init <- rnorm(q, 0, sqrt(50))
+beta_init <- stats::rnorm(q, 0, sqrt(50))
 ## order by abundance
 beta <- beta_init[order(beta_init, decreasing = TRUE)]
 ## create the model parameters
@@ -28,12 +28,12 @@ mu <- exp(log_mu)
 ## ------------------------------------------
 V <- matrix(NA, nrow = n, ncol = q_obs)
 for (i in 1:q_obs) {
-    V[, i] <- rpois(n, mu[, i])    
+    V[, i] <- stats::rpois(n, mu[, i])    
 }
 W <- matrix(NA, nrow = n, ncol = q)
 for (i in 1:n) {
     p_i <- e*mu[i, ]/sum(e*mu[i, ])
-    W[i, ] <- rmultinom(n = 1, size = m[i], prob = p_i)    
+    W[i, ] <- stats::rmultinom(n = 1, size = m[i], prob = p_i)    
 }
 full_data <- cbind(W, V)
 

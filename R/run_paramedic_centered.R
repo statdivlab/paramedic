@@ -25,16 +25,16 @@
 #'
 #' ## run paramedic (with an extremely small number of iterations, for illustration only)
 #' ## on only the first 10 taxa
-#' mod <- run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data,
+#' mod <- run_paramedic_centered(W = example_16S_data[, 1:10], V = example_qPCR_data,
 #' n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747)
 #'
 #' @seealso \code{\link[rstan]{stan}} and \code{\link[rstan]{sampling}} for specific usage of the \code{stan} and \code{sampling} functions.
 #'
 #' @export
-run_paramedic <- function(W, V,
-                      n_iter = 10500, n_burnin = 10000, n_chains = 4, stan_seed = 4747,
-                      inits_lst = NULL,
-                      ...) {
+run_paramedic_centered <- function(W, V,
+                          n_iter = 10500, n_burnin = 10000, n_chains = 4, stan_seed = 4747,
+                          inits_lst = NULL,
+                          ...) {
     N <- dim(W)[1]
     q <- dim(W)[2]
     q_obs <- dim(V)[2]
@@ -44,16 +44,16 @@ run_paramedic <- function(W, V,
     data_lst <- list(W = W, V = V, N = N, q = q, q_obs = q_obs)
     ## get inits from the naive estimator
     naive_estimator <- function(idx, relatives, absolutes, known_absolute) {
-      ## get the sum of the relative abundances
-      sum_relative <- rowSums(relatives[, known_absolute, drop = FALSE])
-      ## get the sum of the absolutes
-      sum_absolute <- rowSums(absolutes)
-
-      ## naive estimator
-      absolute <- relatives[, idx]*sum_absolute/sum_relative
-      ## if sum_relative was zero, predict zero (?)
-      absolute <- ifelse (sum_relative == 0, 0, absolute)
-      return(absolute)
+        ## get the sum of the relative abundances
+        sum_relative <- rowSums(relatives[, known_absolute, drop = FALSE])
+        ## get the sum of the absolutes
+        sum_absolute <- rowSums(absolutes)
+        
+        ## naive estimator
+        absolute <- relatives[, idx]*sum_absolute/sum_relative
+        ## if sum_relative was zero, predict zero (?)
+        absolute <- ifelse (sum_relative == 0, 0, absolute)
+        return(absolute)
     }
     naive_est <- cbind(as.matrix(V), apply(matrix((q_obs + 1):q), 1, naive_estimator, W, V, 1:q_obs))
     colnames(naive_est) <- colnames(W)
@@ -67,14 +67,14 @@ run_paramedic <- function(W, V,
     log_naive_tilde <- tmp
     if (is.null(inits_lst)) { # create inits if not passed in
         if (n_chains > 1) {
-            inits_lst <- list(list(log_mu_tilde = log_naive_tilde), rep(list(init = "random"), n_chains - 1))
+            inits_lst <- list(list(log_mu = log_naive), rep(list(init = "random"), n_chains - 1))
         } else {
-            inits_lst <- list(list(log_mu_tilde = log_naive_tilde, beta = naive_beta, Sigma = naive_Sigma))
+            inits_lst <- list(list(log_mu = log_naive, beta = naive_beta, Sigma = naive_Sigma))
         }
     }
-
+    
     ## run the Stan algorithm
-    mod <- rstan::sampling(stanmodels$variable_efficiency, data = data_lst, pars = c("mu", "e", "beta", "Sigma"),
+    mod <- rstan::sampling(stanmodels$variable_efficiency_centered, data = data_lst, pars = c("mu", "e", "beta", "Sigma"),
                            chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
                            init = inits_lst, ...)
     return(mod)
