@@ -1,19 +1,20 @@
-# paramedic: Predicting Absolute and Relative Abundance by Modeling Efficiency to Derive Intervals and Concentrations
+# paramedic <img src="docs/paramedic-logo.png" align="right" width="165px"/>
+Predicting Absolute and Relative Abundance by Modeling Efficiency to Derive Intervals and Concentrations
 
+[![Build Status](https://travis-ci.org/statdivlab/paramedic.svg?branch=master)](https://travis-ci.org/statdivlab/paramedic)
+[![codecov](https://codecov.io/gh/statdivlab/paramedic/branch/master/graph/badge.svg?token=GnLFG7QNsh)](https://codecov.io/gh/statdivlab/paramedic)
 [![License: BSD-3](https://img.shields.io/badge/License-BSD--3--Clause-yellow)](https://opensource.org/licenses/BSD-3-Clause)
 
-**Author:** Brian Williamson
+**Software author:** [Brian Williamson](https://bdwilliamson.github.io/)
+
+**Methodology authors:** [Brian Williamson](https://bdwilliamson.github.io/), [Jim Hughes](http://faculty.washington.edu/jphughes/) and [Amy Willis](http://statisticaldiversitylab.com/team/amy-willis)
 
 ------------------------------
 
 ## Introduction
 
-
-------------------------------
-
-## Issues
-
-If you encounter any bugs or have any specific feature requests, please [file an issue](https://github.com/statdivlab/paramedic/issues).
+`paramedic` estimates microbial abundances by combining compositional data and absolute abundance data. We return credible intervals and point estimates for the absolute abundance of all taxa, point estimates and prediction intervals for the unobserved absolute abundances, and credible intervals for the taxon-specific detection efficiencies. 
+Check out [the paper](TBD) for more details. 
 
 ------------------------------
 
@@ -73,3 +74,14 @@ posterior_summaries <- extract_posterior_summaries(stan_mod_summ, stan_mod_samps
 posterior_summaries$estimates
 posterior_summaries$est_efficiency
 ```
+
+------------------------------
+
+## Issues
+
+We use Stan to fit the hierarchical model to the data. Read any warning messages returned by the algorithm carefully, as these can help diagnose convergence issues. Carefully choosing initialisation values can speed up convergence. 
+
+If you encounter any bugs or have any specific feature requests, please [file an issue](https://github.com/statdivlab/paramedic/issues).
+
+------------------------------
+
