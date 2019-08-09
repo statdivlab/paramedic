@@ -1,4 +1,6 @@
 ## test that extracting posterior summaries works!
+context("Test extracting posterior summaries")
+
 ## set up the data
 library("testthat")
 library("rstan")
@@ -8,7 +10,7 @@ data(example_qPCR_data)
 
 ## run paramedic (with a *very* small number of iterations, for illustration only)
 mod <- paramedic::run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data,
-                            n_iter = 200, n_burnin = 150, n_chains = 1, stan_seed = 4747,
+                                n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
                             control = list(max_treedepth = 15))
 ## get model summary
 mod_summ <- rstan::summary(mod, probs = c(0.025, 0.975))$summary

@@ -1,4 +1,6 @@
 ## test that processing data works!
+context("Test processing data")
+
 ## set up the data
 library("testthat")
 library("paramedic")
