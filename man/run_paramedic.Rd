@@ -8,9 +8,9 @@ run_paramedic(W, V, n_iter = 10500, n_burnin = 10000, n_chains = 4,
   stan_seed = 4747, inits_lst = NULL, ...)
 }
 \arguments{
-\item{W}{The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers.}
+\item{W}{The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V.}
 
-\item{V}{The absolute abundance data, e.g., from taxon-specific absolute primers.}
+\item{V}{The absolute abundance data, e.g., from taxon-specific absolute primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V.}
 
 \item{n_iter}{The total number of iterations per chain to be run by the Stan algorithm. Defaults to 10500.}
 
