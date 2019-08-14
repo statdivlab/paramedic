@@ -63,16 +63,16 @@ run_paramedic_centered <- function(W, V,
         warning("Re-ordering samples so that the rows of W match the rows of V. The results will be in terms of the rows of V.")
         combined_tbl <- dplyr::left_join(V_tbl, W_tbl, by = names(V_tbl)[1])
         tmp <- combined_tbl %>% 
-            select(-ends_with(".x")) %>% 
-            rename_at(.vars = vars(ends_with(".y")),
-                      .funs = funs(sub("[.]y$", "", .)))
+            dplyr::select(-dplyr::ends_with(".x")) %>% 
+            dplyr::rename_at(.vars = dplyr::vars(dplyr::ends_with(".y")),
+                             .funs = list(~sub("[.]y$", "", .)))
         W_tbl <- tmp
     }
     ## if the absolute abundance-observed columns are scrambled between W and V, change W to match V
     if (sum(names(W_tbl)[-1][1:q_obs] == names(V_tbl)[-1]) != q_obs) {
         warning("Re-ordering columns so that the first q_obs columns of W are in the same order as V.")
         tmp <- W_tbl %>% 
-            select(names(V_tbl), names(W_tbl)[(q_obs + 1):q])
+            dplyr::select(names(V_tbl), names(W_tbl)[(q_obs + 1):q])
         W_tbl <- tmp
     }
     
