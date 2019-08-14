@@ -2,8 +2,8 @@
 #'
 #' Estimate concentrations (and efficiencies, if applicable) by combining absolute and relative abundance data.
 #'
-#' @param W The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers.
-#' @param V The absolute abundance data, e.g., from taxon-specific absolute primers.
+#' @param W The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.
+#' @param V The absolute abundance data, e.g., from taxon-specific absolute primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.
 #' @param n_iter The total number of iterations per chain to be run by the Stan algorithm. Defaults to 10500.
 #' @param n_burnin The total number of warmups per chain to be run by the Stan algorithm. Defaults to 10000.
 #' @param n_chains The total number of chains to be run by the Stan algorithm. Defaults to 4.
@@ -36,12 +36,53 @@ run_paramedic <- function(W, V,
                       inits_lst = NULL,
                       ...) {
     N <- dim(W)[1]
-    q <- dim(W)[2]
-    q_obs <- dim(V)[2]
+    q <- dim(W)[2] - 1
+    q_obs <- dim(V)[2] - 1
+    ## --------------
     ## error messages
+    ## --------------
+    ## error if there aren't the same number of rows in W and V
     if (dim(W)[1] != dim(V)[1]) stop("The number of rows in W and V must match.")
-    ## set up the data list
-    data_lst <- list(W = W, V = V, N = N, q = q, q_obs = q_obs)
+    ## error if there is any difference between the first column of W and V
+    if (length(setdiff(as.numeric(unlist(W[, 1])), as.numeric(unlist(V[, 1])))) != 0) stop("W and V must have the same samples.")
+    ## error if the id columns are named different things
+    if ("data.frame" %in% class(W) | "tbl" %in% class(W)) {
+      if (names(W)[1] != names(V)[1]) stop("W and V must have the same name ")  
+    } else {
+      if (colnames(W)[1] != colnames(V)[1]) stop("W and V must have the same name ")  
+    }
+    
+    ## ---------------------------
+    ## pre-processing and warnings
+    ## ---------------------------
+    ## make tibbles out of W and V, if they aren't already
+    W_tbl <- tibble::as_tibble(W)
+    V_tbl <- tibble::as_tibble(V)
+    ## if the rows are scrambled between W and V, change W to match V
+    if (sum(W_tbl[, 1] == V_tbl[, 1]) != dim(V_tbl)[1]) {
+      warning("Re-ordering samples so that the rows of W match the rows of V. The results will be in terms of the rows of V.")
+      combined_tbl <- dplyr::left_join(V_tbl, W_tbl, by = names(V_tbl)[1])
+      tmp <- combined_tbl %>% 
+        select(-ends_with(".x")) %>% 
+        rename_at(.vars = vars(ends_with(".y")),
+                  .funs = funs(sub("[.]y$", "", .)))
+      W_tbl <- tmp
+    }
+    ## if the absolute abundance-observed columns are scrambled between W and V, change W to match V
+    if (sum(names(W_tbl)[-1][1:q_obs] == names(V_tbl)[-1]) != q_obs) {
+      warning("Re-ordering columns so that the first q_obs columns of W are in the same order as V.")
+      tmp <- W_tbl %>% 
+        select(names(V_tbl), names(W_tbl)[(q_obs + 1):q])
+      W_tbl <- tmp
+    }
+    
+    ## make matrix version of W and V, if they aren't already; remove first column
+    W_mat <- as.matrix(W)[, -1]
+    V_mat <- as.matrix(V)[, -1]
+    ## ----------------------------------------
+    ## set up the data and initial values lists
+    ## ----------------------------------------
+    data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs)
     ## get inits from the naive estimator
     naive_estimator <- function(idx, relatives, absolutes, known_absolute) {
       ## get the sum of the relative abundances
@@ -55,8 +96,8 @@ run_paramedic <- function(W, V,
       absolute <- ifelse (sum_relative == 0, 0, absolute)
       return(absolute)
     }
-    naive_est <- cbind(as.matrix(V), apply(matrix((q_obs + 1):q), 1, naive_estimator, W, V, 1:q_obs))
-    colnames(naive_est) <- colnames(W)
+    naive_est <- cbind(as.matrix(V_mat), apply(matrix((q_obs + 1):q), 1, naive_estimator, W_mat, V_mat, 1:q_obs))
+    colnames(naive_est) <- colnames(W_mat)
     log_naive <- ifelse(is.infinite(log(naive_est)), 0, log(naive_est))
     naive_beta <- colMeans(log_naive, na.rm = TRUE)
     naive_Sigma <- diag(stats::var(log_naive, na.rm = TRUE))
@@ -72,8 +113,9 @@ run_paramedic <- function(W, V,
             inits_lst <- list(list(log_mu_tilde = log_naive_tilde, beta = naive_beta, Sigma = naive_Sigma))
         }
     }
-
+    ## ----------------------
     ## run the Stan algorithm
+    ## ----------------------
     mod <- rstan::sampling(stanmodels$variable_efficiency, data = data_lst, pars = c("mu", "e", "beta", "Sigma"),
                            chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
                            init = inits_lst, ...)
