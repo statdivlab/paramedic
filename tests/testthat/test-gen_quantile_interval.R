@@ -21,5 +21,5 @@ test_that("quantile intervals work", {
   ## check that I have proper dimension of intervals
   expect_equal(dim(summs$pred_intervals), c(dim(example_16S_data)[1], 2, length(1:3)))
   ## check that the intervals cover the observed qPCR for taxon 1
-  expect_equal(mean(summs$pred_intervals[,,1][,1] <= example_qPCR_data[, 1] & summs$pred_intervals[,,1][,2] >= example_qPCR_data[, 1]), 0.95, tolerance = 0.1)
+  expect_equal(mean(summs$pred_intervals[,,1][,1] <= example_qPCR_data$Gardnerella.vaginalis & summs$pred_intervals[,,1][,2] >= example_qPCR_data$Gardnerella.vaginalis), 0.95, tolerance = 0.2)
 })
