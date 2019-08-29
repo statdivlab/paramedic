@@ -24,6 +24,8 @@ matrix:
       env:
         - CXX_OLEVEL=2 CXX=clang++
 
+r_packages:
+  - covr
 
 before_install:
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
