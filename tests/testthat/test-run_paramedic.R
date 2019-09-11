@@ -37,29 +37,33 @@ test_that("errors and warnings for run_paramedic work", {
   expect_error(paramedic::run_paramedic(W = example_16S_data[1, 1:10], V = example_qPCR_data,
                                   n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
                                   control = list(max_treedepth = 15)))
+  ## expect error if q < q_obs
+  expect_error(paramedic::run_paramedic(W = example_16S_data[1, 1:3], V = example_qPCR_data,
+                                        n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
+                                        control = list(max_treedepth = 15)))
   ## check to make sure that both W and V have as first column the sample IDs
-  wrong_sample_id_name <- example_16S_data %>% 
-    mutate(SampleID = sample_id) %>% 
+  wrong_sample_id_name <- example_16S_data %>%
+    mutate(SampleID = sample_id) %>%
     select(SampleID, names(example_16S_data)[2:dim(example_16S_data)[2]], -sample_id)
   expect_error(paramedic::run_paramedic(W = wrong_sample_id_name[, 1:10], V = example_qPCR_data,
                                         n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
                                         control = list(max_treedepth = 15)))
   ## check what happens if rows are scrambled
-  scrambled_rows <- example_16S_data %>% 
+  scrambled_rows <- example_16S_data %>%
     arrange(desc(sample_id))
   expect_warning(paramedic::run_paramedic(W = scrambled_rows[, 1:10], V = example_qPCR_data,
                                           n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
                                           control = list(max_treedepth = 15)))
   ## check what happens if columns are scrambled
-  scrambled_cols <- example_16S_data %>% 
+  scrambled_cols <- example_16S_data %>%
     select(sample_id, Lactobacillus.iners, Gardnerella.vaginalis, Lactobacillus.crispatus,
            Lactobacillus.jensenii:Lactobacillus.gasseri)
   expect_warning(paramedic::run_paramedic(W = scrambled_cols, V = example_qPCR_data,
                                           n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
                                           control = list(max_treedepth = 15)))
   ## make sure that code with rows and columns scrambled works
-  scrambled_rows_and_cols <- example_16S_data %>% 
-    arrange(desc(sample_id)) %>% 
+  scrambled_rows_and_cols <- example_16S_data %>%
+    arrange(desc(sample_id)) %>%
     select(sample_id, Lactobacillus.iners, Gardnerella.vaginalis, Lactobacillus.crispatus,
            Lactobacillus.jensenii:Lactobacillus.gasseri)
   expect_warning(mod <- paramedic::run_paramedic(W = scrambled_rows_and_cols, V = example_qPCR_data,
@@ -75,29 +79,33 @@ test_that("errors and warnings for run_paramedic_centered work", {
   expect_error(paramedic::run_paramedic_centered(W = example_16S_data[1, 1:10], V = example_qPCR_data,
                                         n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
                                         control = list(max_treedepth = 15)))
+  ## expect error if q < q_obs
+  expect_error(paramedic::run_paramedic_centered(W = example_16S_data[1, 1:3], V = example_qPCR_data,
+                                        n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
+                                        control = list(max_treedepth = 15)))
   ## check to make sure that both W and V have as first column the sample IDs
-  wrong_sample_id_name <- example_16S_data %>% 
-    mutate(SampleID = sample_id) %>% 
+  wrong_sample_id_name <- example_16S_data %>%
+    mutate(SampleID = sample_id) %>%
     select(SampleID, names(example_16S_data)[2:dim(example_16S_data)[2]], -sample_id)
   expect_error(paramedic::run_paramedic_centered(W = wrong_sample_id_name[, 1:10], V = example_qPCR_data,
                                         n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
                                         control = list(max_treedepth = 15)))
   ## check what happens if rows are scrambled
-  scrambled_rows <- example_16S_data %>% 
+  scrambled_rows <- example_16S_data %>%
     arrange(desc(sample_id))
   expect_warning(paramedic::run_paramedic_centered(W = scrambled_rows[, 1:10], V = example_qPCR_data,
                                           n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
                                           control = list(max_treedepth = 15)))
   ## check what happens if columns are scrambled
-  scrambled_cols <- example_16S_data %>% 
+  scrambled_cols <- example_16S_data %>%
     select(sample_id, Lactobacillus.iners, Gardnerella.vaginalis, Lactobacillus.crispatus,
            Lactobacillus.jensenii:Lactobacillus.gasseri)
   expect_warning(paramedic::run_paramedic_centered(W = scrambled_cols, V = example_qPCR_data,
                                           n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
                                           control = list(max_treedepth = 15)))
   ## make sure that code with rows and columns scrambled works
-  scrambled_rows_and_cols <- example_16S_data %>% 
-    arrange(desc(sample_id)) %>% 
+  scrambled_rows_and_cols <- example_16S_data %>%
+    arrange(desc(sample_id)) %>%
     select(sample_id, Lactobacillus.iners, Gardnerella.vaginalis, Lactobacillus.crispatus,
            Lactobacillus.jensenii:Lactobacillus.gasseri)
   expect_warning(mod <- paramedic::run_paramedic_centered(W = scrambled_rows_and_cols, V = example_qPCR_data,

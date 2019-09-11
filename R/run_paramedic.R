@@ -51,6 +51,8 @@ run_paramedic <- function(W, V,
     } else {
       if (colnames(W)[1] != colnames(V)[1]) stop("W and V must have the same name ")
     }
+    ## error if q < q_obs
+    if (q < q_obs) stop("V must have fewer taxa than W (or the same number of taxa).")
 
     ## ---------------------------
     ## pre-processing and warnings
