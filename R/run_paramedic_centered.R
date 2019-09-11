@@ -47,11 +47,11 @@ run_paramedic_centered <- function(W, V,
     if (length(setdiff(as.numeric(unlist(W[, 1])), as.numeric(unlist(V[, 1])))) != 0) stop("W and V must have the same samples.")
     ## error if the id columns are named different things
     if ("data.frame" %in% class(W) | "tbl" %in% class(W)) {
-        if (names(W)[1] != names(V)[1]) stop("W and V must have the same name ")  
+        if (names(W)[1] != names(V)[1]) stop("W and V must have the same name ")
     } else {
-        if (colnames(W)[1] != colnames(V)[1]) stop("W and V must have the same name ")  
+        if (colnames(W)[1] != colnames(V)[1]) stop("W and V must have the same name ")
     }
-    
+
     ## ---------------------------
     ## pre-processing and warnings
     ## ---------------------------
@@ -62,8 +62,8 @@ run_paramedic_centered <- function(W, V,
     if (sum(W_tbl[, 1] == V_tbl[, 1]) != dim(V_tbl)[1]) {
         warning("Re-ordering samples so that the rows of W match the rows of V. The results will be in terms of the rows of V.")
         combined_tbl <- dplyr::left_join(V_tbl, W_tbl, by = names(V_tbl)[1])
-        tmp <- combined_tbl %>% 
-            dplyr::select(-dplyr::ends_with(".x")) %>% 
+        tmp <- combined_tbl %>%
+            dplyr::select(-dplyr::ends_with(".x")) %>%
             dplyr::rename_at(.vars = dplyr::vars(dplyr::ends_with(".y")),
                              .funs = list(~sub("[.]y$", "", .)))
         W_tbl <- tmp
@@ -71,11 +71,11 @@ run_paramedic_centered <- function(W, V,
     ## if the absolute abundance-observed columns are scrambled between W and V, change W to match V
     if (sum(names(W_tbl)[-1][1:q_obs] == names(V_tbl)[-1]) != q_obs) {
         warning("Re-ordering columns so that the first q_obs columns of W are in the same order as V.")
-        tmp <- W_tbl %>% 
+        tmp <- W_tbl %>%
             dplyr::select(names(V_tbl), names(W_tbl)[(q_obs + 1):q])
         W_tbl <- tmp
     }
-    
+
     ## make matrix version of W and V, if they aren't already; remove first column
     W_mat <- as.matrix(W)[, -1]
     V_mat <- as.matrix(V)[, -1]
@@ -89,14 +89,19 @@ run_paramedic_centered <- function(W, V,
         sum_relative <- rowSums(relatives[, known_absolute, drop = FALSE])
         ## get the sum of the absolutes
         sum_absolute <- rowSums(absolutes)
-        
+
         ## naive estimator
         absolute <- relatives[, idx]*sum_absolute/sum_relative
         ## if sum_relative was zero, predict zero (?)
         absolute <- ifelse (sum_relative == 0, 0, absolute)
         return(absolute)
     }
-    naive_est <- cbind(as.matrix(V_mat), apply(matrix((q_obs + 1):q), 1, naive_estimator, W_mat, V_mat, 1:q_obs))
+    ## if q == q_obs, the naive estimator is V
+    if (q == q_obs) {
+        naive_est <- as.matrix(V_mat)
+    } else { ## otherwise, we have to do something
+        naive_est <- cbind(as.matrix(V_mat), apply(matrix((q_obs + 1):q), 1, naive_estimator, W_mat, V_mat, 1:q_obs))
+    }
     colnames(naive_est) <- colnames(W_mat)
     log_naive <- ifelse(is.infinite(log(naive_est)), 0, log(naive_est))
     naive_beta <- colMeans(log_naive, na.rm = TRUE)
@@ -113,7 +118,7 @@ run_paramedic_centered <- function(W, V,
             inits_lst <- list(list(log_mu = log_naive, beta = naive_beta, Sigma = naive_Sigma))
         }
     }
-    
+
     ## run the Stan algorithm
     mod <- rstan::sampling(stanmodels$variable_efficiency_centered, data = data_lst, pars = c("mu", "e", "beta", "Sigma"),
                            chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
