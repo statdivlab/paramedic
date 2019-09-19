@@ -4,7 +4,7 @@
 #'
 #' @param stan_mod the model summary object from Stan.
 #' @param stan_samps the list of MCMC samples from Stan.
-#' @param taxa_of_interest the taxa to return estimates and posterior summaries for.
+#' @param taxa_of_interest the indices of the taxa for which point estimates and posterior summaries are desired.
 #' @param mult_num the number to multiply the resulting estimates and standard deviations by (defaults to 1).
 #' @param level the \code{alpha} level for prediction intervals (defaults to 0.95, for a nominal 95\% prediction interval).
 #' @param interval_type the type of prediction interval desired (defaults to "wald", but "quantile" is also acceptable).
@@ -42,6 +42,9 @@
 #'
 #' @export
 extract_posterior_summaries <- function(stan_mod, stan_samps, taxa_of_interest, mult_num = 1, level = 0.95, interval_type = "wald") {
+  ## check to make sure all taxa of interest are actual taxa
+  check_taxa <- lapply(as.list(taxa_of_interest), function(x) any(grepl(paste0(",", x, "]"), rownames(stan_mod), fixed = TRUE)))
+  if (!any(unlist(check_taxa))) stop("One or more of your taxa of interest are not present in the sampling output. Please specify only taxa for which you have samples.")
   ## get the posterior estimates
   mu_summ_lst <- lapply(as.list(taxa_of_interest), function(x) stan_mod[grepl("mu", rownames(stan_mod)) & !grepl("log", rownames(stan_mod)) & grepl(paste0(",", x, "]"), rownames(stan_mod), fixed = TRUE), c(1, 3, 4, 5)]*mult_num)
   est_lst <- lapply(mu_summ_lst, function(x) x[, 1])
