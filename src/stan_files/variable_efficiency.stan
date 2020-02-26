@@ -13,10 +13,8 @@ parameters{
     real<lower=0> sigma_e;
 }
 transformed parameters{
-    vector<lower=0>[q] mu[N];
-    for (j in 1:N){
-        mu[j] = exp(beta + Sigma .* log_mu_tilde[j]);
-    }
+    matrix<lower=0>[N,q] mu;
+    mu = exp(beta + log_mu_tilde * Sigma);
 }
 model {
     // hyperparameters
