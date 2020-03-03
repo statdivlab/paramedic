@@ -1,6 +1,6 @@
 Package: paramedic
 Title: Predicting Absolute and Relative Abundance by Modeling Efficiency to Derive Intervals and Concentrations
-Version: 0.0.1
+Version: 0.0.2
 Authors@R:
     c(person(given = "Brian",
            family = "Williamson",
@@ -34,7 +34,7 @@ Encoding: UTF-8
 LazyData: true
 NeedsCompilation: yes
 SystemRequirements: GNU make
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Suggests:
     testthat (>= 2.1.0),
     knitr,
