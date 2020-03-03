@@ -4,11 +4,16 @@
 #'
 #' @param W The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.
 #' @param V The absolute abundance data, e.g., from taxon-specific absolute primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.
+#' @param X The covariate data. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W, V, and X, and the column must have the same name in W, V, and X. If X only consists of the subject identifiers, then no covariates are used.
 #' @param n_iter The total number of iterations per chain to be run by the Stan algorithm. Defaults to 10500.
 #' @param n_burnin The total number of warmups per chain to be run by the Stan algorithm. Defaults to 10000.
 #' @param n_chains The total number of chains to be run by the Stan algorithm. Defaults to 4.
 #' @param stan_seed The random number seed to initialize.
 #' @param inits_lst An optional list of initial values of the parameters. Must be a named list; see \code{\link[rstan]{stan}}.
+#' @param sigma_beta Hyperparameter specifying the prior variance on \code{beta_0}. Defaults to \code{\sqrt{50}}.
+#' @param sigma_Sigma Hyperparameter specifying the prior variance on \code{\Sigma}. Defaults to \code{\sqrt{50}}.
+#' @param alpha_sigma Hyperparameter specifying the shape parameter of the prior distribution on \code{\sigma_e}. Defaults to 2.
+#' @param kappa_sigma Hyperparameter specifying the scale parameter of the prior distribution on \code{\sigma_e}. Defaults to 1.
 #' @param ... other arguments to pass to \code{\link[rstan]{sampling}} (e.g., control).
 #'
 #' @return An object of class \code{stanfit}.
@@ -31,25 +36,32 @@
 #' @seealso \code{\link[rstan]{stan}} and \code{\link[rstan]{sampling}} for specific usage of the \code{stan} and \code{sampling} functions.
 #'
 #' @export
-run_paramedic_centered <- function(W, V,
+run_paramedic_centered <- function(W, V, X = V[, 1, drop = FALSE],
                           n_iter = 10500, n_burnin = 10000, n_chains = 4, stan_seed = 4747,
-                          inits_lst = NULL,
+                          inits_lst = NULL, sigma_beta = sqrt(50), sigma_Sigma = sqrt(50), alpha_sigma = 2, kappa_sigma = 1,
                           ...) {
     N <- dim(W)[1]
     q <- dim(W)[2] - 1
     q_obs <- dim(V)[2] - 1
+    p <- dim(X)[2]
     ## --------------
     ## error messages
     ## --------------
     ## error if there aren't the same number of rows in W and V
     if (dim(W)[1] != dim(V)[1]) stop("The number of rows in W and V must match.")
+    ## error if there aren't the same number of rows in V and X
+    if (dim(V)[1] != dim(X)[1]) stop("The number of rows in V and X must match.")
     ## error if there is any difference between the first column of W and V
     if (length(setdiff(as.numeric(unlist(W[, 1])), as.numeric(unlist(V[, 1])))) != 0) stop("W and V must have the same samples.")
+    ## error if there is any difference between the first column of X and V
+    if (length(setdiff(as.numeric(unlist(V[, 1])), as.numeric(unlist(X[, 1])))) != 0) stop("V and X must have the same samples.")
     ## error if the id columns are named different things
     if ("data.frame" %in% class(W) | "tbl" %in% class(W)) {
         if (names(W)[1] != names(V)[1]) stop("W and V must have the same name ")
+        if (names(W)[1] != names(X)[1]) stop("W and X must have the same name.")
     } else {
         if (colnames(W)[1] != colnames(V)[1]) stop("W and V must have the same name ")
+        if (colnames(W)[1] != colnames(X)[1]) stop("W and X must have the same name.")
     }
     ## error if q < q_obs
     if (q < q_obs) stop("V must have fewer taxa than W (or the same number of taxa).")
@@ -60,6 +72,7 @@ run_paramedic_centered <- function(W, V,
     ## make tibbles out of W and V, if they aren't already
     W_tbl <- tibble::as_tibble(W)
     V_tbl <- tibble::as_tibble(V)
+    X_tbl <- tibble::as_tibble(X)
     ## if the rows are scrambled between W and V, change W to match V
     if (sum(W_tbl[, 1] == V_tbl[, 1]) != dim(V_tbl)[1]) {
         warning("Re-ordering samples so that the rows of W match the rows of V. The results will be in terms of the rows of V.")
@@ -70,6 +83,16 @@ run_paramedic_centered <- function(W, V,
                              .funs = list(~sub("[.]y$", "", .)))
         W_tbl <- tmp
     }
+    ## if the rows are scrambled between X and V, change X to match V
+    if (sum(X_tbl[, 1] == V_tbl[, 1]) != dim(V_tbl)[1]) {
+        warning("Re-ordering samples so that the rows of X match the rows of V. The results will be in terms of the rows of V.")
+        combined_tbl <- dplyr::left_join(V_tbl, X_tbl, by = names(V_tbl)[1])
+        tmp <- combined_tbl %>%
+          dplyr::select(-dplyr::ends_with(".x")) %>%
+          dplyr::rename_at(.vars = dplyr::vars(dplyr::ends_with(".y")),
+                    .funs = list(~sub("[.]y$", "", .)))
+        X_tbl <- tmp
+    }
     ## if the absolute abundance-observed columns are scrambled between W and V, change W to match V
     if (sum(names(W_tbl)[-1][1:q_obs] == names(V_tbl)[-1]) != q_obs) {
         warning("Re-ordering columns so that the first q_obs columns of W are in the same order as V.")
@@ -79,12 +102,18 @@ run_paramedic_centered <- function(W, V,
     }
 
     ## make matrix version of W and V, if they aren't already; remove first column
-    W_mat <- as.matrix(W)[, -1]
-    V_mat <- as.matrix(V)[, -1]
+    W_mat <- as.matrix(W)[, -1, drop = FALSE]
+    V_mat <- as.matrix(V)[, -1, drop = FALSE]
+    X_mat <- as.matrix(X)[, -1, drop = FALSE]
     ## ----------------------------------------
     ## set up the data and initial values lists
     ## ----------------------------------------
-    data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs)
+    if (dim(X_mat)[2] == 0) {
+        # don't use covariate data
+        data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma, alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma)
+    } else {
+        data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, p = dim(X_mat)[2], X = X_mat, sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma, alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma)
+    }
     ## get inits from the naive estimator
     naive_estimator <- function(idx, relatives, absolutes, known_absolute) {
         ## get the sum of the relative abundances
@@ -115,15 +144,21 @@ run_paramedic_centered <- function(W, V,
     log_naive_tilde <- tmp
     if (is.null(inits_lst)) { # create inits if not passed in
         if (n_chains > 1) {
-            inits_lst <- list(list(log_mu = log_naive), rep(list(init = "random"), n_chains - 1))
+            inits_lst <- list(list(mu = ifelse(naive_est == 0, 1e-4, naive_est)), rep(list(init = "random"), n_chains - 1))
         } else {
-            inits_lst <- list(list(log_mu = log_naive, beta = naive_beta, Sigma = naive_Sigma))
+            inits_lst <- list(list(mu = ifelse(naive_est == 0, 1e-4, naive_est), beta_0 = naive_beta, Sigma = naive_Sigma))
         }
     }
 
     ## run the Stan algorithm
-    mod <- rstan::sampling(stanmodels$variable_efficiency_centered, data = data_lst, pars = c("mu", "e", "beta", "Sigma"),
-                           chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
-                           init = inits_lst, ...)
+    if (dim(X_mat)[2] == 0) {
+        mod <- rstan::sampling(stanmodels$variable_efficiency_centered, data = data_lst, pars = c("mu", "e", "beta_0", "Sigma", "sigma_e"),
+                               chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
+                               init = inits_lst, ...)
+    } else {
+        mod <- rstan::sampling(stanmodels$variable_efficiency_centered_covariates, data = data_lst, pars = c("mu", "e", "beta_0", "beta_1", "Sigma", "sigma_e"),
+                               chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
+                               init = inits_lst, ...)
+    }
     return(mod)
 }
