@@ -144,9 +144,9 @@ run_paramedic_centered <- function(W, V, X = V[, 1, drop = FALSE],
     log_naive_tilde <- tmp
     if (is.null(inits_lst)) { # create inits if not passed in
         if (n_chains > 1) {
-            inits_lst <- list(list(mu = naive), rep(list(init = "random"), n_chains - 1))
+            inits_lst <- list(list(mu = ifelse(naive_est == 0, 1e-4, naive_est)), rep(list(init = "random"), n_chains - 1))
         } else {
-            inits_lst <- list(list(mu = naive, beta_0 = naive_beta, Sigma = naive_Sigma))
+            inits_lst <- list(list(mu = ifelse(naive_est == 0, 1e-4, naive_est), beta_0 = naive_beta, Sigma = naive_Sigma))
         }
     }
 
