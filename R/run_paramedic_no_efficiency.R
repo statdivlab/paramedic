@@ -1,4 +1,4 @@
-#' Run a Stan algorithm to estimate concentrations from combined absolute and relative abundance data
+#' Run a Stan algorithm to estimate concentrations from combined absolute and relative abundance data without modeling efficiency
 #'
 #' Estimate concentrations (and efficiencies, if applicable) by combining absolute and relative abundance data.
 #'
@@ -14,9 +14,8 @@
 #'
 #' @return An object of class \code{stanfit}.
 #'
-#' @details We fit a hierarchical model in Stan to the data, with goal to estimate true concentration for all taxa. There are two available hierarchical models. The two only differ in the way that the true concentration is parameterized. While these hierarchical models are mathematically identical, they are fit differently by Stan. The first hierarchical model is a "centered" model, where \deqn{\beta_0 ~ N(0, \sqrt{50})} \deqn{\log \Sigma ~ N(0, \sqrt{50})} \deqn{\log \mu ~ N(\beta_0 + X\beta_1, \Sigma).} We call this model \code{variable_efficiency_centered.stan}. The second hierarchical model is a "noncentered" model, where \deqn{\beta_0 ~ N(0, \sqrt{50})} \deqn{\log \Sigma ~ N(0, \sqrt{50})} \deqn{\log \gamma ~ N(0, I)} \deqn{\log \mu = \sqrt{\Sigma} \log \gamma + \beta_0 + X\beta_1.} We call this model \code{variable_efficiency.stan}.
+#' @details We fit a hierarchical model in Stan to the data, with goal to estimate true concentration for all taxa. There are two available hierarchical models. The first allows for varying efficiency in the relative abundance data, while the second does not allow for varying efficiency (this model). We always recommend using the model that allows for varying efficiency, unless it is known a prior that there is not varying efficiency in the relative abundance data. However, we include this model so that the results of the manuscript can be replicated.
 
-#' In most cases, we suggest using the noncentered model. However, if the model does not converge in a reasonable amount of time using the noncentered model, consider trying the centered model.
 #'
 #' @examples
 #' ## load the package, read in example data
@@ -150,11 +149,11 @@ run_paramedic <- function(W, V, X = V[, 1, drop = FALSE],
     ## run the Stan algorithm
     ## ----------------------
     if (dim(X_mat)[2] == 0) {
-        mod <- rstan::sampling(stanmodels$variable_efficiency, data = data_lst, pars = c("mu", "e", "beta_0", "Sigma"),
+        mod <- rstan::sampling(stanmodels$no_efficiency, data = data_lst, pars = c("mu", "beta_0", "Sigma"),
                                chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
                                init = inits_lst, ...)
     } else {
-        mod <- rstan::sampling(stanmodels$variable_efficiency_covariates, data = data_lst, pars = c("mu", "e", "beta_0", "beta_1", "Sigma"), chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed, init = inits_lst, ...)
+        mod <- rstan::sampling(stanmodels$no_efficiency_covariates, data = data_lst, pars = c("mu", "beta_0", "beta_1", "Sigma"), chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed, init = inits_lst, ...)
     }
     return(mod)
 }
