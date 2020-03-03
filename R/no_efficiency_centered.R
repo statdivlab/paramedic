@@ -27,7 +27,7 @@
 #'
 #' ## run paramedic (with an extremely small number of iterations, for illustration only)
 #' ## on only the first 10 taxa
-#' mod <- run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data,
+#' mod <- no_efficiency_centered(W = example_16S_data[, 1:10], V = example_qPCR_data,
 #' n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747)
 #'
 #' @seealso \code{\link[rstan]{stan}} and \code{\link[rstan]{sampling}} for specific usage of the \code{stan} and \code{sampling} functions.
@@ -142,9 +142,9 @@ no_efficiency_centered <- function(W, V, X = V[, 1, drop = FALSE],
     log_naive_tilde <- tmp
     if (is.null(inits_lst)) { # create inits if not passed in
         if (n_chains > 1) {
-            inits_lst <- list(list(log_mu_tilde = log_naive_tilde), rep(list(init = "random"), n_chains - 1))
+            inits_lst <- list(list(mu = naive), rep(list(init = "random"), n_chains - 1))
         } else {
-            inits_lst <- list(list(log_mu_tilde = log_naive_tilde, beta_0 = naive_beta, Sigma = naive_Sigma))
+            inits_lst <- list(list(mu = naive, beta_0 = naive_beta, Sigma = naive_Sigma))
         }
     }
     ## ----------------------

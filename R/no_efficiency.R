@@ -27,7 +27,7 @@
 #'
 #' ## run paramedic (with an extremely small number of iterations, for illustration only)
 #' ## on only the first 10 taxa
-#' mod <- run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data,
+#' mod <- no_efficiency(W = example_16S_data[, 1:10], V = example_qPCR_data,
 #' n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747)
 #'
 #' @seealso \code{\link[rstan]{stan}} and \code{\link[rstan]{sampling}} for specific usage of the \code{stan} and \code{sampling} functions.
