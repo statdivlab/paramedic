@@ -83,8 +83,9 @@ run_paramedic_centered <- function(W, V,
     }
 
     ## make matrix version of W and V, if they aren't already; remove first column
-    W_mat <- as.matrix(W)[, -1]
-    V_mat <- as.matrix(V)[, -1]
+    W_mat <- as.matrix(W)[, -1, drop = FALSE]
+    V_mat <- as.matrix(V)[, -1, drop = FALSE]
+    X_mat <- as.matrix(X)[, -1, drop = FALSE]
     ## ----------------------------------------
     ## set up the data and initial values lists
     ## ----------------------------------------
@@ -126,17 +127,17 @@ run_paramedic_centered <- function(W, V,
         if (n_chains > 1) {
             inits_lst <- list(list(log_mu = log_naive), rep(list(init = "random"), n_chains - 1))
         } else {
-            inits_lst <- list(list(log_mu = log_naive, beta = naive_beta, Sigma = naive_Sigma))
+            inits_lst <- list(list(log_mu = log_naive, beta_0 = naive_beta, Sigma = naive_Sigma))
         }
     }
 
     ## run the Stan algorithm
     if (dim(X_mat)[2] == 0) {
-        mod <- rstan::sampling(stanmodels$variable_efficiency_centered, data = data_lst, pars = c("mu", "e", "beta_0", "Sigma"),
+        mod <- rstan::sampling(stanmodels$variable_efficiency_centered, data = data_lst, pars = c("mu", "e", "beta_0", "Sigma", "sigma_e"),
                                chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
                                init = inits_lst, ...)
     } else {
-        mod <- rstan::sampling(stanmodels$variable_efficiency_centered_covariates, data = data_lst, pars = c("mu", "e", "beta_0", "beta_1", "Sigma"),
+        mod <- rstan::sampling(stanmodels$variable_efficiency_centered_covariates, data = data_lst, pars = c("mu", "e", "beta_0", "beta_1", "Sigma", "sigma_e"),
                                chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
                                init = inits_lst, ...)
     }

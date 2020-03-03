@@ -99,9 +99,9 @@ no_efficiency_centered <- function(W, V, X = V[, 1, drop = FALSE],
     }
 
     ## make matrix version of W and V and X, if they aren't already; remove first column
-    W_mat <- as.matrix(W)[, -1]
-    V_mat <- as.matrix(V)[, -1]
-    X_mat <- as.matrix(X)[, -1]
+    W_mat <- as.matrix(W)[, -1, drop = FALSE]
+    V_mat <- as.matrix(V)[, -1, drop = FALSE]
+    X_mat <- as.matrix(X)[, -1, drop = FALSE]
     ## ----------------------------------------
     ## set up the data and initial values lists
     ## ----------------------------------------
@@ -144,7 +144,7 @@ no_efficiency_centered <- function(W, V, X = V[, 1, drop = FALSE],
         if (n_chains > 1) {
             inits_lst <- list(list(log_mu_tilde = log_naive_tilde), rep(list(init = "random"), n_chains - 1))
         } else {
-            inits_lst <- list(list(log_mu_tilde = log_naive_tilde, beta = naive_beta, Sigma = naive_Sigma))
+            inits_lst <- list(list(log_mu_tilde = log_naive_tilde, beta_0 = naive_beta, Sigma = naive_Sigma))
         }
     }
     ## ----------------------

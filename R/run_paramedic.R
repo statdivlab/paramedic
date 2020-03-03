@@ -103,9 +103,9 @@ run_paramedic <- function(W, V, X = V[, 1, drop = FALSE],
     }
 
     ## make matrix version of W and V and X, if they aren't already; remove first column
-    W_mat <- as.matrix(W)[, -1]
-    V_mat <- as.matrix(V)[, -1]
-    X_mat <- as.matrix(X)[, -1]
+    W_mat <- as.matrix(W)[, -1, drop = FALSE]
+    V_mat <- as.matrix(V)[, -1, drop = FALSE]
+    X_mat <- as.matrix(X)[, -1, drop = FALSE]
     ## ----------------------------------------
     ## set up the data and initial values lists
     ## ----------------------------------------
@@ -148,18 +148,18 @@ run_paramedic <- function(W, V, X = V[, 1, drop = FALSE],
         if (n_chains > 1) {
             inits_lst <- list(list(log_mu_tilde = log_naive_tilde), rep(list(init = "random"), n_chains - 1))
         } else {
-            inits_lst <- list(list(log_mu_tilde = log_naive_tilde, beta = naive_beta, Sigma = naive_Sigma))
+            inits_lst <- list(list(log_mu_tilde = log_naive_tilde, beta_0 = naive_beta, Sigma = naive_Sigma))
         }
     }
     ## ----------------------
     ## run the Stan algorithm
     ## ----------------------
     if (dim(X_mat)[2] == 0) {
-        mod <- rstan::sampling(stanmodels$variable_efficiency, data = data_lst, pars = c("mu", "e", "beta_0", "Sigma"),
+        mod <- rstan::sampling(stanmodels$variable_efficiency, data = data_lst, pars = c("mu", "e", "beta_0", "Sigma", "sigma_e"),
                                chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
                                init = inits_lst, ...)
     } else {
-        mod <- rstan::sampling(stanmodels$variable_efficiency_covariates, data = data_lst, pars = c("mu", "e", "beta_0", "beta_1", "Sigma"), chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed, init = inits_lst, ...)
+        mod <- rstan::sampling(stanmodels$variable_efficiency_covariates, data = data_lst, pars = c("mu", "e", "beta_0", "beta_1", "Sigma", "sigma_e"), chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed, init = inits_lst, ...)
     }
     return(mod)
 }
