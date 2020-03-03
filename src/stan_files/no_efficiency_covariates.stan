@@ -13,6 +13,7 @@ data{
 parameters{
     vector[q] log_mu_tilde[N];
     vector[q] beta_0;
+    vector[p] beta_1[q];
     vector<lower=0>[q] Sigma;
 }
 transformed parameters{

@@ -13,7 +13,7 @@ data{
     real kappa_sigma;
 }
 parameters{
-    vector[q] log_mu[N];
+    vector[q] mu[N];
     vector[q] beta_0;
     vector[p] beta_1[q];
     row_vector<lower=0>[q] Sigma;
@@ -22,7 +22,7 @@ parameters{
 }
 model {
     // model
-    beta ~ normal(0, sigma_beta);
+    beta_0 ~ normal(0, sigma_beta);
     Sigma ~ lognormal(0, sigma_Sigma);
 
     sigma_e ~ inv_gamma(alpha_sigma, kappa_sigma);

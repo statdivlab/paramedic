@@ -2,8 +2,10 @@ data{
     int<lower=1> N;
     int<lower=1> q_obs;
     int<lower=1> q;
+    int<lower=0> p;
     int<lower=0> V[N,q_obs];
     int<lower=0> W[N,q];
+    matrix[N,p] X;
     // hyperparameters
     real sigma_beta;
     real sigma_Sigma;

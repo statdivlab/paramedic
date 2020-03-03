@@ -11,7 +11,7 @@ data{
     real kappa_sigma;
 }
 parameters{
-    vector[q] log_mu[N];
+    vector[q] mu[N];
     vector[q] beta_0;
     row_vector<lower=0>[q] Sigma;
     vector<lower=0>[q] e;
