@@ -9,6 +9,10 @@
 #' @param n_chains The total number of chains to be run by the Stan algorithm. Defaults to 4.
 #' @param stan_seed The random number seed to initialize.
 #' @param inits_lst An optional list of initial values of the parameters. Must be a named list; see \code{\link[rstan]{stan}}.
+#' @param sigma_beta Hyperparameter specifying the prior variance on \code{beta_0}. Defaults to \code{\sqrt{50}}.
+#' @param sigma_Sigma Hyperparameter specifying the prior variance on \code{\Sigma}. Defaults to \code{\sqrt{50}}.
+#' @param alpha_sigma Hyperparameter specifying the shape parameter of the prior distribution on \code{\sigma_e}. Defaults to 2.
+#' @param kappa_sigma Hyperparameter specifying the scale parameter of the prior distribution on \code{\sigma_e}. Defaults to 1.
 #' @param ... other arguments to pass to \code{\link[rstan]{sampling}} (e.g., control).
 #'
 #' @return An object of class \code{stanfit}.
@@ -33,7 +37,7 @@
 #' @export
 run_paramedic_centered <- function(W, V,
                           n_iter = 10500, n_burnin = 10000, n_chains = 4, stan_seed = 4747,
-                          inits_lst = NULL,
+                          inits_lst = NULL, sigma_beta = sqrt(50), sigma_Sigma = sqrt(50), alpha_sigma = 2, kappa_sigma = 1,
                           ...) {
     N <- dim(W)[1]
     q <- dim(W)[2] - 1
@@ -84,7 +88,12 @@ run_paramedic_centered <- function(W, V,
     ## ----------------------------------------
     ## set up the data and initial values lists
     ## ----------------------------------------
-    data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs)
+    if (dim(X_mat)[2] == 0) {
+        # don't use covariate data
+        data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma, alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma)
+    } else {
+        data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, p = dim(X_mat)[2], X = X_mat, sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma, alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma)
+    }
     ## get inits from the naive estimator
     naive_estimator <- function(idx, relatives, absolutes, known_absolute) {
         ## get the sum of the relative abundances
@@ -122,8 +131,14 @@ run_paramedic_centered <- function(W, V,
     }
 
     ## run the Stan algorithm
-    mod <- rstan::sampling(stanmodels$variable_efficiency_centered, data = data_lst, pars = c("mu", "e", "beta", "Sigma"),
-                           chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
-                           init = inits_lst, ...)
+    if (dim(X_mat)[2] == 0) {
+        mod <- rstan::sampling(stanmodels$variable_efficiency_centered, data = data_lst, pars = c("mu", "e", "beta_0", "Sigma"),
+                               chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
+                               init = inits_lst, ...)
+    } else {
+        mod <- rstan::sampling(stanmodels$variable_efficiency_centered_covariates, data = data_lst, pars = c("mu", "e", "beta_0", "beta_1", "Sigma"),
+                               chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
+                               init = inits_lst, ...)
+    }
     return(mod)
 }

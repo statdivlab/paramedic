@@ -9,17 +9,9 @@ data{
     real sigma_Sigma;
 }
 parameters{
-    vector[q] log_mu_tilde[N];
+    vector[q] mu[N];
     vector[q] beta_0;
     vector<lower=0>[q] Sigma;
-}
-transformed parameters{
-    vector<lower=0>[q] mu[N];
-    for (i in 1:N){
-        for (j in 1:q) {
-            mu[i,j] = exp(beta_0[j] + Sigma[j] * log_mu_tilde[i,j]);
-        }
-    }
 }
 model {
     // hierarchical model
@@ -27,7 +19,7 @@ model {
     Sigma ~ lognormal(0, sigma_Sigma);
 
     for (i in 1:N){
-        log_mu_tilde[i] ~ std_normal();
+        mu[i] ~ normal(beta_0, Sigma);
         V[i] ~ poisson(head(mu[i],q_obs));
         W[i] ~ multinomial((mu[i])/sum(mu[i]));
     }

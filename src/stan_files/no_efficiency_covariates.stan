@@ -28,7 +28,6 @@ model {
     beta_0 ~ normal(0, sigma_beta);
     Sigma ~ lognormal(0, sigma_Sigma);
 
-
     for (i in 1:N){
         log_mu_tilde[i] ~ std_normal();
         V[i] ~ poisson(head(mu[i],q_obs));

@@ -1,6 +1,6 @@
-#' Run a Stan algorithm to estimate concentrations from combined absolute and relative abundance data
+#' Run a Stan algorithm to estimate concentrations from combined absolute and relative abundance data without modeling efficiency
 #'
-#' Estimate concentrations (and efficiencies, if applicable) by combining absolute and relative abundance data.
+#' Estimate concentrations (without modeling efficiency) by combining absolute and relative abundance data.
 #'
 #' @param W The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.
 #' @param V The absolute abundance data, e.g., from taxon-specific absolute primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.
@@ -12,15 +12,12 @@
 #' @param inits_lst An optional list of initial values of the parameters. Must be a named list; see \code{\link[rstan]{stan}}.
 #' @param sigma_beta Hyperparameter specifying the prior variance on \code{beta_0}. Defaults to \code{\sqrt{50}}.
 #' @param sigma_Sigma Hyperparameter specifying the prior variance on \code{\Sigma}. Defaults to \code{\sqrt{50}}.
-#' @param alpha_sigma Hyperparameter specifying the shape parameter of the prior distribution on \code{\sigma_e}. Defaults to 2.
-#' @param kappa_sigma Hyperparameter specifying the scale parameter of the prior distribution on \code{\sigma_e}. Defaults to 1.
 #' @param ... other arguments to pass to \code{\link[rstan]{sampling}} (e.g., control).
 #'
 #' @return An object of class \code{stanfit}.
 #'
-#' @details We fit a hierarchical model in Stan to the data, with goal to estimate true concentration for all taxa. There are two available hierarchical models. The two only differ in the way that the true concentration is parameterized. While these hierarchical models are mathematically identical, they are fit differently by Stan. The first hierarchical model is a "centered" model, where \deqn{\beta_0 ~ N(0, \sqrt{50})} \deqn{\log \Sigma ~ N(0, \sqrt{50})} \deqn{\log \mu ~ N(\beta_0 + X\beta_1, \Sigma).} We call this model \code{variable_efficiency_centered.stan}. The second hierarchical model is a "noncentered" model, where \deqn{\beta_0 ~ N(0, \sqrt{50})} \deqn{\log \Sigma ~ N(0, \sqrt{50})} \deqn{\log \gamma ~ N(0, I)} \deqn{\log \mu = \sqrt{\Sigma} \log \gamma + \beta_0 + X\beta_1.} We call this model \code{variable_efficiency.stan}.
+#' @details We fit a hierarchical model in Stan to the data, with goal to estimate true concentration for all taxa. There are two available hierarchical models. The first allows for varying efficiency in the relative abundance data, while the second does not allow for varying efficiency (this model). We always recommend using the model that allows for varying efficiency, unless it is known a prior that there is not varying efficiency in the relative abundance data. However, we include this model so that the results of the manuscript can be replicated.
 
-#' In most cases, we suggest using the noncentered model. However, if the model does not converge in a reasonable amount of time using the noncentered model, consider trying the centered model.
 #'
 #' @examples
 #' ## load the package, read in example data
@@ -36,10 +33,9 @@
 #' @seealso \code{\link[rstan]{stan}} and \code{\link[rstan]{sampling}} for specific usage of the \code{stan} and \code{sampling} functions.
 #'
 #' @export
-run_paramedic <- function(W, V, X = V[, 1, drop = FALSE],
+no_efficiency_centered <- function(W, V, X = V[, 1, drop = FALSE],
                       n_iter = 10500, n_burnin = 10000, n_chains = 4, stan_seed = 4747,
-                      inits_lst = NULL,
-                      sigma_beta = sqrt(50), sigma_Sigma = sqrt(50), alpha_sigma = 2, kappa_sigma = 1,
+                      inits_lst = NULL, sigma_beta = sqrt(50), sigma_Sigma = sqrt(50),
                       ...) {
     N <- dim(W)[1]
     q <- dim(W)[2] - 1
@@ -111,9 +107,9 @@ run_paramedic <- function(W, V, X = V[, 1, drop = FALSE],
     ## ----------------------------------------
     if (dim(X_mat)[2] == 0) {
         # don't use covariate data
-        data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma, alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma)
+        data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma)
     } else {
-        data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, p = dim(X_mat)[2], X = X_mat, sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma, alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma)
+        data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, p = dim(X_mat)[2], X = X_mat, sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma)
     }
 
     ## get inits from the naive estimator
@@ -155,11 +151,11 @@ run_paramedic <- function(W, V, X = V[, 1, drop = FALSE],
     ## run the Stan algorithm
     ## ----------------------
     if (dim(X_mat)[2] == 0) {
-        mod <- rstan::sampling(stanmodels$variable_efficiency, data = data_lst, pars = c("mu", "e", "beta_0", "Sigma"),
+        mod <- rstan::sampling(stanmodels$no_efficiency_centered, data = data_lst, pars = c("mu", "beta_0", "Sigma"),
                                chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
                                init = inits_lst, ...)
     } else {
-        mod <- rstan::sampling(stanmodels$variable_efficiency_covariates, data = data_lst, pars = c("mu", "e", "beta_0", "beta_1", "Sigma"), chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed, init = inits_lst, ...)
+        mod <- rstan::sampling(stanmodels$no_efficiency_centered_covariates, data = data_lst, pars = c("mu", "beta_0", "beta_1", "Sigma"), chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed, init = inits_lst, ...)
     }
     return(mod)
 }

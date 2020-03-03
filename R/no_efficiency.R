@@ -1,6 +1,6 @@
 #' Run a Stan algorithm to estimate concentrations from combined absolute and relative abundance data without modeling efficiency
 #'
-#' Estimate concentrations (and efficiencies, if applicable) by combining absolute and relative abundance data.
+#' Estimate concentrations (without modeling efficiency) by combining absolute and relative abundance data.
 #'
 #' @param W The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.
 #' @param V The absolute abundance data, e.g., from taxon-specific absolute primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.
@@ -10,6 +10,8 @@
 #' @param n_chains The total number of chains to be run by the Stan algorithm. Defaults to 4.
 #' @param stan_seed The random number seed to initialize.
 #' @param inits_lst An optional list of initial values of the parameters. Must be a named list; see \code{\link[rstan]{stan}}.
+#' @param sigma_beta Hyperparameter specifying the prior variance on \code{beta_0}. Defaults to \code{\sqrt{50}}.
+#' @param sigma_Sigma Hyperparameter specifying the prior variance on \code{\Sigma}. Defaults to \code{\sqrt{50}}.
 #' @param ... other arguments to pass to \code{\link[rstan]{sampling}} (e.g., control).
 #'
 #' @return An object of class \code{stanfit}.
@@ -31,9 +33,9 @@
 #' @seealso \code{\link[rstan]{stan}} and \code{\link[rstan]{sampling}} for specific usage of the \code{stan} and \code{sampling} functions.
 #'
 #' @export
-run_paramedic <- function(W, V, X = V[, 1, drop = FALSE],
+no_efficiency <- function(W, V, X = V[, 1, drop = FALSE],
                       n_iter = 10500, n_burnin = 10000, n_chains = 4, stan_seed = 4747,
-                      inits_lst = NULL,
+                      inits_lst = NULL, sigma_beta = sqrt(50), sigma_Sigma = sqrt(50),
                       ...) {
     N <- dim(W)[1]
     q <- dim(W)[2] - 1
@@ -105,9 +107,9 @@ run_paramedic <- function(W, V, X = V[, 1, drop = FALSE],
     ## ----------------------------------------
     if (dim(X_mat)[2] == 0) {
         # don't use covariate data
-        data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs)
+        data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma)
     } else {
-        data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, p = dim(X_mat)[2], X = X_mat)
+        data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, p = dim(X_mat)[2], X = X_mat, sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma)
     }
 
     ## get inits from the naive estimator
