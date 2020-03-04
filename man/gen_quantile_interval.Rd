@@ -4,8 +4,13 @@
 \alias{gen_quantile_interval}
 \title{Generate a Poisson-quantile-based prediction interval for qPCR}
 \usage{
-gen_quantile_interval(mu_quantiles, mu_samps, alpha = 0.05,
-  type = "credible_quantiles", div_num = 1)
+gen_quantile_interval(
+  mu_quantiles,
+  mu_samps,
+  alpha = 0.05,
+  type = "credible_quantiles",
+  div_num = 1
+)
 }
 \arguments{
 \item{mu_quantiles}{the (alpha/2, 1 - alpha/2) quantiles from the MCMC sampling distribution for the true absolute concentration \eqn{\mu}; only supply if type = "credible_quantiles" (a matrix of dimension N (the sample size) x q (the number of taxa) by 2).}

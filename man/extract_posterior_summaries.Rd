@@ -4,15 +4,21 @@
 \alias{extract_posterior_summaries}
 \title{Extract posterior summaries from a hierarchical model fit}
 \usage{
-extract_posterior_summaries(stan_mod, stan_samps, taxa_of_interest,
-  mult_num = 1, level = 0.95, interval_type = "wald")
+extract_posterior_summaries(
+  stan_mod,
+  stan_samps,
+  taxa_of_interest,
+  mult_num = 1,
+  level = 0.95,
+  interval_type = "wald"
+)
 }
 \arguments{
 \item{stan_mod}{the model summary object from Stan.}
 
 \item{stan_samps}{the list of MCMC samples from Stan.}
 
-\item{taxa_of_interest}{the taxa to return estimates and posterior summaries for.}
+\item{taxa_of_interest}{the indices of the taxa for which point estimates and posterior summaries are desired.}
 
 \item{mult_num}{the number to multiply the resulting estimates and standard deviations by (defaults to 1).}
 

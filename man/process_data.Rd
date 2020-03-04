@@ -4,9 +4,17 @@
 \alias{process_data}
 \title{Process a dataset, returning observed abolute and relative abundance matrices}
 \usage{
-process_data(full_data, rel_inds, abs_inds, abs_plus_rel_inds,
-  regex_thr = "_t", regex_abs = "_cps", llod = 0, m_min = 1000,
-  div_num = 100)
+process_data(
+  full_data,
+  rel_inds,
+  abs_inds,
+  abs_plus_rel_inds,
+  regex_thr = "_t",
+  regex_abs = "_cps",
+  llod = 0,
+  m_min = 1000,
+  div_num = 100
+)
 }
 \arguments{
 \item{full_data}{the full dataset, containing both absolute and relative abundances}

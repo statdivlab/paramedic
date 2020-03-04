@@ -4,13 +4,28 @@
 \alias{run_paramedic}
 \title{Run a Stan algorithm to estimate concentrations from combined absolute and relative abundance data}
 \usage{
-run_paramedic(W, V, n_iter = 10500, n_burnin = 10000, n_chains = 4,
-  stan_seed = 4747, inits_lst = NULL, ...)
+run_paramedic(
+  W,
+  V,
+  X = V[, 1, drop = FALSE],
+  n_iter = 10500,
+  n_burnin = 10000,
+  n_chains = 4,
+  stan_seed = 4747,
+  inits_lst = NULL,
+  sigma_beta = sqrt(50),
+  sigma_Sigma = sqrt(50),
+  alpha_sigma = 2,
+  kappa_sigma = 1,
+  ...
+)
 }
 \arguments{
-\item{W}{The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V.}
+\item{W}{The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.}
 
-\item{V}{The absolute abundance data, e.g., from taxon-specific absolute primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V.}
+\item{V}{The absolute abundance data, e.g., from taxon-specific absolute primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.}
+
+\item{X}{The covariate data. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W, V, and X, and the column must have the same name in W, V, and X. If X only consists of the subject identifiers, then no covariates are used.}
 
 \item{n_iter}{The total number of iterations per chain to be run by the Stan algorithm. Defaults to 10500.}
 
@@ -22,6 +37,14 @@ run_paramedic(W, V, n_iter = 10500, n_burnin = 10000, n_chains = 4,
 
 \item{inits_lst}{An optional list of initial values of the parameters. Must be a named list; see \code{\link[rstan]{stan}}.}
 
+\item{sigma_beta}{Hyperparameter specifying the prior variance on \code{beta_0}. Defaults to \code{\sqrt{50}}.}
+
+\item{sigma_Sigma}{Hyperparameter specifying the prior variance on \code{\Sigma}. Defaults to \code{\sqrt{50}}.}
+
+\item{alpha_sigma}{Hyperparameter specifying the shape parameter of the prior distribution on \code{\sigma_e}. Defaults to 2.}
+
+\item{kappa_sigma}{Hyperparameter specifying the scale parameter of the prior distribution on \code{\sigma_e}. Defaults to 1.}
+
 \item{...}{other arguments to pass to \code{\link[rstan]{sampling}} (e.g., control).}
 }
 \value{
@@ -31,7 +54,7 @@ An object of class \code{stanfit}.
 Estimate concentrations (and efficiencies, if applicable) by combining absolute and relative abundance data.
 }
 \details{
-We fit a hierarchical model in Stan to the data, with goal to estimate true concentration for all taxa. There are two available hierarchical models. The two only differ in the way that the true concentration is parameterized. While these hierarchical models are mathematically identical, they are fit differently by Stan. The first hierarchical model is a "centered" model, where \deqn{\beta ~ N(0, \sqrt{50})} \deqn{\log \Sigma ~ N(0, \sqrt{50})} \deqn{\log \mu ~ N(\beta, \Sigma).} We call this model \code{variable_efficiency_centered.stan}. The second hierarchical model is a "noncentered" model, where \deqn{\beta ~ N(0, \sqrt{50})} \deqn{\log \Sigma ~ N(0, \sqrt{50})} \deqn{\log \gamma ~ N(0, I)} \deqn{\log \mu = \sqrt{\Sigma} \log \gamma + \beta.} We call this model \code{variable_efficiency.stan}.
+We fit a hierarchical model in Stan to the data, with goal to estimate true concentration for all taxa. There are two available hierarchical models. The two only differ in the way that the true concentration is parameterized. While these hierarchical models are mathematically identical, they are fit differently by Stan. The first hierarchical model is a "centered" model, where \deqn{\beta_0 ~ N(0, \sqrt{50})} \deqn{\log \Sigma ~ N(0, \sqrt{50})} \deqn{\log \mu ~ N(\beta_0 + X\beta_1, \Sigma).} We call this model \code{variable_efficiency_centered.stan}. The second hierarchical model is a "noncentered" model, where \deqn{\beta_0 ~ N(0, \sqrt{50})} \deqn{\log \Sigma ~ N(0, \sqrt{50})} \deqn{\log \gamma ~ N(0, I)} \deqn{\log \mu = \sqrt{\Sigma} \log \gamma + \beta_0 + X\beta_1.} We call this model \code{variable_efficiency.stan}.
 In most cases, we suggest using the noncentered model. However, if the model does not converge in a reasonable amount of time using the noncentered model, consider trying the centered model.
 }
 \examples{
