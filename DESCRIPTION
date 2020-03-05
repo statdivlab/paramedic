@@ -40,5 +40,6 @@ Suggests:
     knitr,
     rmarkdown,
     MASS,
-    stats
+    stats,
+    covr
 VignetteBuilder: knitr
