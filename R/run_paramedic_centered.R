@@ -10,10 +10,10 @@
 #' @param n_chains The total number of chains to be run by the Stan algorithm. Defaults to 4.
 #' @param stan_seed The random number seed to initialize.
 #' @param inits_lst An optional list of initial values of the parameters. Must be a named list; see \code{\link[rstan]{stan}}.
-#' @param sigma_beta Hyperparameter specifying the prior variance on \code{beta_0}. Defaults to \code{\sqrt{50}}.
-#' @param sigma_Sigma Hyperparameter specifying the prior variance on \code{\Sigma}. Defaults to \code{\sqrt{50}}.
-#' @param alpha_sigma Hyperparameter specifying the shape parameter of the prior distribution on \code{\sigma_e}. Defaults to 2.
-#' @param kappa_sigma Hyperparameter specifying the scale parameter of the prior distribution on \code{\sigma_e}. Defaults to 1.
+#' @param sigma_beta Hyperparameter specifying the prior variance on \eqn{\beta_0}. Defaults to \eqn{\sqrt{50}}.
+#' @param sigma_Sigma Hyperparameter specifying the prior variance on \eqn{\Sigma}. Defaults to \eqn{\sqrt{50}}.
+#' @param alpha_sigma Hyperparameter specifying the shape parameter of the prior distribution on \eqn{\sigma_e}. Defaults to 2.
+#' @param kappa_sigma Hyperparameter specifying the scale parameter of the prior distribution on \eqn{\sigma_e}. Defaults to 1.
 #' @param ... other arguments to pass to \code{\link[rstan]{sampling}} (e.g., control).
 #'
 #' @return An object of class \code{stanfit}.
@@ -28,7 +28,7 @@
 #' data(example_16S_data)
 #' data(example_qPCR_data)
 #'
-#' ## run paramedic (with an extremely small number of iterations, for illustration only)
+#' ## run paramedic centered (with an extremely small number of iterations, for illustration only)
 #' ## on only the first 10 taxa
 #' mod <- run_paramedic_centered(W = example_16S_data[, 1:10], V = example_qPCR_data,
 #' n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747)

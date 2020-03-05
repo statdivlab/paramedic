@@ -35,9 +35,9 @@ no_efficiency(
 
 \item{inits_lst}{An optional list of initial values of the parameters. Must be a named list; see \code{\link[rstan]{stan}}.}
 
-\item{sigma_beta}{Hyperparameter specifying the prior variance on \code{beta_0}. Defaults to \code{\sqrt{50}}.}
+\item{sigma_beta}{Hyperparameter specifying the prior variance on \eqn{\beta_0}. Defaults to \eqn{\sqrt{50}}.}
 
-\item{sigma_Sigma}{Hyperparameter specifying the prior variance on \code{\Sigma}. Defaults to \code{\sqrt{50}}.}
+\item{sigma_Sigma}{Hyperparameter specifying the prior variance on \eqn{\Sigma}. Defaults to \eqn{\sqrt{50}}.}
 
 \item{...}{other arguments to pass to \code{\link[rstan]{sampling}} (e.g., control).}
 }
@@ -48,7 +48,7 @@ An object of class \code{stanfit}.
 Estimate concentrations (without modeling efficiency) by combining absolute and relative abundance data.
 }
 \details{
-We fit a hierarchical model in Stan to the data, with goal to estimate true concentration for all taxa. There are two available hierarchical models. The first allows for varying efficiency in the relative abundance data, while the second does not allow for varying efficiency (this model). We always recommend using the model that allows for varying efficiency, unless it is known a prior that there is not varying efficiency in the relative abundance data. However, we include this model so that the results of the manuscript can be replicated.
+We fit a hierarchical model in Stan to the data, with goal to estimate true concentration for all taxa. This model, in contrast with \code{run_paramedic} and \code{run_paramedic_centered}, does not allow for varying efficiency. **We always recommend using the model that allows for varying efficiency**, unless it is known *a priori* that there is not varying efficiency in the relative abundance data. We include this model to facilitate replicating the results of the manuscript.
 }
 \examples{
 ## load the package, read in example data
@@ -56,7 +56,7 @@ library("paramedic")
 data(example_16S_data)
 data(example_qPCR_data)
 
-## run paramedic (with an extremely small number of iterations, for illustration only)
+## run no efficiency (with an extremely small number of iterations, for illustration only)
 ## on only the first 10 taxa
 mod <- no_efficiency(W = example_16S_data[, 1:10], V = example_qPCR_data,
 n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747)

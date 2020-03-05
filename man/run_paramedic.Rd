@@ -37,13 +37,13 @@ run_paramedic(
 
 \item{inits_lst}{An optional list of initial values of the parameters. Must be a named list; see \code{\link[rstan]{stan}}.}
 
-\item{sigma_beta}{Hyperparameter specifying the prior variance on \code{beta_0}. Defaults to \code{\sqrt{50}}.}
+\item{sigma_beta}{Hyperparameter specifying the prior variance on \eqn{\beta_0}. Defaults to \eqn{\sqrt{50}}.}
 
-\item{sigma_Sigma}{Hyperparameter specifying the prior variance on \code{\Sigma}. Defaults to \code{\sqrt{50}}.}
+\item{sigma_Sigma}{Hyperparameter specifying the prior variance on \eqn{\Sigma}. Defaults to \eqn{\sqrt{50}}.}
 
-\item{alpha_sigma}{Hyperparameter specifying the shape parameter of the prior distribution on \code{\sigma_e}. Defaults to 2.}
+\item{alpha_sigma}{Hyperparameter specifying the shape parameter of the prior distribution on \eqn{\sigma_e}. Defaults to 2.}
 
-\item{kappa_sigma}{Hyperparameter specifying the scale parameter of the prior distribution on \code{\sigma_e}. Defaults to 1.}
+\item{kappa_sigma}{Hyperparameter specifying the scale parameter of the prior distribution on \eqn{\sigma_e}. Defaults to 1.}
 
 \item{...}{other arguments to pass to \code{\link[rstan]{sampling}} (e.g., control).}
 }
