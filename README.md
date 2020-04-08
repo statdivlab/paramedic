@@ -13,7 +13,7 @@ Predicting Absolute and Relative Abundance by Modeling Efficiency to Derive Inte
 
 ## Introduction
 
-`paramedic` is a R package for estimating microbial concentration. paramedic uses information from 16S count data (compositional data on all taxa) and absolute data on a subset of taxa (e.g., qPCR or flow cytometry) to estimate the absolute abundance of all taxa. The method accounts for differing taxon detection efficiencies between the two methods, and produces prediction and confidence intervals as well as point estimates of the absolute abundance of all taxa. Check out [the paper](https://www.biorxiv.org/content/10.1101/761486v1) for more details. 
+`paramedic` is a R package for estimating microbial concentration. paramedic uses information from 16S count data (compositional data on all taxa) and absolute data on a subset of taxa (e.g., qPCR or flow cytometry) to estimate the absolute abundance of all taxa. The method accounts for differing taxon detection efficiencies between the two methods, and produces prediction and confidence intervals as well as point estimates of the absolute abundance of all taxa. Check out [the paper](https://www.biorxiv.org/content/10.1101/761486v1) for more details.
 
 ------------------------------
 
@@ -48,12 +48,20 @@ library("paramedic")
 data(example_16S_data)
 data(example_qPCR_data)
 
+# sample hyperparameter values
+sigma_beta <- 1
+sigma_Sigma <- 1
+alpha_sigma <- 2
+kappa_sigma <- 1
+
 ## -------------------------------------------------------------
 ## Estimate concentrations for the first 7 taxa
 ## -------------------------------------------------------------
 ## this is a small number of iterations, only for illustration
 ## also, shows how to use control parameters for rstan::stan
 stan_mod <- run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data,
+                      sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma,
+                      alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma,
                       n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
                       control = list(adapt_delta = 0.85, max_treedepth = 15),
                       verbose = FALSE)
@@ -78,9 +86,8 @@ posterior_summaries$est_efficiency
 
 ## Issues
 
-We use Stan to fit the hierarchical model to the data. Read any warning messages returned by the algorithm carefully, as these can help diagnose convergence issues. Carefully choosing initialisation values can speed up convergence. 
+We use Stan to fit the hierarchical model to the data. Read any warning messages returned by the algorithm carefully, as these can help diagnose convergence issues. Carefully choosing initialisation values can speed up convergence.
 
 If you encounter any bugs or have any specific feature requests, please [file an issue](https://github.com/statdivlab/paramedic/issues).
 
 ------------------------------
-
