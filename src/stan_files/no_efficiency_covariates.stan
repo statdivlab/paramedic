@@ -28,7 +28,7 @@ model {
     log_Sigma ~ normal(0, sigma_Sigma);
 
     for (j in 1:q) {
-        beta_1[j] ~ std_normal();
+        beta_1[:,j] ~ std_normal();
     }
 
     for (i in 1:N){

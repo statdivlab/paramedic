@@ -35,7 +35,7 @@ model {
     log_e ~ normal(0, sqrt(sigma_e));
 
     for (j in 1:q) {
-        beta_1[j] ~ std_normal();
+        beta_1[:,j] ~ std_normal();
     }
 
     for (i in 1:N){
