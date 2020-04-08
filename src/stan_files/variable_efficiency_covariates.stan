@@ -15,7 +15,7 @@ data{
 parameters{
     vector[q] log_mu_tilde[N];
     vector[q] beta_0;
-    vector[p] beta_1[q];
+    matrix[p,q] beta_1;
     vector[q] log_Sigma;
     vector[q] log_e;
     real<lower=0> sigma_e;
@@ -23,7 +23,7 @@ parameters{
 transformed parameters{
     vector[q] log_mu[N];
     for (i in 1:N){
-        log_mu[i] = beta_0 + X[i] * beta_1 + exp(log_Sigma) .* log_mu_tilde[i];
+        log_mu[i] = beta_0 + (X[i] * beta_1)' + exp(log_Sigma) .* log_mu_tilde[i];
     }
 }
 model {
