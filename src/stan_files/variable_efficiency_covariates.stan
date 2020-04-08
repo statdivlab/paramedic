@@ -16,25 +16,23 @@ parameters{
     vector[q] log_mu_tilde[N];
     vector[q] beta_0;
     vector[p] beta_1[q];
-    vector<lower=0>[q] Sigma;
-    vector<lower=0>[q] e;
+    vector[q] log_Sigma;
+    vector[q] log_e;
     real<lower=0> sigma_e;
 }
 transformed parameters{
-    vector<lower=0>[q] mu[N];
+    vector[q] log_mu[N];
     for (i in 1:N){
-        for (j in 1:q) {
-            mu[i,j] = exp(beta_0[j] + X[i] * beta_1[j] + Sigma[j] * log_mu_tilde[i,j]);
-        }
+        log_mu[i] = beta_0 + X[i] * beta_1 + exp(log_Sigma) .* log_mu_tilde[i];
     }
 }
 model {
     // hierarchical model
     beta_0 ~ normal(0, sigma_beta);
-    Sigma ~ lognormal(0, sigma_Sigma);
+    log_Sigma ~ normal(0, sigma_Sigma);
 
     sigma_e ~ inv_gamma(alpha_sigma, kappa_sigma);
-    e ~ lognormal(0, sqrt(sigma_e));
+    log_e ~ normal(0, sqrt(sigma_e));
 
     for (j in 1:q) {
         beta_1[j] ~ std_normal();
@@ -42,7 +40,15 @@ model {
 
     for (i in 1:N){
         log_mu_tilde[i] ~ std_normal();
-        V[i] ~ poisson(head(mu[i],q_obs));
-        W[i] ~ multinomial((e .* mu[i])/sum(e .* mu[i]));
+        V[i] ~ poisson_log(head(log_mu[i],q_obs));
+        W[i] ~ multinomial(softmax(log_e + log_mu[i]));
     }
+}
+generated quantities{
+    vector[q] mu[N];
+    vector[q] e;
+    vector[q] Sigma;
+    mu = exp(log_mu);
+    e = exp(log_e);
+    Sigma = exp(log_Sigma);
 }
