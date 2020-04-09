@@ -146,7 +146,7 @@ run_paramedic_centered <- function(W, V, X = V[, 1, drop = FALSE],
         if (n_chains > 1) {
             inits_lst <- list(list(mu = ifelse(naive_est == 0, 1e-4, naive_est)), rep(list(init = "random"), n_chains - 1))
         } else {
-            inits_lst <- list(list(mu = ifelse(naive_est == 0, 1e-4, naive_est), beta_0 = naive_beta, Sigma = naive_Sigma))
+            inits_lst <- list(list(mu = ifelse(naive_est == 0, 1e-4, naive_est), beta_0 = naive_beta, log_Sigma = log(naive_Sigma)))
         }
     }
 

@@ -15,7 +15,7 @@ data{
 parameters{
     vector[q] log_mu[N];
     vector[q] beta_0;
-    vector[p] beta_1[q];
+    matrix[p,q] beta_1;
     vector[q] log_Sigma;
     vector[q] log_e;
     real<lower=0> sigma_e;
@@ -33,9 +33,7 @@ model {
     }
 
     for (i in 1:N){
-        for (j in 1:q) {
-            log_mu[i,j] ~ normal(beta_0[j] + X[i] * beta_1[j], exp(log_Sigma));
-        }
+        log_mu[i] ~ normal(beta_0 + (X[i] * beta_1)', exp(log_Sigma));
         V[i] ~ poisson_log(head(log_mu[i],q_obs));
         W[i] ~ multinomial(softmax(log_e + log_mu[i]));
     }
