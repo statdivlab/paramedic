@@ -2,16 +2,18 @@ Package: paramedic
 Title: Predicting Absolute and Relative Abundance by Modeling Efficiency to Derive Intervals and Concentrations
 Version: 0.0.3
 Authors@R:
-    c(person(given = "Brian",
-           family = "Williamson",
-           role = c("aut", "cre"),
-           email = "brianw26@uw.edu"),
-           person(given = "James",
-           family = "Hughes",
-           role = "aut"),
-           person(given = "Amy",
-           family = "Willis",
-           role = "aut"))
+    c(person(given = "Brian D.",
+             family = "Williamson",
+             role = c("aut", "cre"),
+             email = "brianw26@uw.edu",
+             comment = c(ORCID = "0000-0002-7024-548X")),
+      person(given = "James",
+             family = "Hughes",
+             role = "aut"),
+      person(given = "Amy",
+             family = "Willis",
+             role = "aut",
+             comment = c(ORCID = "0000-0002-2802-4317"))
 Description: We estimate microbial abundances by combining compositional abundance data and observed absolute abundance data. We have two fully Bayesian hierarchical models allowing for varying efficiencies. The two models only differ in the way that the true concentration is parameterized: the first uses a centered parameterization, while the second uses a noncentered parameterization. There may be differences in speed and accuracy of each hierarchical model, depending on the dataset and initial values chosen. Please read any warning messages returned by the algorithm carefully, as these can help diagnose convergence issues. We return credible intervals and point estimates for the true concentrations, and point estimates and prediction intervals for the unobserved absolute abundances.
 License: BSD_3_clause + file LICENSE
 Depends:
