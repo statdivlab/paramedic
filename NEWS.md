@@ -1,3 +1,13 @@
+# paramedic 0.0.3.900
+
+## Major changes
+
+None
+
+## Minor changes
+
+* new internal functions to reduce replicating code within key functions
+
 # paramedic 0.0.3
 
 ## Major changes

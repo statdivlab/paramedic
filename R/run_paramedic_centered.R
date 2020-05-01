@@ -34,122 +34,30 @@
 #' n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747)
 #'
 #' @seealso \code{\link[rstan]{stan}} and \code{\link[rstan]{sampling}} for specific usage of the \code{stan} and \code{sampling} functions.
-#'
+#' 
+#' @importFrom rstan sampling
 #' @export
 run_paramedic_centered <- function(W, V, X = V[, 1, drop = FALSE],
                           n_iter = 10500, n_burnin = 10000, n_chains = 4, stan_seed = 4747,
                           inits_lst = NULL, sigma_beta = sqrt(50), sigma_Sigma = sqrt(50), alpha_sigma = 2, kappa_sigma = 1,
                           ...) {
-    N <- dim(W)[1]
-    q <- dim(W)[2] - 1
-    q_obs <- dim(V)[2] - 1
-    p <- dim(X)[2]
     ## --------------
     ## error messages
     ## --------------
-    ## error if there aren't the same number of rows in W and V
-    if (dim(W)[1] != dim(V)[1]) stop("The number of rows in W and V must match.")
-    ## error if there aren't the same number of rows in V and X
-    if (dim(V)[1] != dim(X)[1]) stop("The number of rows in V and X must match.")
-    ## error if there is any difference between the first column of W and V
-    if (length(setdiff(as.numeric(unlist(W[, 1])), as.numeric(unlist(V[, 1])))) != 0) stop("W and V must have the same samples.")
-    ## error if there is any difference between the first column of X and V
-    if (length(setdiff(as.numeric(unlist(V[, 1])), as.numeric(unlist(X[, 1])))) != 0) stop("V and X must have the same samples.")
-    ## error if the id columns are named different things
-    if ("data.frame" %in% class(W) | "tbl" %in% class(W)) {
-        if (names(W)[1] != names(V)[1]) stop("W and V must have the same name ")
-        if (names(W)[1] != names(X)[1]) stop("W and X must have the same name.")
-    } else {
-        if (colnames(W)[1] != colnames(V)[1]) stop("W and V must have the same name ")
-        if (colnames(W)[1] != colnames(X)[1]) stop("W and X must have the same name.")
-    }
-    ## error if q < q_obs
-    if (q < q_obs) stop("V must have fewer taxa than W (or the same number of taxa).")
-
+    check_entered_data(W, V, X, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma)
     ## ---------------------------
     ## pre-processing and warnings
     ## ---------------------------
-    ## make tibbles out of W and V, if they aren't already
-    W_tbl <- tibble::as_tibble(W)
-    V_tbl <- tibble::as_tibble(V)
-    X_tbl <- tibble::as_tibble(X)
-    ## if the rows are scrambled between W and V, change W to match V
-    if (sum(W_tbl[, 1] == V_tbl[, 1]) != dim(V_tbl)[1]) {
-        warning("Re-ordering samples so that the rows of W match the rows of V. The results will be in terms of the rows of V.")
-        combined_tbl <- dplyr::left_join(V_tbl, W_tbl, by = names(V_tbl)[1])
-        tmp <- combined_tbl %>%
-            dplyr::select(-dplyr::ends_with(".x")) %>%
-            dplyr::rename_at(.vars = dplyr::vars(dplyr::ends_with(".y")),
-                             .funs = list(~sub("[.]y$", "", .)))
-        W_tbl <- tmp
-    }
-    ## if the rows are scrambled between X and V, change X to match V
-    if (sum(X_tbl[, 1] == V_tbl[, 1]) != dim(V_tbl)[1]) {
-        warning("Re-ordering samples so that the rows of X match the rows of V. The results will be in terms of the rows of V.")
-        combined_tbl <- dplyr::left_join(V_tbl, X_tbl, by = names(V_tbl)[1])
-        tmp <- combined_tbl %>%
-          dplyr::select(-dplyr::ends_with(".x")) %>%
-          dplyr::rename_at(.vars = dplyr::vars(dplyr::ends_with(".y")),
-                    .funs = list(~sub("[.]y$", "", .)))
-        X_tbl <- tmp
-    }
-    ## if the absolute abundance-observed columns are scrambled between W and V, change W to match V
-    if (sum(names(W_tbl)[-1][1:q_obs] == names(V_tbl)[-1]) != q_obs) {
-        warning("Re-ordering columns so that the first q_obs columns of W are in the same order as V.")
-        tmp <- W_tbl %>%
-            dplyr::select(names(V_tbl), names(W_tbl)[(q_obs + 1):q])
-        W_tbl <- tmp
-    }
-
-    ## make matrix version of W and V, if they aren't already; remove first column
-    W_mat <- as.matrix(W)[, -1, drop = FALSE]
-    V_mat <- as.matrix(V)[, -1, drop = FALSE]
-    X_mat <- as.matrix(X)[, -1, drop = FALSE]
+    pre_processed_lst <- make_paramedic_tibbles(W, V, X, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma)
+    W_mat <- pre_processed_lst$w_mat
+    V_mat <- pre_processed_lst$v_mat
+    X_mat <- pre_processed_lst$x_mat
     ## ----------------------------------------
     ## set up the data and initial values lists
     ## ----------------------------------------
-    if (dim(X_mat)[2] == 0) {
-        # don't use covariate data
-        data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma, alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma)
-    } else {
-        data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, p = dim(X_mat)[2], X = X_mat, sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma, alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma)
-    }
-    ## get inits from the naive estimator
-    naive_estimator <- function(idx, relatives, absolutes, known_absolute) {
-        ## get the sum of the relative abundances
-        sum_relative <- rowSums(relatives[, known_absolute, drop = FALSE])
-        ## get the sum of the absolutes
-        sum_absolute <- rowSums(absolutes)
-
-        ## naive estimator
-        absolute <- relatives[, idx]*sum_absolute/sum_relative
-        ## if sum_relative was zero, predict zero (?)
-        absolute <- ifelse (sum_relative == 0, 0, absolute)
-        return(absolute)
-    }
-    ## if q == q_obs, the naive estimator is V
-    if (q == q_obs) {
-        naive_est <- as.matrix(V_mat)
-    } else { ## otherwise, we have to do something
-        naive_est <- cbind(as.matrix(V_mat), apply(matrix((q_obs + 1):q), 1, naive_estimator, W_mat, V_mat, 1:q_obs))
-    }
-    colnames(naive_est) <- colnames(W_mat)
-    log_naive <- ifelse(is.infinite(log(naive_est)), 0, log(naive_est))
-    naive_beta <- colMeans(log_naive, na.rm = TRUE)
-    naive_Sigma <- diag(stats::var(log_naive, na.rm = TRUE))
-    tmp <- ifelse(naive_Sigma < 1e-3, 1e-3, naive_Sigma)
-    naive_Sigma <- tmp
-    log_naive_tilde <- sweep(sweep(log_naive, 2, naive_beta, FUN = "-"), 2, naive_Sigma, FUN = "/")
-    tmp <- ifelse(is.na(log_naive_tilde), 0, log_naive_tilde)
-    log_naive_tilde <- tmp
-    if (is.null(inits_lst)) { # create inits if not passed in
-        if (n_chains > 1) {
-            inits_lst <- list(list(mu = ifelse(naive_est == 0, 1e-4, naive_est)), rep(list(init = "random"), n_chains - 1))
-        } else {
-            inits_lst <- list(list(mu = ifelse(naive_est == 0, 1e-4, naive_est), beta_0 = naive_beta, log_Sigma = log(naive_Sigma)))
-        }
-    }
-
+    data_inits_lst <- make_paramedic_stan_data(W_mat, V_mat, X_mat, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma, n_chains)
+    data_lst <- data_inits_lst$data_lst
+    inits_lst <- data_inits_lst$inits_lst
     ## run the Stan algorithm
     if (dim(X_mat)[2] == 0) {
         mod <- rstan::sampling(stanmodels$variable_efficiency_centered, data = data_lst, pars = c("mu", "e", "beta_0", "Sigma", "sigma_e"),
