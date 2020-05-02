@@ -36,3 +36,12 @@ vignettes/*.pdf
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
 .Rproj.user
+
+# Other binary files
+*.o
+*.so
+*.out
+*.d
+*.hpp.d.*
+src/*.o
+src/*.hpp
