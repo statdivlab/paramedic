@@ -2,10 +2,10 @@ data{
     int<lower=1> N;
     int<lower=1> q_obs;
     int<lower=1> q;
-    int<lower=0> p;
+    int<lower=0> d;
     int<lower=0> V[N,q_obs];
     int<lower=0> W[N,q];
-    matrix[N,p] X;
+    matrix[N,d] X;
     // hyperparameters
     real hyper_sigma_beta;
     real hyper_sigma_Sigma;
@@ -18,7 +18,7 @@ parameters{
     vector[q] log_e;
     // second-level hyperparameters
     vector[q] beta_0;
-    matrix[p,q] beta_1;
+    matrix[d,q] beta_1;
     vector[q] log_Sigma;
     real<lower=0> sigma_e;
     // third-level hyperparameters

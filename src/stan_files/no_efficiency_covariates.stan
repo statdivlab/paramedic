@@ -2,10 +2,10 @@ data{
     int<lower=1> N;
     int<lower=1> q_obs;
     int<lower=1> q;
-    int<lower=0> p;
+    int<lower=0> d;
     int<lower=0> V[N,q_obs];
     int<lower=0> W[N,q];
-    matrix[N,p] X;
+    matrix[N,d] X;
     // hyperparameters
     real hyper_sigma_beta;
     real hyper_sigma_Sigma;
@@ -15,7 +15,7 @@ parameters{
     vector[q] log_mu_tilde[N];
     // second-level hyperparameters
     vector[q] beta_0;
-    matrix[p,q] beta_1;
+    matrix[d,q] beta_1;
     vector[q] log_Sigma;
     // third-level hyperparameters
     vector[q] mu_beta;
@@ -27,8 +27,8 @@ transformed parameters{
     simplex[q] p[N];
     vector[q_obs] log_mu_v[N];
     for (i in 1:N){
-        p[i] = softmax(beta_0 + (X[i] * beta_1)' exp(log_Sigma) .* log_mu_tilde[i]);
-        log_mu_v[i] = head(beta_0 + (X[i] * beta_1)' exp(log_Sigma) .* log_mu_tilde[i], q_obs);
+        p[i] = softmax(beta_0 + (X[i] * beta_1)' + exp(log_Sigma) .* log_mu_tilde[i]);
+        log_mu_v[i] = head(beta_0 + (X[i] * beta_1)' + exp(log_Sigma) .* log_mu_tilde[i], q_obs);
     }
 }
 model {
@@ -53,6 +53,8 @@ model {
 generated quantities{
     vector[q] mu[N];
     vector[q] Sigma;
-    mu = exp(beta_0 + (X[i] * beta_1)' exp(log_Sigma) .* log_mu_tilde[i]);
+    for (i in 1:N) {
+        mu[i] = exp(beta_0 + (X[i] * beta_1)' + exp(log_Sigma) .* log_mu_tilde[i]);
+    }
     Sigma = exp(log_Sigma);
 }

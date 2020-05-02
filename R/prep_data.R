@@ -93,11 +93,11 @@ make_paramedic_stan_data <- function(W_mat, V_mat, X_mat, inits_lst, sigma_beta,
     N <- dim(W_mat)[1]
     q <- dim(W_mat)[2]
     q_obs <- dim(V_mat)[2]
-    p <- dim(X_mat)[2]
+    d <- dim(X_mat)[2]
     data_lst_init <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, hyper_sigma_beta = sigma_beta, hyper_sigma_Sigma = sigma_Sigma)
     data_lst <- data_lst_init
     if (dim(X_mat)[2] > 0) {
-        data_lst <- c(data_lst, list(p = dim(X_mat)[2], X = X_mat))
+        data_lst <- c(data_lst, list(d = d, X = X_mat))
     }
     if (!is.null(alpha_sigma)) {
         data_lst <- c(data_lst, list(alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma))
