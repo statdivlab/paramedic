@@ -89,12 +89,12 @@ make_paramedic_tibbles <- function(W, V, X, inits_lst, sigma_beta, sigma_Sigma, 
 #' @param X_mat the pre-processed matrix X
 #' @describeIn check_entered_data Make data and initial values lists to pass to stan
 #' @importFrom stats var
-make_paramedic_stan_data <- function(W_mat, V_mat, X_mat, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma, n_chains) {
+make_paramedic_stan_data <- function(W_mat, V_mat, X_mat, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma, n_chains, centered = FALSE) {
     N <- dim(W_mat)[1]
     q <- dim(W_mat)[2]
     q_obs <- dim(V_mat)[2]
     p <- dim(X_mat)[2]
-    data_lst_init <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma)
+    data_lst_init <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, hyper_sigma_beta = sigma_beta, hyper_sigma_Sigma = sigma_Sigma)
     data_lst <- data_lst_init
     if (dim(X_mat)[2] > 0) {
         data_lst <- c(data_lst, list(p = dim(X_mat)[2], X = X_mat))
@@ -135,10 +135,15 @@ make_paramedic_stan_data <- function(W_mat, V_mat, X_mat, inits_lst, sigma_beta,
     tmp <- ifelse(is.na(log_naive_tilde), 0, log_naive_tilde)
     log_naive_tilde <- tmp
     if (is.null(inits_lst)) { # create inits if not passed in
-        if (n_chains > 1) {
-            inits_lst <- list(list(mu = ifelse(naive_est == 0, 1e-4, naive_est)), rep(list(init = "random"), n_chains - 1))
+        if (centered) {
+            inits_lst <- list(list(mu = ifelse(naive_est == 0, 1e-4, naive_est)))
         } else {
-            inits_lst <- list(list(mu = ifelse(naive_est == 0, 1e-4, naive_est), beta_0 = naive_beta, log_Sigma = log(naive_Sigma)))
+            inits_lst <- list(list(log_mu_tilde = log_naive_tilde))
+        }
+        if (n_chains > 1) {
+            inits_lst <- c(inits_lst, rep(list(init = "random"), n_chains - 1))
+        } else {
+            inits_lst <- c(inits_lst, list(list(log_Sigma = log(naive_Sigma))))
         }
     }
     return(list(data_lst = data_lst, inits_lst = inits_lst))

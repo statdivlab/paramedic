@@ -55,7 +55,7 @@ run_paramedic_centered <- function(W, V, X = V[, 1, drop = FALSE],
     ## ----------------------------------------
     ## set up the data and initial values lists
     ## ----------------------------------------
-    data_inits_lst <- make_paramedic_stan_data(W_mat, V_mat, X_mat, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma, n_chains)
+    data_inits_lst <- make_paramedic_stan_data(W_mat, V_mat, X_mat, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma, n_chains, centered = TRUE)
     data_lst <- data_inits_lst$data_lst
     inits_lst <- data_inits_lst$inits_lst
     ## run the Stan algorithm
