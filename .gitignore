@@ -44,4 +44,5 @@ rsconnect/
 *.d
 *.hpp.d.*
 src/*.o
+src/*.so
 src/*.hpp
