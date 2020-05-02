@@ -13,12 +13,6 @@ parameters{
     vector[q] beta_0;
     vector[q] log_Sigma;
 }
-//transformed parameters{
-//    vector[q] log_mu[N];
-//    for (i in 1:N){
-//        log_mu[i] = beta_0 + exp(log_Sigma) .* log_mu_tilde[i];
-//    }
-//}
 model {
     vector[q] log_mu[N];
     // hierarchical model
