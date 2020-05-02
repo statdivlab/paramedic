@@ -40,18 +40,18 @@ no_efficiency <- function(W, V, X = V[, 1, drop = FALSE],
   ## --------------
   ## error messages
   ## --------------
-  check_entered_data(W, V, X, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma)
+  check_entered_data(W, V, X, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma = NULL, kappa_sigma = NULL)
   ## ---------------------------
   ## pre-processing and warnings
   ## ---------------------------
-  pre_processed_lst <- make_paramedic_tibbles(W, V, X, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma)
+  pre_processed_lst <- make_paramedic_tibbles(W, V, X, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma = NULL, kappa_sigma = NULL)
   W_mat <- pre_processed_lst$w_mat
   V_mat <- pre_processed_lst$v_mat
   X_mat <- pre_processed_lst$x_mat
   ## ----------------------------------------
   ## set up the data and initial values lists
   ## ----------------------------------------
-  data_inits_lst <- make_paramedic_stan_data(W_mat, V_mat, X_mat, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma, n_chains)
+  data_inits_lst <- make_paramedic_stan_data(W_mat, V_mat, X_mat, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma = NULL, kappa_sigma = NULL, n_chains)
   data_lst <- data_inits_lst$data_lst
   inits_lst <- data_inits_lst$inits_lst
   ## ----------------------

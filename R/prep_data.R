@@ -94,12 +94,14 @@ make_paramedic_stan_data <- function(W_mat, V_mat, X_mat, inits_lst, sigma_beta,
     q <- dim(W_mat)[2]
     q_obs <- dim(V_mat)[2]
     p <- dim(X_mat)[2]
-    if (dim(X_mat)[2] == 0) {
-        # don't use covariate data
-        data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma, alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma)
-    } else {
-        data_lst <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, p = dim(X_mat)[2], X = X_mat, sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma, alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma)
+    data_lst_init <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma)
+    data_lst <- data_lst_init
+    if (dim(X_mat)[2] > 0) {
+        data_lst <- c(data_lst, list(p = dim(X_mat)[2], X = X_mat))
     }
+    if (!is.null(alpha_sigma)) {
+        data_lst <- c(data_lst, list(alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma))
+    } 
     ## get inits from the naive estimator
     naive_estimator <- function(idx, relatives, absolutes, known_absolute) {
         ## get the sum of the relative abundances
@@ -117,7 +119,11 @@ make_paramedic_stan_data <- function(W_mat, V_mat, X_mat, inits_lst, sigma_beta,
     if (q == q_obs) {
         naive_est <- as.matrix(V_mat)
     } else { ## otherwise, we have to do something
-        naive_est <- cbind(as.matrix(V_mat), apply(matrix((q_obs + 1):q), 1, naive_estimator, W_mat, V_mat, 1:q_obs))
+        naive_ests <- apply(matrix((q_obs + 1):q), 1, naive_estimator, W_mat, V_mat, 1:q_obs)
+        if (N == 1) {
+          naive_ests <- matrix(naive_ests, nrow = 1)
+        }
+        naive_est <- cbind(as.matrix(V_mat), naive_ests)
     }
     colnames(naive_est) <- colnames(W_mat)
     log_naive <- ifelse(is.infinite(log(naive_est)), 0, log(naive_est))
