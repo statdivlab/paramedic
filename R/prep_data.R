@@ -143,7 +143,7 @@ make_paramedic_stan_data <- function(W_mat, V_mat, X_mat, inits_lst, sigma_beta,
         if (n_chains > 1) {
             inits_lst <- c(inits_lst, rep(list(init = "random"), n_chains - 1))
         } else {
-            inits_lst <- c(inits_lst, list(list(log_Sigma = log(naive_Sigma))))
+            inits_lst <- list(c(inits_lst[[1]], list(log_Sigma = log(naive_Sigma))))
         }
     }
     return(list(data_lst = data_lst, inits_lst = inits_lst))

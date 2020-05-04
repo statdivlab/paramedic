@@ -55,7 +55,7 @@ test_that("centered-paramedic works", {
   mod_summ_c <- rstan::summary(mod_centered, probs = c(0.025, 0.975))$summary
   expect_equal(mean(mod_summ_c[grepl("mu", rownames(mod_summ_c)) & grepl(",1]", rownames(mod_summ_c)), 1]), 
                mean(example_qPCR_data$Gardnerella.vaginalis), 
-               tolerance = 0.5, scale = mean(example_qPCR_data$Gardnerella.vaginalis))
+               tolerance = 1, scale = mean(example_qPCR_data$Gardnerella.vaginalis))
 })
 
 test_that("centered-paramedic works with covariates", {
@@ -67,7 +67,7 @@ test_that("centered-paramedic works with covariates", {
   mod_summ_c <- rstan::summary(mod_centered, probs = c(0.025, 0.975))$summary
   expect_equal(mean(mod_summ_c[grepl("mu", rownames(mod_summ_c)) & grepl(",1]", rownames(mod_summ_c)), 1]), 
                mean(example_qPCR_data$Gardnerella.vaginalis), 
-               tolerance = 0.5, scale = mean(example_qPCR_data$Gardnerella.vaginalis))
+               tolerance = 1, scale = mean(example_qPCR_data$Gardnerella.vaginalis))
 })
 
 
@@ -180,5 +180,5 @@ test_that("errors and warnings for run_paramedic_centered work", {
   mod_summ <- rstan::summary(mod, probs = c(0.025, 0.975))$summary
   expect_equal(mean(mod_summ[grepl("mu", rownames(mod_summ)) & grepl(",1]", rownames(mod_summ)), 1]), 
                mean(example_qPCR_data$Gardnerella.vaginalis), 
-               tolerance = 0.5, scale = mean(example_qPCR_data$Gardnerella.vaginalis))
+               tolerance = 1, scale = mean(example_qPCR_data$Gardnerella.vaginalis))
 })

@@ -26,7 +26,7 @@ test_that("no-efficiency works", {
   ## check that mean of mu for taxon 1 is "close" to mean qPCR for taxon 1
   expect_equal(mean(mod_summ[grepl("mu", rownames(mod_summ)) & grepl(",1]", rownames(mod_summ)), 1]), 
                mean(example_qPCR_data$Gardnerella.vaginalis), 
-               tolerance = 0.5, scale = mean(example_qPCR_data$Gardnerella.vaginalis))
+               tolerance = 1, scale = mean(example_qPCR_data$Gardnerella.vaginalis))
 })
 # test that no_efficiency works with covariates
 X <- cbind(example_qPCR_data[, 1], rbinom(dim(example_qPCR_data)[1], 1, prob = 0.6))
@@ -83,5 +83,5 @@ test_that("errors and warnings for no_efficiency work", {
   mod_summ <- rstan::summary(mod, probs = c(0.025, 0.975))$summary
   expect_equal(mean(mod_summ[grepl("mu", rownames(mod_summ)) & grepl(",1]", rownames(mod_summ)), 1]), 
                mean(example_qPCR_data$Gardnerella.vaginalis), 
-               tolerance = 0.5, scale = mean(example_qPCR_data$Gardnerella.vaginalis))
+               tolerance = 1, scale = mean(example_qPCR_data$Gardnerella.vaginalis))
 })
