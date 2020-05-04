@@ -7,8 +7,8 @@ data{
     int<lower=0> W[N,q];
     matrix[N,d] X;
     // hyperparameters
-    real hyper_sigma_beta;
-    real hyper_sigma_Sigma;
+    real sigma_beta;
+    real sigma_Sigma;
 }
 parameters{
     // first-level parameters
@@ -17,11 +17,6 @@ parameters{
     vector[q] beta_0;
     matrix[d,q] beta_1;
     vector[q] log_Sigma;
-    // third-level hyperparameters
-    vector[q] mu_beta;
-    vector[q] sigma_beta;
-    vector[q] mu_sigma;
-    vector[q] sigma_Sigma;
 }
 transformed parameters{
     simplex[q] p[N];
@@ -33,12 +28,8 @@ transformed parameters{
 }
 model {
     // hierarchical model
-    mu_beta ~ std_normal();
-    mu_sigma ~ std_normal();
-    sigma_beta ~ normal(hyper_sigma_beta, 1);
-    sigma_Sigma ~ normal(hyper_sigma_Sigma, 1);
-    beta_0 ~ normal(mu_beta, exp(sigma_beta));
-    log_Sigma ~ normal(mu_sigma, exp(sigma_Sigma));
+    beta_0 ~ normal(0, sigma_beta);
+    log_Sigma ~ normal(0, sigma_Sigma);
 
     for (j in 1:q) {
         beta_1[:,j] ~ std_normal();
