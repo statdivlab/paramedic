@@ -7,8 +7,8 @@ data{
     int<lower=0> W[N,q];
     matrix[N,d] X;
     // hyperparameters
-    real hyper_sigma_beta;
-    real hyper_sigma_Sigma;
+    real sigma_beta;
+    real sigma_Sigma;
     real alpha_sigma;
     real kappa_sigma;
 }
