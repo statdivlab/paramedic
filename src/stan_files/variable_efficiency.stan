@@ -13,7 +13,7 @@ data{
 parameters{
     // first-level parameters
     vector[q] log_mu_tilde[N];
-    vector[q] log_e_tilde;
+    vector[q] log_e;
     // second-level hyperparameters
     vector[q] beta_0;
     vector[q] log_Sigma;
