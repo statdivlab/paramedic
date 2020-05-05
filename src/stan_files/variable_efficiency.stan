@@ -13,19 +13,21 @@ data{
 parameters{
     // first-level parameters
     vector[q] log_mu_tilde[N];
-    vector[q] log_e;
+    vector[q] log_e_tilde;
     // second-level hyperparameters
     vector[q] beta_0;
     vector[q] log_Sigma;
     real<lower=0> sigma_e;
 }
 transformed parameters{
-    simplex[q] p[N];
+    vector[q] p[N];
     vector[q_obs] log_mu_v[N];
+    vector[q] log_mu[N];
 
     for (i in 1:N) {
-        p[i] = softmax(beta_0 + exp(log_Sigma) .* log_mu_tilde[i] + log_e);
-        log_mu_v[i] = head(beta_0 + exp(log_Sigma) .* log_mu_tilde[i], q_obs);
+        log_mu[i] = beta_0 + exp(log_Sigma) .* log_mu_tilde[i];
+        p[i] = softmax(log_mu[i] + log_e);
+        log_mu_v[i] = head(log_mu[i], q_obs);
     }
 }
 model {
@@ -34,7 +36,7 @@ model {
     log_Sigma ~ normal(0, sigma_Sigma);
 
     sigma_e ~ inv_gamma(alpha_sigma, kappa_sigma);
-    log_e ~ normal(0, sqrt(sigma_e));
+    log_e ~ normal(0, sqrt(sigma_e))
 
     for (i in 1:N){
         log_mu_tilde[i] ~ std_normal();
@@ -47,9 +49,7 @@ generated quantities{
     vector[q] e;
     vector[q] Sigma;
 
-    for (i in 1:N) {
-        mu[i] = exp(beta_0 + exp(log_Sigma) .* log_mu_tilde[i]);
-    }
+    mu = exp(log_mu);
     e = exp(log_e);
     Sigma = exp(log_Sigma);
 }

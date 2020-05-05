@@ -20,7 +20,7 @@ parameters{
     real<lower=0> sigma_e;
 }
 transformed parameters{
-    simplex[q] p[N];
+    vector[q] p[N];
     vector[q_obs] log_mu_v[N];
 
     for (i in 1:N) {
@@ -46,6 +46,7 @@ generated quantities{
     vector[q] mu[N];
     vector[q] e;
     vector[q] Sigma;
+    
     mu = exp(log_mu);
     e = exp(log_e);
     Sigma = exp(log_Sigma);
