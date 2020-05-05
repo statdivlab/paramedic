@@ -21,11 +21,6 @@ parameters{
     matrix[d,q] beta_1;
     vector[q] log_Sigma;
     real<lower=0> sigma_e;
-    // third-level hyperparameters
-    vector[q] mu_beta;
-    vector[q] sigma_beta;
-    vector[q] mu_sigma;
-    vector[q] sigma_Sigma;
 }
 transformed parameters{
     vector[q] p[N];
