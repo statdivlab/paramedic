@@ -16,12 +16,14 @@ parameters{
     vector[q] log_Sigma;
 }
 transformed parameters{
-    simplex[q] p[N];
+    vector[q] p[N];
     vector[q_obs] log_mu_v[N];
+    vector[q] log_mu[N];
 
     for (i in 1:N) {
-        p[i] = softmax(beta_0 + exp(log_Sigma) .* log_mu_tilde[i]);
-        log_mu_v[i] = head(beta_0 + exp(log_Sigma) .* log_mu_tilde[i], q_obs);
+        log_mu[i] = beta_0 + exp(log_Sigma) .* log_mu_tilde[i];
+        p[i] = softmax(log_mu[i]);
+        log_mu_v[i] = head(log_mu[i], q_obs);
     }
 }
 model {
@@ -39,8 +41,6 @@ generated quantities{
     vector[q] mu[N];
     vector[q] Sigma;
 
-    for (i in 1:N) {
-        mu[i] = exp(beta_0 + exp(log_Sigma) .* log_mu_tilde[i]);
-    }
+    mu = exp(log_mu);
     Sigma = exp(log_Sigma);
 }
