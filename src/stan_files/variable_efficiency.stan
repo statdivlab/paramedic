@@ -36,7 +36,7 @@ model {
     log_Sigma ~ normal(0, sigma_Sigma);
 
     sigma_e ~ inv_gamma(alpha_sigma, kappa_sigma);
-    log_e ~ normal(0, sqrt(sigma_e))
+    log_e ~ normal(0, sqrt(sigma_e));
 
     for (i in 1:N){
         log_mu_tilde[i] ~ std_normal();
