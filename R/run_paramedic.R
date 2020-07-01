@@ -15,6 +15,8 @@
 #' @param sigma_Sigma Hyperparameter specifying the prior variance on \eqn{\Sigma}. Defaults to \eqn{\sqrt{50}}.
 #' @param alpha_sigma Hyperparameter specifying the shape parameter of the prior distribution on \eqn{\sigma_e}. Defaults to 2.
 #' @param kappa_sigma Hyperparameter specifying the scale parameter of the prior distribution on \eqn{\sigma_e}. Defaults to 1.
+#' @param alpha_phi Hyperparameter specifying the shape parameter of the prior distribution on \eqn{\phi}. Only used if \code{v_model = "negbin"}. Defaults to 1.
+#' @param beta_sigma Hyperparameter specifying the rate parameter of the prior distribution on \eqn{\phi}. Only used if \code{v_model = "negbin"}. Defaults to 1.
 #' @param ... other arguments to pass to \code{\link[rstan]{sampling}} (e.g., control).
 #'
 #' @return An object of class \code{stanfit}.
@@ -40,7 +42,7 @@
 run_paramedic <- function(W, V, X = V[, 1, drop = FALSE],
                       n_iter = 10500, n_burnin = 10000, n_chains = 4, stan_seed = 4747, v_model = "poisson",
                       inits_lst = NULL,
-                      sigma_beta = sqrt(50), sigma_Sigma = sqrt(50), alpha_sigma = 2, kappa_sigma = 1,
+                      sigma_beta = sqrt(50), sigma_Sigma = sqrt(50), alpha_sigma = 2, kappa_sigma = 1, alpha_phi = 1, beta_phi = 1,
                       ...) {
     ## --------------
     ## error messages

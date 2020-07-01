@@ -34,7 +34,7 @@
 #' n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747)
 #'
 #' @seealso \code{\link[rstan]{stan}} and \code{\link[rstan]{sampling}} for specific usage of the \code{stan} and \code{sampling} functions.
-#' 
+#'
 #' @importFrom rstan sampling
 #' @export
 run_paramedic_centered <- function(W, V, X = V[, 1, drop = FALSE],
@@ -60,13 +60,14 @@ run_paramedic_centered <- function(W, V, X = V[, 1, drop = FALSE],
     inits_lst <- data_inits_lst$inits_lst
     ## run the Stan algorithm
     if (dim(X_mat)[2] == 0) {
-        mod <- rstan::sampling(stanmodels$variable_efficiency_centered, data = data_lst, pars = c("mu", "e", "beta_0", "Sigma", "sigma_e"),
-                               chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
-                               init = inits_lst, ...)
+        stan_model <- stanmodels$variable_efficiency_centered
+        pars <- c("mu", "e", "beta_0", "Sigma", "sigma_e")
     } else {
-        mod <- rstan::sampling(stanmodels$variable_efficiency_centered_covariates, data = data_lst, pars = c("mu", "e", "beta_0", "beta_1", "Sigma", "sigma_e"),
-                               chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
-                               init = inits_lst, ...)
+        stan_model <- stanmodels$variable_efficiency_centered_covariates
+        pars <- c("mu", "e", "beta_0", "beta_1", "Sigma", "sigma_e")
     }
+    mod <- rstan::sampling(stan_model, data = data_lst, pars = pars,
+                           chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
+                           init = inits_lst, ...)
     return(mod)
 }

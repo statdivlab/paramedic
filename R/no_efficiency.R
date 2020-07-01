@@ -37,32 +37,35 @@ no_efficiency <- function(W, V, X = V[, 1, drop = FALSE],
                       n_iter = 10500, n_burnin = 10000, n_chains = 4, stan_seed = 4747,
                       inits_lst = NULL, sigma_beta = sqrt(50), sigma_Sigma = sqrt(50),
                       ...) {
-  ## --------------
-  ## error messages
-  ## --------------
-  check_entered_data(W, V, X, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma = NULL, kappa_sigma = NULL)
-  ## ---------------------------
-  ## pre-processing and warnings
-  ## ---------------------------
-  pre_processed_lst <- make_paramedic_tibbles(W, V, X, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma = NULL, kappa_sigma = NULL)
-  W_mat <- pre_processed_lst$w_mat
-  V_mat <- pre_processed_lst$v_mat
-  X_mat <- pre_processed_lst$x_mat
-  ## ----------------------------------------
-  ## set up the data and initial values lists
-  ## ----------------------------------------
-  data_inits_lst <- make_paramedic_stan_data(W_mat, V_mat, X_mat, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma = NULL, kappa_sigma = NULL, n_chains)
-  data_lst <- data_inits_lst$data_lst
-  inits_lst <- data_inits_lst$inits_lst
-  ## ----------------------
+    ## --------------
+    ## error messages
+    ## --------------
+    check_entered_data(W, V, X, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma = NULL, kappa_sigma = NULL)
+    ## ---------------------------
+    ## pre-processing and warnings
+    ## ---------------------------
+    pre_processed_lst <- make_paramedic_tibbles(W, V, X, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma = NULL, kappa_sigma = NULL)
+    W_mat <- pre_processed_lst$w_mat
+    V_mat <- pre_processed_lst$v_mat
+    X_mat <- pre_processed_lst$x_mat
+    ## ----------------------------------------
+    ## set up the data and initial values lists
+    ## ----------------------------------------
+    data_inits_lst <- make_paramedic_stan_data(W_mat, V_mat, X_mat, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma = NULL, kappa_sigma = NULL, n_chains)
+    data_lst <- data_inits_lst$data_lst
+    inits_lst <- data_inits_lst$inits_lst
+    ## ----------------------
     ## run the Stan algorithm
     ## ----------------------
     if (dim(X_mat)[2] == 0) {
-        mod <- rstan::sampling(stanmodels$no_efficiency, data = data_lst, pars = c("mu", "beta_0", "Sigma"),
-                               chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
-                               init = inits_lst, ...)
+        stan_model <- stanmodels$no_efficiency
+        pars <- c("mu", "beta_0", "Sigma")
     } else {
-        mod <- rstan::sampling(stanmodels$no_efficiency_covariates, data = data_lst, pars = c("mu", "beta_0", "beta_1", "Sigma"), chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed, init = inits_lst, ...)
+        stan_model <- stanmodels$no_efficiency_covariates
+        pars <-  c("mu", "beta_0", "beta_1", "Sigma")
     }
+    mod <- rstan::sampling(stan_model, data = data_lst, pars = pars,
+                           chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
+                           init = inits_lst, ...)
     return(mod)
 }
