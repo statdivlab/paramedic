@@ -4,8 +4,10 @@
 \name{simple_example_data}
 \alias{simple_example_data}
 \title{Simulated data from relative and absolute abundance views}
-\format{`simple_example_data`: a matrix with 10 rows and 5 columns, 
-where the first three columns are relative abundance data and the final two columns are absolute abundance data.}
+\format{
+`simple_example_data`: a matrix with 10 rows and 5 columns, 
+where the first three columns are relative abundance data and the final two columns are absolute abundance data.
+}
 \usage{
 simple_example_data
 }

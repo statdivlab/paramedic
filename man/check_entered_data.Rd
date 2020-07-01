@@ -37,7 +37,8 @@ make_paramedic_stan_data(
   sigma_Sigma,
   alpha_sigma,
   kappa_sigma,
-  n_chains
+  n_chains,
+  centered = FALSE
 )
 }
 \arguments{

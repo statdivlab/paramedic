@@ -1,6 +1,3 @@
-## test that quantile intervals work!
-context("Test quantile intervals")
-
 ## set up the data
 library("testthat")
 library("rstan")

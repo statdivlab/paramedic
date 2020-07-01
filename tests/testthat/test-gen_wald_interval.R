@@ -1,6 +1,3 @@
-## test that wald intervals work!
-context("Test wald intervals")
-
 ## set up the data
 library("testthat")
 library("rstan")

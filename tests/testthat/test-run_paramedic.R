@@ -1,5 +1,3 @@
-context("Test paramedic, both noncentered and centered models")
-
 ## test that run_paramedic works!
 ## set up the data
 library("testthat")

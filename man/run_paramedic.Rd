@@ -12,11 +12,14 @@ run_paramedic(
   n_burnin = 10000,
   n_chains = 4,
   stan_seed = 4747,
+  v_model = "poisson",
   inits_lst = NULL,
   sigma_beta = sqrt(50),
   sigma_Sigma = sqrt(50),
   alpha_sigma = 2,
   kappa_sigma = 1,
+  alpha_phi = 1,
+  beta_phi = 1,
   ...
 )
 }
@@ -35,6 +38,8 @@ run_paramedic(
 
 \item{stan_seed}{The random number seed to initialize.}
 
+\item{v_model}{The model for V; currently supports \code{"poisson"} (for a Poisson model, the default) or \code{"negbin"} (for a Negative Binomial model)}
+
 \item{inits_lst}{An optional list of initial values of the parameters. Must be a named list; see \code{\link[rstan]{stan}}.}
 
 \item{sigma_beta}{Hyperparameter specifying the prior variance on \eqn{\beta_0}. Defaults to \eqn{\sqrt{50}}.}
@@ -45,7 +50,11 @@ run_paramedic(
 
 \item{kappa_sigma}{Hyperparameter specifying the scale parameter of the prior distribution on \eqn{\sigma_e}. Defaults to 1.}
 
+\item{alpha_phi}{Hyperparameter specifying the shape parameter of the prior distribution on \eqn{\phi}. Only used if \code{v_model = "negbin"}. Defaults to 1.}
+
 \item{...}{other arguments to pass to \code{\link[rstan]{sampling}} (e.g., control).}
+
+\item{beta_sigma}{Hyperparameter specifying the rate parameter of the prior distribution on \eqn{\phi}. Only used if \code{v_model = "negbin"}. Defaults to 1.}
 }
 \value{
 An object of class \code{stanfit}.

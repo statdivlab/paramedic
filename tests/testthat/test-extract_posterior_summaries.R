@@ -1,6 +1,3 @@
-## test that extracting posterior summaries works!
-context("Test extracting posterior summaries")
-
 ## set up the data
 library("testthat")
 library("rstan")

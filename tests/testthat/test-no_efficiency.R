@@ -1,5 +1,3 @@
-context("Test the no-efficiency models (only present to replicate results from the paramedic manuscript)")
-
 ## test that no_efficiency works!
 ## set up the data
 library("testthat")
