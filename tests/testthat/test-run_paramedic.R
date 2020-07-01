@@ -70,6 +70,19 @@ test_that("centered-paramedic works with covariates", {
                tolerance = 1, scale = mean(example_qPCR_data$Gardnerella.vaginalis))
 })
 
+test_that("negative-binomial paramedic works", {
+  expect_warning(mod_negbin <- paramedic::run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data, X = X,
+                                                        v_model = "negbin", alpha_phi = 1, beta_phi = 1,
+                                                        sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma,
+                                                        alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma,
+                                                        n_iter = 50, n_burnin = 30, n_chains = 1, stan_seed = 4747,
+                                                        control = list(adapt_delta = 0.9, max_treedepth = 15)))
+  mod_summ_nb <- rstan::summary(mod_negbin, probs = c(0.025, 0.975))$summary
+  expect_equal(mean(mod_summ_nb[grepl("mu", rownames(mod_summ_nb)) & grepl(",1]", rownames(mod_summ_nb)), 1]), 
+               mean(example_qPCR_data$Gardnerella.vaginalis), 
+               tolerance = 1, scale = mean(example_qPCR_data$Gardnerella.vaginalis))
+})
+
 
 ## check to see that errors/warnings work for run_paramedic
 test_that("errors and warnings for run_paramedic work", {
