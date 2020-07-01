@@ -64,7 +64,7 @@ run_paramedic <- function(W, V, X = V[, 1, drop = FALSE],
     ## ----------------------
     if (dim(X_mat)[2] == 0) {
         if (grepl("negbin", v_model)) {
-            stan_model <- stanmodels$variable_efficiency-negative-binomial-extension
+            stan_model <- stanmodels$variable_efficiency_negative_binomial_extension
         } else {
             stan_model <- stanmodels$variable_efficiency
         }
