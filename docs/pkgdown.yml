@@ -1,0 +1,11 @@
+pandoc: 2.9.2.1
+pkgdown: 1.5.1
+pkgdown_sha: ~
+articles:
+  hierarchical_model_specification: hierarchical_model_specification.html
+  introduction_to_paramedic: introduction_to_paramedic.html
+last_built: 2020-07-02T18:26Z
+urls:
+  reference: https://bdwilliamson.github.io/paramedic/reference
+  article: https://bdwilliamson.github.io/paramedic/articles
+

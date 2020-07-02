@@ -48,4 +48,4 @@ src/*.so
 src/*.hpp
 src/*.cc
 src/stan_files/*.hpp
-docs
+doc
