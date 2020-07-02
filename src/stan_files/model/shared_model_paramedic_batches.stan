@@ -4,7 +4,10 @@
 
     if (alpha_sigma > 0 && kappa_sigma > 0) {
         sigma_e ~ inv_gamma(alpha_sigma, kappa_sigma);
-        log_e ~ normal(0, sqrt(sigma_e));
+        xi ~ normal(0, sqrt(sigma_e));
+        for (k in 1:K) {
+            log_e[k] ~ normal(xi, sigma_xi);
+        }
     }
     if (d > 0) {
         for (j in 1:q) {

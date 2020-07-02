@@ -40,10 +40,11 @@ generated quantities{
     vector[q] Sigma;
 
     mu = exp(log_mu);
-    if (alpha_sigma > 0 && kappa_sigma > 0)
+    if (alpha_sigma > 0 && kappa_sigma > 0) {
         e = exp(log_e);
-    else
+    }
+    else {
         e = rep_vector(1, q);
-
+    }
     Sigma = exp(log_Sigma);
 }
