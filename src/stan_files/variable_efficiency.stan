@@ -1,77 +1,36 @@
 data{
-    int<lower=1> N;
-    int<lower=1> q_obs;
-    int<lower=1> q;
-    int<lower=0> d;
-    int<lower=0> V[N,q_obs];
-    int<lower=0> W[N,q];
-    matrix[N,d] X;
-    // hyperparameters
-    real sigma_beta;
-    real sigma_Sigma;
-    // 0 for both = efficiency-naive model
-    // otherwise, fit varying-efficiency model
-    real<lower=0> alpha_sigma;
-    real<lower=0> kappa_sigma;
-    // 0 for both = Poisson model
-    // otherwise, fit negative binomial
-    real<lower=0> alpha_phi;
-    real<lower=0> beta_phi;
+    // declares N, q_obs, q, d, V, W, X
+    // also declares hyperparameters:
+    // sigma_beta, sigma_Sigma,
+    // alpha_sigma, kappa_sigma,
+    // alpha_phi, beta_phi
+#include /data/data_paramedic.stan
 }
 parameters{
     // first-level parameters
     vector[q] log_mu_tilde[N];
-    vector[q] log_e;
-    // second-level hyperparameters
-    vector[q] beta_0;
-    matrix[d,q] beta_1;
-    vector[q] log_Sigma;
-    real<lower=0> sigma_e;
-    vector<lower=0>[N] phi;
+    // declares shared parameters log_e,
+    // beta_0, beta_1, log_Sigma,
+    // sigma_e, phi
+#include /parameters/parameters_paramedic.stan
 }
 transformed parameters{
-    vector[q] p[N];
-    vector[q_obs] log_mu_v[N];
-    vector[q] log_mu[N];
-
-    for (i in 1:N) {
-        if (d > 0)
-            log_mu[i] = beta_0 + (X[i] * beta_1)' + exp(log_Sigma) .* log_mu_tilde[i];
-        else
-            log_mu[i] = beta_0 + exp(log_Sigma) .* log_mu_tilde[i];
-
-        if (alpha_sigma > 0 && kappa_sigma > 0)
-            p[i] = softmax(log_mu[i] + log_e);
-        else
-            p[i] = softmax(log_mu[i]);
-
-        log_mu_v[i] = head(log_mu[i], q_obs);
-    }
+    // declares p, log_mu_v, log_mu
+#include /tparameters/tparameters_paramedic.stan
 }
 model {
-    // hierarchical model
-    beta_0 ~ normal(0, sigma_beta);
-    log_Sigma ~ normal(0, sigma_Sigma);
-
-    if (alpha_sigma > 0 && kappa_sigma > 0)
-        sigma_e ~ inv_gamma(alpha_sigma, kappa_sigma);
-        log_e ~ normal(0, sqrt(sigma_e));
-
-    if (d > 0)
-        for (j in 1:q) {
-            beta_1[:,j] ~ std_normal();
-        }
-
-    if (alpha_phi > 0 && beta_phi > 0)
-        phi ~ gamma(alpha_phi, beta_phi);
+    // specifies priors on beta_0, beta_1, Sigma,
+    // sigma_e, log_e, and phi
+#include /model/shared_model_paramedic.stan
 
     for (i in 1:N) {
         log_mu_tilde[i] ~ std_normal();
-        if (alpha_phi > 0 && beta_phi > 0)
+        if (alpha_phi > 0 && beta_phi > 0) {
             V[i] ~ neg_binomial_2_log(log_mu_v[i], phi[i]);
-        else
+        }
+        else {
             V[i] ~ poisson_log(log_mu_v[i]);
-
+        }
         W[i] ~ multinomial(p[i]);
     }
 }
