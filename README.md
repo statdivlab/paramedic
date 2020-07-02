@@ -1,4 +1,4 @@
-# `R/paramedic`: Predicting Absolute and Relative Abundance by Modeling Efficiency to Derive Intervals and Concentrations <img src="doc/paramedic-logo.png" align="right" width="165px"/>
+# `R/paramedic`: Predicting Absolute and Relative Abundance by Modeling Efficiency to Derive Intervals and Concentrations <img src="man/figures/paramedic-logo.png" align="right" width="165px"/>
 
 [![Build Status](https://travis-ci.org/statdivlab/paramedic.svg?branch=master)](https://travis-ci.org/statdivlab/paramedic)
 [![codecov](https://codecov.io/gh/statdivlab/paramedic/branch/master/graph/badge.svg?token=GnLFG7QNsh)](https://codecov.io/gh/statdivlab/paramedic)
