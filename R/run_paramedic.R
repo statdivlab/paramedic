@@ -64,17 +64,16 @@ run_paramedic <- function(W, V, X = V[, 1, drop = FALSE],
     ## ----------------------
     ## run the Stan algorithm
     ## ----------------------
-    if (dim(X_mat)[2] == 0) {
-        if (grepl("negbin", v_model)) {
-            stan_model <- stanmodels$variable_efficiency_negative_binomial_extension
-        } else {
-            stan_model <- stanmodels$variable_efficiency
-        }
-        pars <- c("mu", "e", "beta_0", "Sigma", "sigma_e")
-    } else {
-        stan_model <- stanmodels$variable_efficiency_covariates
-        pars <- c("mu", "e", "beta_0", "beta_1", "Sigma", "sigma_e")
-    }
+    pars <- c("mu",
+              if (alpha_sigma > 0 & kappa_sigma > 0) "e",
+              "beta_0",
+              if (ncol(X_mat) > 0) "beta_1",
+              "Sigma",
+              if (alpha_phi > 0 & beta_phi > 0) "phi",
+              if (alpha_sigma > 0 & kappa_sigma > 0) "sigma_e")
+    stan_model <- switch(centered + 1,
+                         stanmodels$variable_efficiency_centered,
+                         stanmodels$variable_efficiency)
     mod <- rstan::sampling(stan_model, data = data_lst, pars = pars,
                            chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
                            init = inits_lst, ...)
