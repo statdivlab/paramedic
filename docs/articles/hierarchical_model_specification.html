@@ -101,7 +101,21 @@
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>The core idea of <code>paramedic</code> is to combine estimates of absolute and relative abundance by modeling efficiency. In <a href="https://www.biorxiv.org/content/10.1101/761486v1">our paper</a>, we detailed a potential hierarchical model that incorporates efficiency. We also showed how the model can be extended to include covariates. In this vignette, we explore the other options currently available in <code>paramedic</code> and provide guidelines for requesting new hierarchical model specifications.</p>
+<p>The core idea of <code>paramedic</code> is to combine estimates of absolute and relative abundance by modeling efficiency. In <a href="https://www.biorxiv.org/content/10.1101/761486v1">our paper</a>, we detailed a potential hierarchical model that incorporates efficiency. We also showed how the model can be extended to include covariates. In this vignette, we explore the other options currently available in <code>paramedic</code> and provide guidelines for requesting new hierarchical model specifications. In all examples below, we use the example data referenced in the <a href="introduction_to_paramedic.html">main vignette</a>, so we load those data now. Additionally, we use a <em>very</em> small number of total and burn-in iterations for illustration only; we stress that a larger number of iterations should be used in practice.</p>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"rstan"</span>)</pre></body></html></div>
+<pre><code>## Loading required package: StanHeaders</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## rstan (Version 2.19.3, GitRev: 2e1f913d3ca3)</code></pre>
+<pre><code>## For execution on a local, multicore CPU with excess RAM we recommend calling
+## options(mc.cores = parallel::detectCores()).
+## To avoid recompilation of unchanged Stan programs, we recommend calling
+## rstan_options(auto_write = TRUE)</code></pre>
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"paramedic"</span>)</pre></body></html></div>
+<pre><code>## Loading required package: Rcpp</code></pre>
+<pre><code>## paramedic version 0.1.0: Predicting Absolute and Relative Abundance by Modeling Efficiency to Derive Intervals and Concentrations</code></pre>
+<pre><code>## Package created on 2020-07-02</code></pre>
+<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">example_16S_data</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">example_qPCR_data</span>)</pre></body></html></div>
 </div>
 <div id="hierarchical-models-currently-available-in-paramedic" class="section level1">
 <h1 class="hasAnchor">
@@ -112,12 +126,28 @@
 <a href="#the-default-hierarchical-model" class="anchor"></a>The default hierarchical model</h2>
 <p>The default hierarchical model in <code>paramedic</code> places a Poisson distribution on <span class="math inline">\(V\)</span> and a multinomial distribution on <span class="math inline">\(W\)</span>; a normal distribution on <span class="math inline">\(\log \mu\)</span>, where the distribution depends on a taxon-specific intercept <span class="math inline">\(\beta_0\)</span> and a covariance matrix <span class="math inline">\(\Sigma\)</span>; and a normal distribution on <span class="math inline">\(\log e\)</span>. The likelihood is (for all <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>): <span class="math display">\[V_{ij} \mid \mu_{ij} \sim Poisson(\mu_{ij}) \\ p_{ij} = \frac{\mu_{ij}e_j}{\sum_{\ell = 1}^q \mu_{i\ell}e_\ell} \\ W_{i\cdot} \mid M_i, \mu_{i\cdot}, e \sim Multinomial(M_i, p_{i\cdot}).\]</span></p>
 <p>We place the following priors on <span class="math inline">\(\mu\)</span> and <span class="math inline">\(e\)</span>: <span class="math display">\[\log\mu_{i\cdot} \sim N_q(\beta_0, \Sigma) \\ \beta_0 \sim N_q(0, \sigma^2_\beta) \\ \Sigma_{jj} \sim Lognormal(0, \sigma^2_\Sigma) \\ e_j \sim Lognormal(0, \sigma^2_e) \\ \sigma^2_e \sim InvGamma(\alpha_\sigma, \kappa_\sigma).\]</span></p>
+<p>The following code fits this model in <code>paramedic</code> for the example data:</p>
+<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">mod</span> <span class="kw">&lt;-</span> <span class="kw pkg">paramedic</span><span class="kw ns">::</span><span class="fu"><a href="../reference/run_paramedic.html">run_paramedic</a></span>(<span class="kw">W</span> <span class="kw">=</span> <span class="no">example_16S_data</span>[, <span class="fl">1</span>:<span class="fl">8</span>], <span class="kw">V</span> <span class="kw">=</span> <span class="no">example_qPCR_data</span>,
+                                <span class="kw">n_iter</span> <span class="kw">=</span> <span class="fl">30</span>, <span class="kw">n_burnin</span> <span class="kw">=</span> <span class="fl">25</span>, <span class="kw">n_chains</span> <span class="kw">=</span> <span class="fl">1</span>,
+                                <span class="kw">stan_seed</span> <span class="kw">=</span> <span class="fl">4747</span>, <span class="kw">control</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">max_treedepth</span> <span class="kw">=</span> <span class="fl">15</span>))</pre></body></html></div>
 </div>
 <div id="allowing-for-covariates" class="section level2">
 <h2 class="hasAnchor">
 <a href="#allowing-for-covariates" class="anchor"></a>Allowing for covariates</h2>
 <p>It may be of interest to allow covariates to affect the mean for each taxon. In this case, we may replace the prior on <span class="math inline">\(\mu\)</span> with the following: <span class="math display">\[\log\mu_{i\cdot} \sim N_q(\beta_0 + X_i\beta_1, \Sigma) \\ \beta_0 \sim N_q(0, \sigma^2_\beta) \\ \beta_{1,k} \sim N_q(0, 1),\]</span> where <span class="math inline">\(\beta_1\)</span> is a matrix with number of rows equal to the number of covariates and number of columns equal to <span class="math inline">\(q\)</span>.</p>
 <p>You can implement this model by passing a tibble of covariates <span class="math inline">\(X\)</span> to <code>run_paramedic</code>. <span class="math inline">\(X\)</span> must have number of rows equal to the sample size, and any number of columns.</p>
+<p>Suppose that we have a binary variable that specifies case status (i.e., 1 denotes a case and 0 denotes a control) for some disease. For example,</p>
+<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="co"># generate a random case/control status variable</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">4747</span>)
+<span class="no">case_control</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="fl">0</span>:<span class="fl">1</span>, <span class="kw">size</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">example_qPCR_data</span>), <span class="kw">replace</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"tibble"</span>)
+<span class="no">X</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span>(<span class="kw">sample_id</span> <span class="kw">=</span> <span class="no">example_qPCR_data</span>$<span class="no">sample_id</span>, <span class="kw">case</span> <span class="kw">=</span> <span class="no">case_control</span>)</pre></body></html></div>
+<p>If we want to adjust for this covariate in the example data analysis using <code>paramedic</code>, we use the following code:</p>
+<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">mod_with_covariates</span> <span class="kw">&lt;-</span> <span class="kw pkg">paramedic</span><span class="kw ns">::</span><span class="fu"><a href="../reference/run_paramedic.html">run_paramedic</a></span>(<span class="kw">W</span> <span class="kw">=</span> <span class="no">example_16S_data</span>[, <span class="fl">1</span>:<span class="fl">8</span>],
+                                                <span class="kw">V</span> <span class="kw">=</span> <span class="no">example_qPCR_data</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>,
+                                                <span class="kw">n_iter</span> <span class="kw">=</span> <span class="fl">30</span>, <span class="kw">n_burnin</span> <span class="kw">=</span> <span class="fl">25</span>,
+                                                <span class="kw">n_chains</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">stan_seed</span> <span class="kw">=</span> <span class="fl">4747</span>,
+                                                <span class="kw">control</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">max_treedepth</span> <span class="kw">=</span> <span class="fl">15</span>))</pre></body></html></div>
 </div>
 <div id="allowing-for-potential-overdispersion-in-v" class="section level2">
 <h2 class="hasAnchor">
@@ -125,6 +155,11 @@
 </h2>
 <p>It may be of interest to allow for overdispersion in <span class="math inline">\(V\)</span>. In this case, we may replace the likelihood on <span class="math inline">\(V\)</span> with the following: <span class="math display">\[V_{ij} \sim NegBin(\mu_{ij}, \phi_i),\]</span> where <span class="math inline">\(\phi_i\)</span> is a subject-specific overdispersion parameter. We add the following prior on <span class="math inline">\(\phi\)</span>: for all <span class="math inline">\(i\)</span>, <span class="math display">\[\phi_i \sim Gamma(\alpha_\phi, \beta_\phi).\]</span></p>
 <p>You can implement this model by passing nonzero values of <code>alpha_phi</code> and <code>beta_phi</code> to <code>run_paramedic</code>.</p>
+<p>In the example data, we can run the following code to implement this analysis:</p>
+<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">mod</span> <span class="kw">&lt;-</span> <span class="kw pkg">paramedic</span><span class="kw ns">::</span><span class="fu"><a href="../reference/run_paramedic.html">run_paramedic</a></span>(<span class="kw">W</span> <span class="kw">=</span> <span class="no">example_16S_data</span>[, <span class="fl">1</span>:<span class="fl">8</span>], <span class="kw">V</span> <span class="kw">=</span> <span class="no">example_qPCR_data</span>,
+                                <span class="kw">alpha_phi</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">beta_phi</span> <span class="kw">=</span> <span class="fl">10</span>, <span class="kw">n_iter</span> <span class="kw">=</span> <span class="fl">30</span>,
+                                <span class="kw">n_burnin</span> <span class="kw">=</span> <span class="fl">25</span>, <span class="kw">n_chains</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">stan_seed</span> <span class="kw">=</span> <span class="fl">4747</span>,
+                                <span class="kw">control</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">max_treedepth</span> <span class="kw">=</span> <span class="fl">15</span>))</pre></body></html></div>
 </div>
 </div>
 <div id="requesting-new-hierarchical-modeling-options" class="section level1">
