@@ -24,7 +24,7 @@ par(mar = c(5, 12, 4, 2) + 0.1)
 
 `paramedic` is a `R` package for estimating microbial concentration. `paramedic` uses information from 16S count data (compositional data on all taxa) and absolute data on a subset of taxa (e.g., qPCR or flow cytometry) to estimate the absolute abundance of all taxa. The method accounts for differing taxon detection efficiencies between the two methods, and produces prediction and confidence intervals as well as point estimates of the absolute abundance of all taxa.
 
-The author and maintainer of the `paramedic` package is [Brian Williamson](https://bdwilliamson.github.io/). For details on the method, check out our preprint (coming soon!).
+The author and maintainer of the `paramedic` package is [Brian Williamson](https://bdwilliamson.github.io/). For details on the method, check out [our preprint](https://www.biorxiv.org/content/10.1101/761486v1).
 
 ## Installation
 
@@ -88,3 +88,7 @@ posterior_summaries$est_efficiency
 ```
 
 This output shows that we have point estimates for the true concentration of each taxon within each participant, and the efficiencies of each taxon comparing br16S to qPCR.
+
+## Specifying different hierarchical models
+
+For details on the hierarchical modelling options available in `paramedic`, see [the vignette on hierarchical model specificaion](https://bdwilliamson.github.io/paramedic/hierarchical_model_specification.html).

@@ -1,4 +1,4 @@
-# paramedic <img src="docs/paramedic-logo.png" align="right" width="165px"/>
+# `R/paramedic` <img src="docs/paramedic-logo.png" align="right" width="165px"/>
 Predicting Absolute and Relative Abundance by Modeling Efficiency to Derive Intervals and Concentrations
 
 [![Build Status](https://travis-ci.org/statdivlab/paramedic.svg?branch=master)](https://travis-ci.org/statdivlab/paramedic)
@@ -13,23 +13,23 @@ Predicting Absolute and Relative Abundance by Modeling Efficiency to Derive Inte
 
 ## Introduction
 
-`paramedic` is a R package for estimating microbial concentration. paramedic uses information from 16S count data (compositional data on all taxa) and absolute data on a subset of taxa (e.g., qPCR or flow cytometry) to estimate the absolute abundance of all taxa. The method accounts for differing taxon detection efficiencies between the two methods, and produces prediction and confidence intervals as well as point estimates of the absolute abundance of all taxa. Check out [the paper](https://www.biorxiv.org/content/10.1101/761486v1) for more details.
+`paramedic` is a R package for estimating microbial concentration. `paramedic` uses information from 16S count data (compositional data on all taxa) and absolute data on a subset of taxa (e.g., qPCR or flow cytometry) to estimate the absolute abundance of all taxa. The method accounts for differing taxon detection efficiencies between the two methods, and produces prediction and confidence intervals as well as point estimates of the absolute abundance of all taxa. Check out [the paper](https://www.biorxiv.org/content/10.1101/761486v1) for more details.
 
 ------------------------------
 
 ## R installation
 
-You may install a stable release of `paramedic` from GitHub via  [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) by running the following code (you may replace `v0.0.1` with the tag for the specific release you wish to install):
+You may install a stable release of `paramedic` from GitHub via  [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) by running the following code (replace `v0.1.0` with the tag for the specific release you wish to install, and only install `devtools` if needed):
 
 ```r
-## install.packages("devtools") # only run this line if necessary
-devtools::install_github(repo = "statdivlab/paramedic@v0.0.1")
+install.packages("devtools")
+devtools::install_github(repo = "statdivlab/paramedic@v0.1.0")
 ```
 
 You may install a development release of `paramedic` from GitHub via [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) by running the following code:
 
 ```r
-## install.packages("devtools") # only run this line if necessary
+install.packages("devtools")
 devtools::install_github(repo = "statdivlab/paramedic")
 ```
 
@@ -84,10 +84,26 @@ posterior_summaries$est_efficiency
 
 ------------------------------
 
+## Citation
+
+After using the `paramedic` package, please cite the following:
+
+```
+  @article{williamson2020,
+    author={Williamson, BD and Hughes, JP and Willis, AD},
+    title={A multi-view model for relative and absolute microbial abundances},
+    journal={bioRxiv},
+    year={2020},
+    note={doi: https://doi.org/10.1101/761486}
+  }
+```
+
+------------------------------
+
 ## Issues
 
 We use Stan to fit the hierarchical model to the data. Read any warning messages returned by the algorithm carefully, as these can help diagnose convergence issues. Carefully choosing initialisation values can speed up convergence.
 
-If you encounter any bugs or have any specific feature requests, please [file an issue](https://github.com/statdivlab/paramedic/issues).
+If you encounter any bugs or have any specific feature requests, please [file an issue](https://github.com/statdivlab/paramedic/issues). If your feature request relates to the hierarchical models implemented in `paramedic`, please read [the hierarchical models vignette](https://github.com/statdivlab/paramedic/vignettes/hierarchical_model_specification.html) prior to filing an issue or creating a pull request.
 
 ------------------------------

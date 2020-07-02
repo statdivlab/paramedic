@@ -10,6 +10,7 @@
 
 * updated all tests to reflect major changes
 * added vignette discussing hierarchical model specification
+* added a pkgdown site
 
 # paramedic 0.0.3.900
 

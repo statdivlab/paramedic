@@ -41,7 +41,7 @@
 #' @export
 run_paramedic <- function(W, V, X = V[, 1, drop = FALSE],
                       n_iter = 10500, n_burnin = 10000, n_chains = 4, stan_seed = 4747,
-                      inits_lst = NULL,
+                      centered = FALSE, inits_lst = NULL,
                       sigma_beta = sqrt(50), sigma_Sigma = sqrt(50), alpha_sigma = 2, kappa_sigma = 1, alpha_phi = 0, beta_phi = 0,
                       ...) {
     ## --------------
@@ -58,7 +58,11 @@ run_paramedic <- function(W, V, X = V[, 1, drop = FALSE],
     ## ----------------------------------------
     ## set up the data and initial values lists
     ## ----------------------------------------
-    data_inits_lst <- make_paramedic_stan_data(W_mat, V_mat, X_mat, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma, n_chains)
+    data_inits_lst <- make_paramedic_stan_data(W_mat, V_mat, X_mat, inits_lst, 
+                                               sigma_beta, sigma_Sigma, 
+                                               alpha_sigma, kappa_sigma, 
+                                               alpha_phi, beta_phi,
+                                               n_chains, centered)
     data_lst <- data_inits_lst$data_lst
     inits_lst <- data_inits_lst$inits_lst
     ## ----------------------
@@ -72,8 +76,8 @@ run_paramedic <- function(W, V, X = V[, 1, drop = FALSE],
               if (alpha_phi > 0 & beta_phi > 0) "phi",
               if (alpha_sigma > 0 & kappa_sigma > 0) "sigma_e")
     stan_model <- switch(centered + 1,
-                         stanmodels$variable_efficiency_centered,
-                         stanmodels$variable_efficiency)
+                         stanmodels$variable_efficiency,
+                         stanmodels$variable_efficiency_centered)
     mod <- rstan::sampling(stan_model, data = data_lst, pars = pars,
                            chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
                            init = inits_lst, ...)

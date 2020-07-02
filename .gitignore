@@ -47,3 +47,4 @@ src/*.o
 src/*.so
 src/*.hpp
 src/stan_files/*.hpp
+docs

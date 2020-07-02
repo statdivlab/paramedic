@@ -77,7 +77,6 @@ test_that("centered-paramedic works with covariates", {
 
 test_that("negative-binomial paramedic works", {
   expect_warning(mod_negbin <- paramedic::run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data, X = X,
-                                                        v_model = "negbin", alpha_phi = 1, beta_phi = 1,
                                                         sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma,
                                                         alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma,
                                                         alpha_phi = 1, beta_phi = 1,

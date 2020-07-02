@@ -89,19 +89,20 @@ make_paramedic_tibbles <- function(W, V, X, inits_lst, sigma_beta, sigma_Sigma, 
 #' @param X_mat the pre-processed matrix X
 #' @describeIn check_entered_data Make data and initial values lists to pass to stan
 #' @importFrom stats var
-make_paramedic_stan_data <- function(W_mat, V_mat, X_mat, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma, n_chains, centered = FALSE) {
+make_paramedic_stan_data <- function(W_mat, V_mat, X_mat, inits_lst, 
+                                     sigma_beta, sigma_Sigma, 
+                                     alpha_sigma, kappa_sigma, 
+                                     alpha_phi, beta_phi,
+                                     n_chains, centered = FALSE) {
     N <- dim(W_mat)[1]
     q <- dim(W_mat)[2]
     q_obs <- dim(V_mat)[2]
     d <- dim(X_mat)[2]
-    data_lst_init <- list(W = W_mat, V = V_mat, N = N, q = q, q_obs = q_obs, sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma)
-    data_lst <- data_lst_init
-    if (dim(X_mat)[2] > 0) {
-        data_lst <- c(data_lst, list(d = d, X = X_mat))
-    }
-    if (!is.null(alpha_sigma)) {
-        data_lst <- c(data_lst, list(alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma))
-    } 
+    data_lst <- list(W = W_mat, V = V_mat, X = X_mat,
+                     N = N, q = q, q_obs = q_obs, d = d,
+                     sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma,
+                     alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma,
+                     alpha_phi = alpha_phi, beta_phi = beta_phi)
     ## get inits from the naive estimator
     naive_estimator <- function(idx, relatives, absolutes, known_absolute) {
         ## get the sum of the relative abundances

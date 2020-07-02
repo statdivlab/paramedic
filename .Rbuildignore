@@ -8,3 +8,6 @@ LICENSE.md
 README.md
 NEWS.md
 docs/
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

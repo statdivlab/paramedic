@@ -1,0 +1,52 @@
+---
+title: "Hierarchical model specification in `paramedic`"
+author: "Brian D. Williamson and Amy D. Willis"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    keep_md: true
+vignette: >
+  %\VignetteIndexEntry{Hierarchical model specification in `paramedic`}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE, include = FALSE}
+library(knitr)
+opts_knit$set(cache = FALSE, verbose = TRUE, global.par = TRUE)
+```
+
+```{r echo = FALSE}
+par(mar = c(5, 12, 4, 2) + 0.1)
+```
+
+# Introduction
+
+The core idea of `paramedic` is to combine estimates of absolute and relative abundance by modeling efficiency. In [our paper](https://www.biorxiv.org/content/10.1101/761486v1), we detailed a potential hierarchical model that incorporates efficiency. We also showed how the model can be extended to include covariates. In this vignette, we explore the other options currently available in `paramedic` and provide guidelines for requesting new hierarchical model specifications.
+
+# Hierarchical models currently available in `paramedic` 
+
+## The default hierarchical model
+
+The default hierarchical model in `paramedic` places a Poisson distribution on $V$ and a multinomial distribution on $W$; a normal distribution on $\log \mu$, where the distribution depends on a taxon-specific intercept $\beta_0$ and a covariance matrix $\Sigma$; and a normal distribution on $\log e$. The likelihood is (for all $i$ and $j$): $$V_{ij} \mid \mu_{ij} \sim Poisson(\mu_{ij}) \\ p_{ij} = \frac{\mu_{ij}e_j}{\sum_{\ell = 1}^q \mu_{i\ell}e_\ell} \\ W_{i\cdot} \mid M_i, \mu_{i\cdot}, e \sim Multinomial(M_i, p_{i\cdot}).$$
+
+We place the following priors on $\mu$ and $e$: $$\log\mu_{i\cdot} \sim N_q(\beta_0, \Sigma) \\ \beta_0 \sim N_q(0, \sigma^2_\beta) \\ \Sigma_{jj} \sim Lognormal(0, \sigma^2_\Sigma) \\ e_j \sim Lognormal(0, \sigma^2_e) \\ \sigma^2_e \sim InvGamma(\alpha_\sigma, \kappa_\sigma).$$
+
+## Allowing for covariates
+
+It may be of interest to allow covariates to affect the mean for each taxon. In this case, we may replace the prior on $\mu$ with the following: $$\log\mu_{i\cdot} \sim N_q(\beta_0 + X_i\beta_1, \Sigma) \\ \beta_0 \sim N_q(0, \sigma^2_\beta) \\ \beta_{1,k} \sim N_q(0, 1),$$ where $\beta_1$ is a matrix with number of rows equal to the number of covariates and number of columns equal to $q$.
+
+You can implement this model by passing a tibble of covariates $X$ to `run_paramedic`. $X$ must have number of rows equal to the sample size, and any number of columns.
+
+## Allowing for potential overdispersion in $V$
+
+It may be of interest to allow for overdispersion in $V$. In this case, we may replace the likelihood on $V$ with the following: $$V_{ij} \sim NegBin(\mu_{ij}, \phi_i),$$ where $\phi_i$ is a subject-specific overdispersion parameter. We add the following prior on $\phi$: for all $i$, $$\phi_i \sim Gamma(\alpha_\phi, \beta_\phi).$$
+
+You can implement this model by passing nonzero values of `alpha_phi` and `beta_phi` to `run_paramedic`.
+
+# Requesting new hierarchical modeling options
+
+If you would like to see a new hierarchical modeling choice in `paramedic`, please do one of the following:
+
+1. [File an issue](https://github.com/statdivlab/paramedic/issues) specifying exactly the distribution that you would like to be added to `paramedic` (i.e., provide the mathematical formula and describe all parameters/hyperparameters). Please state your justification for requesting this distribution.
+2. Create a pull request after modifying the following files: update `src/stan/variable_efficiency.stan` and `src/stan/variable_efficiency_centered.stan` by adding the new option (please follow the style already implemented for various options); then update `R/run_paramedic.R` with any new arguments that are required.

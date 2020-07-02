@@ -1,0 +1,32 @@
+url: https://bdwilliamson.github.io/paramedic
+
+destination: docs
+
+reference:
+    - title: "Estimate and do inference on absolute abundance"
+      desc: "The core top-level function in paramedic."
+      contents:
+       - run_paramedic
+    - title: "Process data and set up initial parameter values"
+      desc: "Internal functions that ensure incoming data is valid and generates initial values to pass to stan"
+      contents:
+       - check_entered_data
+       - make_paramedic_tibbles
+       - make_paramedic_stan_data
+       - process_data
+    - title: "Extract estimates"
+      desc: "Functions to extract point estimates and interval estimates from paramedic runs."
+      contents:
+       - extract_posterior_summaries
+       - gen_wald_interval
+       - gen_quantile_interval
+    - title: "Example data"
+      desc: "Load and describe example datasets"
+      contents:
+       - example_16S_data
+       - example_qPCR_data
+       - simple_example_data
+    - title: "Package documentation homepage"
+      desc: "Landing page for R help"
+      contents:
+       - paramedic
