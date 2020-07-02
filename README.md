@@ -58,7 +58,7 @@ kappa_sigma <- 1
 ## -------------------------------------------------------------
 ## this is a small number of iterations, only for illustration
 ## also, shows how to use control parameters for rstan::stan
-stan_mod <- run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data,
+stan_mod <- run_paramedic(W = example_16S_data[, 1:8], V = example_qPCR_data,
                       sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma,
                       alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma,
                       n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,

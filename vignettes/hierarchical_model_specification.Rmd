@@ -22,7 +22,15 @@ par(mar = c(5, 12, 4, 2) + 0.1)
 
 # Introduction
 
-The core idea of `paramedic` is to combine estimates of absolute and relative abundance by modeling efficiency. In [our paper](https://www.biorxiv.org/content/10.1101/761486v1), we detailed a potential hierarchical model that incorporates efficiency. We also showed how the model can be extended to include covariates. In this vignette, we explore the other options currently available in `paramedic` and provide guidelines for requesting new hierarchical model specifications.
+The core idea of `paramedic` is to combine estimates of absolute and relative abundance by modeling efficiency. In [our paper](https://www.biorxiv.org/content/10.1101/761486v1), we detailed a potential hierarchical model that incorporates efficiency. We also showed how the model can be extended to include covariates. In this vignette, we explore the other options currently available in `paramedic` and provide guidelines for requesting new hierarchical model specifications. In all examples below, we use the example data referenced in the [main vignette](introduction_to_paramedic.html), so we load those data now. Additionally, we use a *very* small number of total and burn-in iterations for illustration only; we stress that a larger number of iterations should be used in practice.
+
+```{r load-example-data}
+library("rstan")
+library("paramedic")
+
+data(example_16S_data)
+data(example_qPCR_data)
+```
 
 # Hierarchical models currently available in `paramedic` 
 
@@ -32,17 +40,50 @@ The default hierarchical model in `paramedic` places a Poisson distribution on $
 
 We place the following priors on $\mu$ and $e$: $$\log\mu_{i\cdot} \sim N_q(\beta_0, \Sigma) \\ \beta_0 \sim N_q(0, \sigma^2_\beta) \\ \Sigma_{jj} \sim Lognormal(0, \sigma^2_\Sigma) \\ e_j \sim Lognormal(0, \sigma^2_e) \\ \sigma^2_e \sim InvGamma(\alpha_\sigma, \kappa_\sigma).$$
 
+The following code fits this model in `paramedic` for the example data:
+```{r default-model, eval=FALSE}
+mod <- paramedic::run_paramedic(W = example_16S_data[, 1:8], V = example_qPCR_data, 
+                                n_iter = 30, n_burnin = 25, n_chains = 1, 
+                                stan_seed = 4747, control = list(max_treedepth = 15))
+```
+
 ## Allowing for covariates
 
 It may be of interest to allow covariates to affect the mean for each taxon. In this case, we may replace the prior on $\mu$ with the following: $$\log\mu_{i\cdot} \sim N_q(\beta_0 + X_i\beta_1, \Sigma) \\ \beta_0 \sim N_q(0, \sigma^2_\beta) \\ \beta_{1,k} \sim N_q(0, 1),$$ where $\beta_1$ is a matrix with number of rows equal to the number of covariates and number of columns equal to $q$.
 
 You can implement this model by passing a tibble of covariates $X$ to `run_paramedic`. $X$ must have number of rows equal to the sample size, and any number of columns.
 
+Suppose that we have a binary variable that specifies case status (i.e., 1 denotes a case and 0 denotes a control) for some disease. For example,
+```{r gen-case, eval=FALSE}
+# generate a random case/control status variable
+set.seed(4747)
+case_control <- sample(0:1, size = nrow(example_qPCR_data), replace = TRUE)
+library("tibble")
+X <- tibble(sample_id = example_qPCR_data$sample_id, case = case_control)
+```
+
+If we want to adjust for this covariate in the example data analysis using `paramedic`, we use the following code:
+```{r covariate-model, eval=FALSE}
+mod_with_covariates <- paramedic::run_paramedic(W = example_16S_data[, 1:8], 
+                                                V = example_qPCR_data, X = X, 
+                                                n_iter = 30, n_burnin = 25, 
+                                                n_chains = 1, stan_seed = 4747, 
+                                                control = list(max_treedepth = 15))
+```
+
 ## Allowing for potential overdispersion in $V$
 
 It may be of interest to allow for overdispersion in $V$. In this case, we may replace the likelihood on $V$ with the following: $$V_{ij} \sim NegBin(\mu_{ij}, \phi_i),$$ where $\phi_i$ is a subject-specific overdispersion parameter. We add the following prior on $\phi$: for all $i$, $$\phi_i \sim Gamma(\alpha_\phi, \beta_\phi).$$
 
 You can implement this model by passing nonzero values of `alpha_phi` and `beta_phi` to `run_paramedic`.
+
+In the example data, we can run the following code to implement this analysis:
+```{r negbin-model, eval=FALSE}
+mod <- paramedic::run_paramedic(W = example_16S_data[, 1:8], V = example_qPCR_data,
+                                alpha_phi = 1, beta_phi = 10, n_iter = 30, 
+                                n_burnin = 25, n_chains = 1, stan_seed = 4747, 
+                                control = list(max_treedepth = 15))
+```
 
 # Requesting new hierarchical modeling options
 

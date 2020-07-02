@@ -55,21 +55,21 @@ data(example_qPCR_data)
 
 We are now ready to estimate concentrations. We pass the data to `run_paramedic`, the workhorse function of the package:
 
-```{r
+```{r run-paramedic}
 ## -------------------------------------------------------------
 ## Obtain estimates of concentration for the first seven taxa
 ## -------------------------------------------------------------
 ## this is a small number of iterations, only for illustration
 ## also, shows how to use control parameters for rstan::stan
-mod <- paramedic::run_paramedic(W = example_16S_data[, 1:7], V = example_qPCR_data,
+mod <- paramedic::run_paramedic(W = example_16S_data[, 1:8], V = example_qPCR_data,
     n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
     control = list(max_treedepth = 15))
-mod_summ <- summary(stan_mod, probs = c(0.025, 0.975))$summary
-mod_samps <- extract(stan_mod)
+mod_summ <- summary(mod, probs = c(0.025, 0.975))$summary
+mod_samps <- extract(mod)
 ```
 
 The output from `run_paramedic` may be manipulated as any output from `rstan::stan` might; however, there are certain posterior summaries that are of particular interest in this problem, namely the posterior mean estimates of concentrations and efficiencies, along with interval estimates for these quantities. The next function extracts these point and interval estimators:
-```{r
+```{r extract-estimates}
 ## -------------------------------------------------------------
 ## Extract posterior estimates for the first three taxa
 ## -------------------------------------------------------------
@@ -79,12 +79,12 @@ summs <- paramedic::extract_posterior_summaries(stan_mod = mod_summ,
     interval_type = "wald")
 ```
 and we may finally print them out:
-```{r
+```{r print-summaries}
 ## -------------------------------------------------------------
 ## Print out the posterior mean efficiencies and concentrations
 ## -------------------------------------------------------------
-posterior_summaries$estimates
-posterior_summaries$est_efficiency
+summs$estimates
+summs$est_efficiency
 ```
 
 This output shows that we have point estimates for the true concentration of each taxon within each participant, and the efficiencies of each taxon comparing br16S to qPCR.
