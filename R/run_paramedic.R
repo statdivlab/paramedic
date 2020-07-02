@@ -9,14 +9,14 @@
 #' @param n_burnin The total number of warmups per chain to be run by the Stan algorithm. Defaults to 10000.
 #' @param n_chains The total number of chains to be run by the Stan algorithm. Defaults to 4.
 #' @param stan_seed The random number seed to initialize.
-#' @param v_model The model for V; currently supports \code{"poisson"} (for a Poisson model, the default) or \code{"negbin"} (for a Negative Binomial model)
+#' @param centered If \code{TRUE}, uses a centered parameterization on the true concentrations \eqn{\mu}; if \code{FALSE} (the default), uses a non-centered parameterization.
 #' @param inits_lst An optional list of initial values of the parameters. Must be a named list; see \code{\link[rstan]{stan}}.
 #' @param sigma_beta Hyperparameter specifying the prior variance on \eqn{\beta_0}. Defaults to \eqn{\sqrt{50}}.
 #' @param sigma_Sigma Hyperparameter specifying the prior variance on \eqn{\Sigma}. Defaults to \eqn{\sqrt{50}}.
 #' @param alpha_sigma Hyperparameter specifying the shape parameter of the prior distribution on \eqn{\sigma_e}. Defaults to 2.
 #' @param kappa_sigma Hyperparameter specifying the scale parameter of the prior distribution on \eqn{\sigma_e}. Defaults to 1.
-#' @param alpha_phi Hyperparameter specifying the shape parameter of the prior distribution on \eqn{\phi}. Only used if \code{v_model = "negbin"}. Defaults to 1.
-#' @param beta_sigma Hyperparameter specifying the rate parameter of the prior distribution on \eqn{\phi}. Only used if \code{v_model = "negbin"}. Defaults to 1.
+#' @param alpha_phi Hyperparameter specifying the shape parameter of the prior distribution on \eqn{\phi}. Defaults to 0; a negative binomial model can be specified if both \code{alpha_phi} and \code{beta_phi} are nonzero.
+#' @param beta_phi Hyperparameter specifying the rate parameter of the prior distribution on \eqn{\phi}. Defaults to 0; a negative binomial model can be specified if both \code{alpha_phi} and \code{beta_phi} are nonzero.
 #' @param ... other arguments to pass to \code{\link[rstan]{sampling}} (e.g., control).
 #'
 #' @return An object of class \code{stanfit}.
@@ -40,9 +40,9 @@
 #'
 #' @export
 run_paramedic <- function(W, V, X = V[, 1, drop = FALSE],
-                      n_iter = 10500, n_burnin = 10000, n_chains = 4, stan_seed = 4747, v_model = "poisson",
+                      n_iter = 10500, n_burnin = 10000, n_chains = 4, stan_seed = 4747,
                       inits_lst = NULL,
-                      sigma_beta = sqrt(50), sigma_Sigma = sqrt(50), alpha_sigma = 2, kappa_sigma = 1, alpha_phi = 1, beta_phi = 1,
+                      sigma_beta = sqrt(50), sigma_Sigma = sqrt(50), alpha_sigma = 2, kappa_sigma = 1, alpha_phi = 0, beta_phi = 0,
                       ...) {
     ## --------------
     ## error messages
