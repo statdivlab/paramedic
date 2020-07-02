@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://bdwilliamson.github.io/paramedic/index.html</loc>
+    <loc>https://statdivlab.github.io/paramedic/index.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/paramedic/reference/check_entered_data.html</loc>
+    <loc>https://statdivlab.github.io/paramedic/reference/check_entered_data.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/paramedic/reference/example_16S_data.html</loc>
+    <loc>https://statdivlab.github.io/paramedic/reference/example_16S_data.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/paramedic/reference/example_qPCR_data.html</loc>
+    <loc>https://statdivlab.github.io/paramedic/reference/example_qPCR_data.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/paramedic/reference/extract_posterior_summaries.html</loc>
+    <loc>https://statdivlab.github.io/paramedic/reference/extract_posterior_summaries.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/paramedic/reference/gen_quantile_interval.html</loc>
+    <loc>https://statdivlab.github.io/paramedic/reference/gen_quantile_interval.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/paramedic/reference/gen_wald_interval.html</loc>
+    <loc>https://statdivlab.github.io/paramedic/reference/gen_wald_interval.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/paramedic/reference/paramedic-package.html</loc>
+    <loc>https://statdivlab.github.io/paramedic/reference/paramedic-package.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/paramedic/reference/process_data.html</loc>
+    <loc>https://statdivlab.github.io/paramedic/reference/process_data.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/paramedic/reference/run_paramedic.html</loc>
+    <loc>https://statdivlab.github.io/paramedic/reference/run_paramedic.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/paramedic/reference/simple_example_data.html</loc>
+    <loc>https://statdivlab.github.io/paramedic/reference/simple_example_data.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/paramedic/articles/hierarchical_model_specification.html</loc>
+    <loc>https://statdivlab.github.io/paramedic/articles/hierarchical_model_specification.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/paramedic/articles/introduction_to_paramedic.html</loc>
+    <loc>https://statdivlab.github.io/paramedic/articles/introduction_to_paramedic.html</loc>
   </url>
 </urlset>
