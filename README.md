@@ -104,6 +104,6 @@ After using the `paramedic` package, please cite the following:
 
 We use Stan to fit the hierarchical model to the data. Read any warning messages returned by the algorithm carefully, as these can help diagnose convergence issues. Carefully choosing initialisation values can speed up convergence.
 
-If you encounter any bugs or have any specific feature requests, please [file an issue](https://github.com/statdivlab/paramedic/issues). If your feature request relates to the hierarchical models implemented in `paramedic`, please read [the hierarchical models vignette](https://github.com/statdivlab/paramedic/vignettes/hierarchical_model_specification.html) prior to filing an issue or creating a pull request.
+If you encounter any bugs or have any specific feature requests, please [file an issue](https://github.com/statdivlab/paramedic/issues). If your feature request relates to the hierarchical models implemented in `paramedic`, please read [the hierarchical models vignette](docs/articles/hierarchical_model_specification.html) prior to filing an issue or creating a pull request.
 
 ------------------------------

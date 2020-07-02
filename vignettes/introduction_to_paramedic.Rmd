@@ -91,4 +91,4 @@ This output shows that we have point estimates for the true concentration of eac
 
 ## Specifying different hierarchical models
 
-For details on the hierarchical modelling options available in `paramedic`, see [the vignette on hierarchical model specificaion](https://bdwilliamson.github.io/paramedic/hierarchical_model_specification.html).
+For details on the hierarchical modelling options available in `paramedic`, see [the vignette on hierarchical model specificaion](docs/articles/hierarchical_model_specification.html).
