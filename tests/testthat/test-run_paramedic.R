@@ -79,7 +79,7 @@ test_that("negative-binomial paramedic works", {
   expect_warning(mod_negbin <- paramedic::run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data, X = X,
                                                         sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma,
                                                         alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma,
-                                                        alpha_phi = 1, beta_phi = 1,
+                                                        alpha_phi = 3, beta_phi = 10,
                                                         n_iter = 50, n_burnin = 30, n_chains = 1, stan_seed = 4747,
                                                         control = list(adapt_delta = 0.9, max_treedepth = 15)))
   mod_summ_nb <- rstan::summary(mod_negbin, probs = c(0.025, 0.975))$summary
