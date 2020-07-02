@@ -5,6 +5,7 @@
 #' @param W The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.
 #' @param V The absolute abundance data, e.g., from taxon-specific absolute primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.
 #' @param X The covariate data. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W, V, and X, and the column must have the same name in W, V, and X. If X only consists of the subject identifiers, then no covariates are used.
+#' @param k the number of batches that the relative abundance data W were analyzed in. If k = 0 (the default), then batch effects are not considered.
 #' @param n_iter The total number of iterations per chain to be run by the Stan algorithm. Defaults to 10500.
 #' @param n_burnin The total number of warmups per chain to be run by the Stan algorithm. Defaults to 10000.
 #' @param n_chains The total number of chains to be run by the Stan algorithm. Defaults to 4.
@@ -17,6 +18,7 @@
 #' @param kappa_sigma Hyperparameter specifying the scale parameter of the prior distribution on \eqn{\sigma_e}. Defaults to 1.
 #' @param alpha_phi Hyperparameter specifying the shape parameter of the prior distribution on \eqn{\phi}. Defaults to 0; a negative binomial model can be specified if both \code{alpha_phi} and \code{beta_phi} are nonzero.
 #' @param beta_phi Hyperparameter specifying the rate parameter of the prior distribution on \eqn{\phi}. Defaults to 0; a negative binomial model can be specified if both \code{alpha_phi} and \code{beta_phi} are nonzero.
+#' @param sigma_xi Hyperparameters specifying the variance of efficiencies over batches. Only used if \code{k} is greater than zero. Defaults to 1.
 #' @param ... other arguments to pass to \code{\link[rstan]{sampling}} (e.g., control).
 #'
 #' @return An object of class \code{stanfit}.
@@ -39,10 +41,11 @@
 #' @seealso \code{\link[rstan]{stan}} and \code{\link[rstan]{sampling}} for specific usage of the \code{stan} and \code{sampling} functions.
 #'
 #' @export
-run_paramedic <- function(W, V, X = V[, 1, drop = FALSE],
+run_paramedic <- function(W, V, X = V[, 1, drop = FALSE], k = 0,
                       n_iter = 10500, n_burnin = 10000, n_chains = 4, stan_seed = 4747,
                       centered = FALSE, inits_lst = NULL,
-                      sigma_beta = sqrt(50), sigma_Sigma = sqrt(50), alpha_sigma = 2, kappa_sigma = 1, alpha_phi = 0, beta_phi = 0,
+                      sigma_beta = sqrt(50), sigma_Sigma = sqrt(50), alpha_sigma = 2, kappa_sigma = 1, 
+                      alpha_phi = 0, beta_phi = 0, sigma_xi = 1,
                       ...) {
     ## --------------
     ## error messages
