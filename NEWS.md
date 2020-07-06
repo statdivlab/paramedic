@@ -1,3 +1,14 @@
+# paramedic 0.1.1
+
+## Major changes
+
+* added ability to run analysis adjusted for batch effects by setting argument "k" to be nonzero in run_paramedic (the default is zero for data collected in a single experiment)
+* added new stan code for batch analysis
+
+## Minor changes
+
+* reorganized stan code into directories, since much of the code was shared between models; the new organization uses #include statements, and the shared code is stored in data/ (sets up data objects), parameters/ (sets up model parameters), tparameters/ (sets up transformed parameters), and model/ (sets up hierarchical model for shared parameters)
+
 # paramedic 0.1.0
 
 ## Major changes
