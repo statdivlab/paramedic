@@ -22,7 +22,7 @@ par(mar = c(5, 12, 4, 2) + 0.1)
 
 # Introduction
 
-The core idea of `paramedic` is to combine estimates of absolute and relative abundance by modeling efficiency. In [our paper](https://www.biorxiv.org/content/10.1101/761486v1), we detailed a potential hierarchical model that incorporates efficiency. We also showed how the model can be extended to include covariates. In this vignette, we explore the other options currently available in `paramedic` and provide guidelines for requesting new hierarchical model specifications. In all examples below, we use the example data referenced in the [main vignette](introduction_to_paramedic.html), so we load those data now. Additionally, we use a *very* small number of total and burn-in iterations for illustration only; we stress that a larger number of iterations should be used in practice.
+`paramedic` jointly models two data types: relative abundance data (e.g., 16S data), and absolute abundance data (e.g., qPCR data). Importantly, the model accounts for the fact that taxa may be detected with differing efficiency across the two datatypes. In [the paper](https://www.biorxiv.org/content/10.1101/761486v1), we describe a hierarchical model that can be used in the absence of sample covariates or batch covariates. However, many users are likely to have covariate data available to improve modelling. The purpose of this vignette is to show you how to customise `paramedic` to incorporate your covariate data and batch data. We also discuss how to modify the absolute abundance data's generating process from Poisson to Negative Binomial. In all examples below, we use the example data referenced in the [main vignette](introduction_to_paramedic.html). Additionally, we use a very small number of total and burn-in iterations for illustration only; we stress that a larger number of iterations should be used in practice.
 
 ```{r load-example-data}
 library("rstan")
@@ -32,7 +32,7 @@ data(example_16S_data)
 data(example_qPCR_data)
 ```
 
-# Hierarchical models currently available in `paramedic` 
+# Hierarchical models currently available in `paramedic`
 
 ## The default hierarchical model
 
@@ -42,8 +42,8 @@ We place the following priors on $\mu$ and $e$: $$\log\mu_{i\cdot} \sim N_q(\bet
 
 The following code fits this model in `paramedic` for the example data:
 ```{r default-model, eval=FALSE}
-mod <- paramedic::run_paramedic(W = example_16S_data[, 1:8], V = example_qPCR_data, 
-                                n_iter = 30, n_burnin = 25, n_chains = 1, 
+mod <- paramedic::run_paramedic(W = example_16S_data[, 1:8], V = example_qPCR_data,
+                                n_iter = 30, n_burnin = 25, n_chains = 1,
                                 stan_seed = 4747, control = list(max_treedepth = 15))
 ```
 
@@ -64,10 +64,10 @@ X <- tibble(sample_id = example_qPCR_data$sample_id, case = case_control)
 
 If we want to adjust for this covariate in the example data analysis using `paramedic`, we use the following code:
 ```{r covariate-model, eval=FALSE}
-mod_with_covariates <- paramedic::run_paramedic(W = example_16S_data[, 1:8], 
-                                                V = example_qPCR_data, X = X, 
-                                                n_iter = 30, n_burnin = 25, 
-                                                n_chains = 1, stan_seed = 4747, 
+mod_with_covariates <- paramedic::run_paramedic(W = example_16S_data[, 1:8],
+                                                V = example_qPCR_data, X = X,
+                                                n_iter = 30, n_burnin = 25,
+                                                n_chains = 1, stan_seed = 4747,
                                                 control = list(max_treedepth = 15))
 ```
 
@@ -80,8 +80,8 @@ You can implement this model by passing nonzero values of `alpha_phi` and `beta_
 In the example data, we can run the following code to implement this analysis:
 ```{r negbin-model, eval=FALSE}
 mod <- paramedic::run_paramedic(W = example_16S_data[, 1:8], V = example_qPCR_data,
-                                alpha_phi = 1, beta_phi = 10, n_iter = 30, 
-                                n_burnin = 25, n_chains = 1, stan_seed = 4747, 
+                                alpha_phi = 1, beta_phi = 10, n_iter = 30,
+                                n_burnin = 25, n_chains = 1, stan_seed = 4747,
                                 control = list(max_treedepth = 15))
 ```
 
