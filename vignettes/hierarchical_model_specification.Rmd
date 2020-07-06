@@ -85,6 +85,10 @@ mod <- paramedic::run_paramedic(W = example_16S_data[, 1:8], V = example_qPCR_da
                                 control = list(max_treedepth = 15))
 ```
 
+## Allowing for batch covariates
+
+In some cases, the data under consideration are collected in multiple experiments (or batches). Here, we could add a layer to the hierarchical model to describe this data-generating mechanism. For example, if $i$ indexes the sample, $j$ indexes the taxon, and $k$ indexes the study (or batch), the efficiencies could be modeled as $$e_{jk} \sim Lognormal(\xi_j, \sigma^2_\xi) \\ \xi_j \sim Lognormal(0, \sigma^2_e)$$ in order that each taxon's efficiency in each experiment can vary around an overall efficiency for that taxon. 
+
 # Requesting new hierarchical modeling options
 
 If you would like to see a new hierarchical modeling choice in `paramedic`, please do one of the following:

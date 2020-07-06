@@ -9,9 +9,9 @@
     // num batches
     int<lower=1> K;
     // observed absolute abundance
-    int<lower=0> V[N,q_obs];
+    int<lower=0>[N,q_obs] V[K];
     // observed rel. abundance
-    int<lower=0> W[N,q,K];
+    int<lower=0>[N,q] W[K];
     // feature matrix
     matrix[N,d] X;
     // hyperparameters

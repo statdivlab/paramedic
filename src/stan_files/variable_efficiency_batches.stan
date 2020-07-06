@@ -23,16 +23,16 @@ model {
     // sigma_e, log_e, and phi
 #include /model/shared_model_paramedic_batches.stan
 
-    for (i in 1:N) {
-        log_mu_tilde[i] ~ std_normal();
-        if (alpha_phi > 0 && beta_phi > 0) {
-            V[i] ~ neg_binomial_2_log(log_mu_v[i], phi[i]);
-        }
-        else {
-            V[i] ~ poisson_log(log_mu_v[i]);
-        }
-        for (k in 1:K) {
-            W[i,k] ~ multinomial(p[i,k]);
+    for (k in 1:K) {
+        for (i in 1:N) {
+            log_mu_tilde[i] ~ std_normal();
+            if (alpha_phi > 0 && beta_phi > 0) {
+                V[k][i] ~ neg_binomial_2_log(log_mu_v[i], phi[i]);
+            }
+            else {
+                V[k][i] ~ poisson_log(log_mu_v[i]);
+            }
+            W[k][i] ~ multinomial(p[i,k]);
         }
     }
 }
