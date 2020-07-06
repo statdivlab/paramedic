@@ -9,12 +9,13 @@
 #' @param W The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.
 #' @param V The absolute abundance data, e.g., from taxon-specific absolute primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.
 #' @param X The covariate data. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W, V, and X, and the column must have the same name in W, V, and X. If X only consists of the subject identifiers, then no covariates are used.
+#' @param k the number of batches; if > 0, expects a column named "batch" as part of each tibble
 #' @param inits_lst An optional list of initial values of the parameters. Must be a named list; see \code{\link[rstan]{stan}}.
 #' @param sigma_beta Hyperparameter specifying the prior variance on \eqn{\beta_0}. Defaults to \eqn{\sqrt{50}}.
 #' @param sigma_Sigma Hyperparameter specifying the prior variance on \eqn{\Sigma}. Defaults to \eqn{\sqrt{50}}.
 #' @param alpha_sigma Hyperparameter specifying the shape parameter of the prior distribution on \eqn{\sigma_e}. Defaults to 2.
 #' @param kappa_sigma Hyperparameter specifying the scale parameter of the prior distribution on \eqn{\sigma_e}. Defaults to 1.
-check_entered_data <- function(W, V, X, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma) {
+check_entered_data <- function(W, V, X, k, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma) {
     ## error if there aren't the same number of rows in W and V
     if (dim(W)[1] != dim(V)[1]) stop("The number of rows in W and V must match.")
     ## error if there aren't the same number of rows in V and X
@@ -31,8 +32,8 @@ check_entered_data <- function(W, V, X, inits_lst, sigma_beta, sigma_Sigma, alph
         if (colnames(W)[1] != colnames(V)[1]) stop("W and V must have the same name ")
         if (colnames(W)[1] != colnames(X)[1]) stop("W and X must have the same name.")
     }
-    q <- dim(W)[2] - 1
-    q_obs <- dim(V)[2] - 1
+    q <- dim(W)[2] - 1 - ifelse(k > 0, 1, 0)
+    q_obs <- dim(V)[2] - 1 - ifelse(k > 0, 1, 0)
     ## error if q < q_obs
     if (q < q_obs) stop("V must have fewer taxa than W (or the same number of taxa).")
     return(invisible(NULL))
@@ -41,13 +42,14 @@ check_entered_data <- function(W, V, X, inits_lst, sigma_beta, sigma_Sigma, alph
 #' @describeIn check_entered_data Make tibbles from entered data
 #' @importFrom tibble as_tibble 
 #' @importFrom dplyr select rename_at ends_with .data left_join
-make_paramedic_tibbles <- function(W, V, X, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma) {
+#' @importFrom rlang !! sym
+make_paramedic_tibbles <- function(W, V, X, k, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma) {
     ## make tibbles out of W and V, if they aren't already
     W_tbl <- tibble::as_tibble(W)
     V_tbl <- tibble::as_tibble(V)
     X_tbl <- tibble::as_tibble(X)
-    q <- dim(W_tbl)[2] - 1
-    q_obs <- dim(V_tbl)[2] - 1
+    q <- dim(W_tbl)[2] - 1 - ifelse(k > 0, 1, 0)
+    q_obs <- dim(V_tbl)[2] - 1 - ifelse(k > 0, 1, 0)
     ## if the rows are scrambled between W and V, change W to match V
     if (sum(W_tbl[, 1] == V_tbl[, 1]) != dim(V_tbl)[1]) {
         warning("Re-ordering samples so that the rows of W match the rows of V. The results will be in terms of the rows of V.")
@@ -77,29 +79,50 @@ make_paramedic_tibbles <- function(W, V, X, inits_lst, sigma_beta, sigma_Sigma, 
     }
     
     ## make matrix version of W and V, if they aren't already; remove first column
-    W_mat <- as.matrix(W)[, -1, drop = FALSE]
-    V_mat <- as.matrix(V)[, -1, drop = FALSE]
-    X_mat <- as.matrix(X)[, -1, drop = FALSE]
+    ## if k > 0, make an array with K in the first position
+    W_mat <- array(NA, dim = c(k, nrow(W), q))
+    V_mat <- array(NA, dim = c(k, nrow(V), q_obs))
+    X_mat <- array(NA, dim = c(nrow(X), ncol(X) - 1))
+    if (k > 0) {
+        for (j in 1:k) {
+            W_mat[j, , ] <- (W %>% 
+                                 dplyr::filter(!! rlang::sym("batch") == j) %>% 
+                                 dplyr::select(- !! rlang::sym("batch")) %>% 
+                                 as.matrix())[, -1, drop = FALSE]
+            V_mat[j, , ] <- (V %>% 
+                                 dplyr::filter(!! rlang::sym("batch") == j) %>%
+                                 dplyr::select(- !! rlang::sym("batch")) %>% 
+                                 as.matrix())[, -1, drop = FALSE]
+        }
+        X_mat <- as.matrix(X)[, -1, drop = FALSE]
+    } else {
+        W_mat <- as.matrix(W)[, -1, drop = FALSE]
+        V_mat <- as.matrix(V)[, -1, drop = FALSE]
+        X_mat <- as.matrix(X)[, -1, drop = FALSE]    
+    }
+    
     return(list(w_tbl = W_tbl, v_tbl = V_tbl, x_tbl = X_tbl, 
                 w_mat = W_mat, v_mat = V_mat, x_mat = X_mat))
 }
 
+#' @param k the number of batches (0 if a single batch)
 #' @param W_mat the pre-processed matrix W
 #' @param V_mat the pre-processed matrix V
 #' @param X_mat the pre-processed matrix X
 #' @describeIn check_entered_data Make data and initial values lists to pass to stan
 #' @importFrom stats var
-make_paramedic_stan_data <- function(W_mat, V_mat, X_mat, inits_lst, 
+make_paramedic_stan_data <- function(k, W_mat, V_mat, X_mat, inits_lst, 
                                      sigma_beta, sigma_Sigma, 
                                      alpha_sigma, kappa_sigma, 
                                      alpha_phi, beta_phi,
                                      n_chains, centered = FALSE) {
-    N <- dim(W_mat)[1]
-    q <- dim(W_mat)[2]
-    q_obs <- dim(V_mat)[2]
+    N <- ifelse(k > 0, dim(W_mat)[2], dim(W_mat)[1])
+    q <- ifelse(k > 0, dim(W_mat)[3], dim(W_mat)[2])
+    q_obs <- ifelse(k > 0, dim(V_mat)[3], dim(V_mat)[2])
     d <- dim(X_mat)[2]
     data_lst <- list(W = W_mat, V = V_mat, X = X_mat,
                      N = N, q = q, q_obs = q_obs, d = d,
+                     K = k,
                      sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma,
                      alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma,
                      alpha_phi = alpha_phi, beta_phi = beta_phi)
@@ -118,13 +141,27 @@ make_paramedic_stan_data <- function(W_mat, V_mat, X_mat, inits_lst,
     }
     ## if q == q_obs, the naive estimator is V
     if (q == q_obs) {
-        naive_est <- as.matrix(V_mat)
+        if (k > 0) {
+            naive_est <- apply(V_mat, c(2, 3), mean)
+        } else {
+            naive_est <- as.matrix(V_mat)
+        }
     } else { ## otherwise, we have to do something
-        naive_ests <- apply(matrix((q_obs + 1):q), 1, naive_estimator, W_mat, V_mat, 1:q_obs)
+        if (k > 0) {
+            naive_v <- apply(V_mat, c(2, 3), mean)
+            naive_ests_arr <- array(NA, dim = c(k, dim(W_mat)[2], length((q_obs + 1):q)))
+            for (l in 1:k) {
+                naive_ests_arr[l, , ] <- apply(matrix((q_obs + 1):q), 1, naive_estimator, W_mat[l, , ], V_mat[l, , ], 1:q_obs)   
+            }
+            naive_ests <- apply(naive_ests_arr, c(2, 3), mean)
+        } else {
+            naive_v <- as.matrix(V_mat)
+            naive_ests <- apply(matrix((q_obs + 1):q), 1, naive_estimator, W_mat, V_mat, 1:q_obs)   
+        }
         if (N == 1) {
           naive_ests <- matrix(naive_ests, nrow = 1)
         }
-        naive_est <- cbind(as.matrix(V_mat), naive_ests)
+        naive_est <- cbind(naive_v, naive_ests)
     }
     colnames(naive_est) <- colnames(W_mat)
     log_naive <- ifelse(is.infinite(log(naive_est)), 0, log(naive_est))

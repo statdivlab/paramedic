@@ -27,6 +27,7 @@ par(mar = c(5, 12, 4, 2) + 0.1)
 ```{r load-example-data}
 library("rstan")
 library("paramedic")
+library("dplyr")
 
 data(example_16S_data)
 data(example_qPCR_data)
@@ -88,6 +89,34 @@ mod <- paramedic::run_paramedic(W = example_16S_data[, 1:8], V = example_qPCR_da
 ## Allowing for batch covariates
 
 In some cases, the data under consideration are collected in multiple experiments (or batches). Here, we could add a layer to the hierarchical model to describe this data-generating mechanism. For example, if $i$ indexes the sample, $j$ indexes the taxon, and $k$ indexes the study (or batch), the efficiencies could be modeled as $$e_{jk} \sim Lognormal(\xi_j, \sigma^2_\xi) \\ \xi_j \sim Lognormal(0, \sigma^2_e)$$ in order that each taxon's efficiency in each experiment can vary around an overall efficiency for that taxon. 
+
+Suppose that in the example data, we had replicates from multiple batches. For example, 
+```{r make-batches, eval = FALSE}
+# generate technical replicates
+K <- 2
+set.seed(12345)
+W_diff <- replicate(ncol(example_16S_data) - 1, runif(n = nrow(example_16S_data), min = 0, max = 100))
+V_diff <- replicate(ncol(example_qPCR_data) - 1, runif(n = nrow(example_qPCR_data), min = 0, max = 100))
+W_replicate <- example_16S_data
+W_replicate[, -1] <- W_replicate[, -1] + as.integer(W_diff)
+W <- bind_rows(example_16S_data %>% mutate(batch = 1), W_replicate %>% mutate(batch = 2))
+V_replicate <- example_qPCR_data
+V_replicate[, -1] <- V_replicate[, -1] + as.integer(V_diff)
+V <- bind_rows(example_qPCR_data %>% mutate(batch = 1), V_replicate %>% mutate(batch = 2))
+```
+
+We can run the following code to implement this analysis:
+```{r batches, eval = FALSE}
+mod_batches <- paramedic::run_paramedic(W = W[, c(1:10, 434)], V = V, 
+                                        k = K, sigma_beta = sigma_beta, 
+                                        sigma_Sigma = sigma_Sigma, 
+                                        alpha_sigma = alpha_sigma, 
+                                        kappa_sigma = kappa_sigma, 
+                                        n_iter = 50, n_burnin = 30, 
+                                        n_chains = 1, stan_seed = 4747, 
+                                        control = list(adapt_delta = 0.9, 
+                                                       max_treedepth = 15))
+```
 
 # Requesting new hierarchical modeling options
 

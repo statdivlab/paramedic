@@ -88,6 +88,29 @@ test_that("negative-binomial paramedic works", {
                tolerance = 1, scale = mean(example_qPCR_data$Gardnerella.vaginalis))
 })
 
+# generate technical replicates
+K <- 2
+set.seed(12345)
+W_diff <- replicate(ncol(example_16S_data) - 1, runif(n = nrow(example_16S_data), min = 0, max = 100))
+V_diff <- replicate(ncol(example_qPCR_data) - 1, runif(n = nrow(example_qPCR_data), min = 0, max = 100))
+W_replicate <- example_16S_data
+W_replicate[, -1] <- W_replicate[, -1] + as.integer(W_diff)
+W <- bind_rows(example_16S_data %>% mutate(batch = 1), W_replicate %>% mutate(batch = 2))
+V_replicate <- example_qPCR_data
+V_replicate[, -1] <- V_replicate[, -1] + as.integer(V_diff)
+V <- bind_rows(example_qPCR_data %>% mutate(batch = 1), V_replicate %>% mutate(batch = 2))
+test_that("paramedic with batches works", {
+  expect_warning(mod_batches <- paramedic::run_paramedic(W = W[, c(1:10, 435)], V = V, k = K,
+                                                         sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma,
+                                                         alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma,
+                                                         n_iter = 50, n_burnin = 30, n_chains = 1, stan_seed = 4747,
+                                                         control = list(adapt_delta = 0.9, max_treedepth = 15)))
+  mod_summ_batch <- rstan::summary(mod_batches, probs = c(0.025, 0.975))$summary
+  e_mod <- mod_summ_batch[grepl("e", rownames(mod_summ_batch)) & !grepl("beta", rownames(mod_summ_batch)), ]
+  expect_equal(nrow(e_mod), K * (ncol(W[, c(1:10, 435)]) - 2) + 1, 
+               tolerance = 1)
+})
+
 
 ## check to see that errors/warnings work for run_paramedic
 test_that("errors and warnings for run_paramedic work", {
