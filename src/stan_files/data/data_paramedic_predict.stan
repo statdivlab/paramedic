@@ -1,21 +1,24 @@
     // sample size
     int<lower=1> N;
+    // number of samples
+    int<lower=1> N_samples;
     // num taxa with observed absolute abundance
     int<lower=1> q_obs;
     // overall num taxa
     int<lower=1> q;
     // read counts
-    int<lower=1>[N] M;
+    int<lower=1> M[N];
     // num covariates
     int<lower=0> d;
     // feature matrix (test data)
     matrix[N,d] X;
     // posterior distributions on sigma_e
-    real[q] sigma_e;
-    // posterior distributions on beta_0, beta_1, Sigma
-    real[q] beta_0;
-    matrix[d,q] beta_1;
-    real[q] Sigma;
+    vector[q] sigma_e[N_samples];
+    // posterior distributions on beta_0, beta_1, Sigma, phi
+    vector[q] beta_0[N_samples];
+    matrix[d, q] beta_1[N_samples];
+    vector[q] Sigma[N_samples];
+    vector[N] phi[N_samples];
     // 0 for both = efficiency-naive model
     // otherwise, fit varying-efficiency model
     real<lower=0> alpha_sigma;

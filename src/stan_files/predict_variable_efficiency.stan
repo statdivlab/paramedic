@@ -15,38 +15,42 @@ transformed parameters{
 model {
 }
 generated quantities{
-    vector[q] mu[N];
-    vector[q] e;
-    vector[q] V[N];
-    vector[q] W[N];
+    vector[q] mu[N_samples, N];
+    vector[q] e[N_samples];
+    int V[N_samples, N, q];
+    int W[N_samples, N, q];
 
-    // predicted values for e
-    if (alpha_sigma > 0 && kappa_sigma > 0) {
-        e = exp(normal_rng(0, sqrt(sigma_e)));
-    }
-    else {
-        e = rep_vector(1, q);
-    }
-    for (i in 1:N) {
-        // predicted values for mu
-        if (d > 0) {
-            mu[i] = exp(normal_rng(beta_0 + (X[i] * beta_1)', Sigma));
-        } else {
-            mu[i] = exp(normal_rng(beta_0, Sigma));
-        }
-        // predicted values for V
-        if (alpha_phi > 0 && beta_phi > 0) {
-            V[i] = neg_binomial_rng(mu[i], phi[i]);
-        }
-        else {
-            V[i] = poisson_rng(mu[i]);
-        }
-        // predicted values for W
+    for (l in 1:N_samples) {
+        // predicted values for e
         if (alpha_sigma > 0 && kappa_sigma > 0) {
-            W[i] = multinomial_rng(softmax(log(mu[i]) + log(e)), M[i]);
+            e[l] = to_vector(exp(normal_rng(0, sqrt(sigma_e[l]))));
         }
         else {
-            W[i] = multinomial_rng(softmax(log(mu[i])), M[i]);
+            for (j in 1:q) {
+                e[l, q] = 1;
+            }
+        }
+        for (i in 1:N) {
+            // predicted values for mu
+            if (d > 0) {
+                mu[l, i] = to_vector(exp(normal_rng(beta_0[l] + (X[i] * beta_1[l])', Sigma[l])));
+            } else {
+                mu[l, i] = to_vector(exp(normal_rng(beta_0[l], Sigma[l])));
+            }
+            // predicted values for V
+            if (alpha_phi > 0 && beta_phi > 0) {
+                V[l, i] = neg_binomial_rng(mu[l, i], phi[l, i]);
+            }
+            else {
+                V[l, i] = poisson_rng(mu[l, i]);
+            }
+            // predicted values for W
+            if (alpha_sigma > 0 && kappa_sigma > 0) {
+                W[l, i] = multinomial_rng(softmax(log(mu[l, i]) + log(e[l])), M[i]);
+            }
+            else {
+                W[l, i] = multinomial_rng(softmax(log(mu[l, i])), M[i]);
+            }
         }
     }
 }
