@@ -13,7 +13,7 @@
     // feature matrix (test data)
     matrix[N,d] X;
     // posterior distributions on sigma_e
-    vector[q] sigma_e[N_samples];
+    vector[N_samples] sigma_e;
     // posterior distributions on beta_0, beta_1, Sigma, phi
     vector[q] beta_0[N_samples];
     matrix[d, q] beta_1[N_samples];

@@ -43,7 +43,9 @@ check_entered_data <- function(W, V, X, k, inits_lst, sigma_beta, sigma_Sigma, a
 #' @importFrom tibble as_tibble 
 #' @importFrom dplyr select rename_at ends_with .data left_join
 #' @importFrom rlang !! sym
-make_paramedic_tibbles <- function(W, V, X, k, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma) {
+make_paramedic_tibbles <- function(W, V, X, k, inits_lst, 
+                                   sigma_beta, sigma_Sigma, 
+                                   alpha_sigma, kappa_sigma) {
     ## make tibbles out of W and V, if they aren't already
     W_tbl <- tibble::as_tibble(W)
     V_tbl <- tibble::as_tibble(V)

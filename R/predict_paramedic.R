@@ -6,7 +6,7 @@
 #' @param V The new absolute abundance data, e.g., from taxon-specific absolute primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.
 #' @param X The new covariate data. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W, V, and X, and the column must have the same name in W, V, and X. If X only consists of the subject identifiers, then no covariates are used.
 #' @param beta_0 The posterior distribution on \eqn{\beta_0} (the intercept in the distribution on concentrations \eqn{\mu}), resulting from a call to \code{run_paramedic}.
-#' @param beta_1 The posterior distribution on \eqn{\beta_0} (the slope in the distribution on concentrations \eqn{\mu}; only used if X consists of more than just sample identifiers), resulting from a call to \code{run_paramedic}.
+#' @param beta_1 The posterior distribution on \eqn{\beta_1} (the slope in the distribution on concentrations \eqn{\mu}; only used if X consists of more than just sample identifiers), resulting from a call to \code{run_paramedic}.
 #' @param Sigma The posterior distribution on \eqn{\Sigma} (the variance in the distribution on concentrations \eqn{\mu}).
 #' @param sigma_e The posterior distribution on \eqn{\sigma_e} (the variance of the efficiencies); only used if both \code{alpha_sigma} and \code{kappa_sigma} below are nonzero.
 #' @param phi The posterior distribution on \eqn{\phi} (the overdispersion parameter on V); only used if both \code{alpha_phi} and \code{beta_phi} below are nonzero.
@@ -52,7 +52,7 @@
 #' @seealso \code{\link[rstan]{stan}} and \code{\link[rstan]{sampling}} for specific usage of the \code{stan} and \code{sampling} functions; \code{\link[paramedic]{run_paramedic}} for usage of the \code{run_paramedic} function.
 #'
 #' @export
-run_paramedic <- function(W, V, X = V[, 1, drop = FALSE], beta_0, 
+predict_paramedic <- function(W, V, X = V[, 1, drop = FALSE], beta_0, 
                           beta_1 = array(0, dim = c(nrow(beta_0), nrow(V),
                                                     ncol(X))),
                           Sigma, sigma_e = matrix(0, nrow = nrow(Sigma), 
@@ -65,30 +65,37 @@ run_paramedic <- function(W, V, X = V[, 1, drop = FALSE], beta_0,
     ## --------------
     ## error messages
     ## --------------
-    check_entered_data(W, V, X, k, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma)
+    check_entered_data(W, V, X, k, alpha_sigma = alpha_sigma, 
+                       kappa_sigma = kappa_sigma)
     ## ---------------------------
     ## pre-processing and warnings
     ## ---------------------------
-    pre_processed_lst <- make_paramedic_tibbles(W, V, X, k, inits_lst, sigma_beta, sigma_Sigma, alpha_sigma, kappa_sigma)
+    pre_processed_lst <- make_paramedic_tibbles(W, V, X, k, 
+                                                alpha_sigma = alpha_sigma, 
+                                                kappa_sigma = kappa_sigma)
     W_mat <- pre_processed_lst$w_mat
     V_mat <- pre_processed_lst$v_mat
     X_mat <- pre_processed_lst$x_mat
-    # get M from the W matrix
     ## ----------------------------------------
-    ## set up the data and initial values lists
+    ## set up the data list
     ## ----------------------------------------
-    data_inits_lst <- make_paramedic_stan_data(k, W_mat, V_mat, X_mat, inits_lst, 
-                                               sigma_beta, sigma_Sigma, 
-                                               alpha_sigma, kappa_sigma, 
-                                               alpha_phi, beta_phi,
-                                               n_chains, centered)
-    data_lst <- data_inits_lst$data_lst
-    inits_lst <- data_inits_lst$inits_lst
+    N <- ifelse(k > 0, dim(W_mat)[2], dim(W_mat)[1])
+    N_samples <- nrow(Sigma)
+    q <- ifelse(k > 0, dim(W_mat)[3], dim(W_mat)[2])
+    q_obs <- ifelse(k > 0, dim(V_mat)[3], dim(V_mat)[2])
+    d <- dim(X_mat)[2]
+    M <- rowSums(W_mat)
+    data_lst <- list(N = N, N_samples = N_samples, q_obs = q_obs, q = q,
+                     M = M, d = d, X = X_mat, sigma_e = sigma_e, 
+                     beta_0 = beta_0, beta_1 = beta_1, Sigma = Sigma,
+                     phi = phi, alpha_sigma = alpha_sigma, 
+                     kappa_sigma = kappa_sigma, alpha_phi = alpha_phi,
+                     beta_phi = beta_phi)
     ## ----------------------
     ## run the Stan algorithm
     ## ----------------------
     pars <- c("mu",
-              if (alpha_sigma > 0 & kappa_sigma > 0) "e",
+              switch((alpha_sigma > 0 & kappa_sigma > 0) + 1, NULL, "e"),
               "V", "W")
     stan_model <- stanmodels$predict_variable_efficiency
     mod <- rstan::sampling(stan_model, data = data_lst, pars = pars,

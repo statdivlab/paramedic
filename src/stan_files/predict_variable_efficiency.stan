@@ -23,7 +23,9 @@ generated quantities{
     for (l in 1:N_samples) {
         // predicted values for e
         if (alpha_sigma > 0 && kappa_sigma > 0) {
-            e[l] = to_vector(exp(normal_rng(0, sqrt(sigma_e[l]))));
+            for (j in 1:q) {
+                e[l, q] = exp(normal_rng(0, sqrt(sigma_e[l])));
+            }
         }
         else {
             for (j in 1:q) {
