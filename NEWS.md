@@ -1,3 +1,13 @@
+# paramedic 0.1.2
+
+## Major changes
+
+* added ability to obtain predictions on new data using a previously fitted model
+
+## Minor changes
+
+None
+
 # paramedic 0.1.1
 
 ## Major changes

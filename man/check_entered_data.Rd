@@ -10,6 +10,7 @@ check_entered_data(
   W,
   V,
   X,
+  k,
   inits_lst,
   sigma_beta,
   sigma_Sigma,
@@ -21,6 +22,7 @@ make_paramedic_tibbles(
   W,
   V,
   X,
+  k,
   inits_lst,
   sigma_beta,
   sigma_Sigma,
@@ -29,6 +31,7 @@ make_paramedic_tibbles(
 )
 
 make_paramedic_stan_data(
+  k,
   W_mat,
   V_mat,
   X_mat,
@@ -37,6 +40,8 @@ make_paramedic_stan_data(
   sigma_Sigma,
   alpha_sigma,
   kappa_sigma,
+  alpha_phi,
+  beta_phi,
   n_chains,
   centered = FALSE
 )
@@ -47,6 +52,8 @@ make_paramedic_stan_data(
 \item{V}{The absolute abundance data, e.g., from taxon-specific absolute primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.}
 
 \item{X}{The covariate data. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W, V, and X, and the column must have the same name in W, V, and X. If X only consists of the subject identifiers, then no covariates are used.}
+
+\item{k}{the number of batches (0 if a single batch)}
 
 \item{inits_lst}{An optional list of initial values of the parameters. Must be a named list; see \code{\link[rstan]{stan}}.}
 
