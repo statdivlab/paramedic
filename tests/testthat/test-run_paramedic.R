@@ -2,7 +2,6 @@
 ## set up the data
 library("testthat")
 library("rstan")
-library("paramedic")
 library("dplyr")
 data(example_16S_data)
 data(example_qPCR_data)

@@ -16,6 +16,7 @@ model {
 }
 generated quantities{
     vector[q] mu[N_samples, N];
+    vector[q] p[N_samples, N];
     vector[q] e[N_samples];
     real V[N_samples, N, q];
     int W[N_samples, N, q];
@@ -24,12 +25,12 @@ generated quantities{
         // predicted values for e
         if (alpha_sigma > 0 && kappa_sigma > 0) {
             for (j in 1:q) {
-                e[l, q] = exp(normal_rng(0, sqrt(sigma_e[l])));
+                e[l, j] = exp(normal_rng(0, sqrt(sigma_e[l])));
             }
         }
         else {
             for (j in 1:q) {
-                e[l, q] = 1;
+                e[l, j] = 1;
             }
         }
         for (i in 1:N) {
@@ -54,12 +55,8 @@ generated quantities{
                 }
             }
             // predicted values for W
-            if (alpha_sigma > 0 && kappa_sigma > 0) {
-                W[l, i] = multinomial_rng(softmax(log(mu[l, i]) + log(e[l])), M[i]);
-            }
-            else {
-                W[l, i] = multinomial_rng(softmax(log(mu[l, i])), M[i]);
-            }
+            p[l, i] = softmax(log(mu[l, i]) + log(e[l]));
+            W[l, i] = multinomial_rng(p[l, i], M[i]);
         }
     }
 }

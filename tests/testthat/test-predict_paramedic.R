@@ -44,7 +44,7 @@ test_that("predictions from paramedic work", {
             W = example_16S_data[folds == 2, 1:10], 
             V = example_qPCR_data[folds == 2, ], 
             beta_0 = beta0_post, Sigma = sigma_post, sigma_e = sigmae_post,
-            n_iter = 35, 
+            n_iter = 100, 
             n_burnin = 25, n_chains = 1, stan_seed = 4747
         )
     )
