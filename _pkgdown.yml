@@ -7,6 +7,10 @@ reference:
       desc: "The core top-level function in paramedic."
       contents:
        - run_paramedic
+    - title: "Make predictions on new data"
+      desc: "Using the posterior distribution from a paramedic fit, make predictions on new data."
+      contents:
+       - predict_paramedic
     - title: "Process data and set up initial parameter values"
       desc: "Internal functions that ensure incoming data is valid and generates initial values to pass to stan"
       contents:

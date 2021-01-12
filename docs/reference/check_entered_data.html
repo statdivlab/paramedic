@@ -40,11 +40,12 @@
 
 
 <meta property="og:title" content="Prepare Data for Paramedic — check_entered_data" />
-<meta property="og:description" content="Functions in paramedic expect data (W, V, and X) in matrix, data.frame, or tibble form, 
-with the first column being sample identifiers. Sample identifiers must be the same 
-between W, V, and X and the column must have the same name in W and V. This function
-checks the incoming data, transforms it into the data list that is passed to the
-Stan functions, and computes any initial values of model parameters." />
+<meta property="og:description" content="Functions in paramedic expect data (W, V, and X) in matrix, data.frame
+, or tibble form, with the first column being sample identifiers. 
+Sample identifiers must be the same between W, V, and X and the column must 
+have the same name in W and V. This function checks the incoming data, 
+transforms it into the data list that is passed to the Stan functions, and 
+computes any initial values of model parameters." />
 
 
 
@@ -76,7 +77,7 @@ Stan functions, and computes any initial values of model parameters." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">paramedic</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -136,17 +137,19 @@ Stan functions, and computes any initial values of model parameters." />
     </div>
 
     <div class="ref-description">
-    <p>Functions in <code>paramedic</code> expect data (W, V, and X) in matrix, data.frame, or tibble form, 
-with the first column being sample identifiers. Sample identifiers must be the same 
-between W, V, and X and the column must have the same name in W and V. This function
-checks the incoming data, transforms it into the data list that is passed to the
-Stan functions, and computes any initial values of model parameters.</p>
+    <p>Functions in <code>paramedic</code> expect data (W, V, and X) in matrix, data.frame
+, or tibble form, with the first column being sample identifiers. 
+Sample identifiers must be the same between W, V, and X and the column must 
+have the same name in W and V. This function checks the incoming data, 
+transforms it into the data list that is passed to the Stan functions, and 
+computes any initial values of model parameters.</p>
     </div>
 
     <pre class="usage"><span class='fu'>check_entered_data</span>(
   <span class='no'>W</span>,
   <span class='no'>V</span>,
   <span class='no'>X</span>,
+  <span class='no'>k</span>,
   <span class='no'>inits_lst</span>,
   <span class='no'>sigma_beta</span>,
   <span class='no'>sigma_Sigma</span>,
@@ -158,6 +161,7 @@ Stan functions, and computes any initial values of model parameters.</p>
   <span class='no'>W</span>,
   <span class='no'>V</span>,
   <span class='no'>X</span>,
+  <span class='no'>k</span>,
   <span class='no'>inits_lst</span>,
   <span class='no'>sigma_beta</span>,
   <span class='no'>sigma_Sigma</span>,
@@ -166,6 +170,7 @@ Stan functions, and computes any initial values of model parameters.</p>
 )
 
 <span class='fu'>make_paramedic_stan_data</span>(
+  <span class='no'>k</span>,
   <span class='no'>W_mat</span>,
   <span class='no'>V_mat</span>,
   <span class='no'>X_mat</span>,
@@ -174,6 +179,8 @@ Stan functions, and computes any initial values of model parameters.</p>
   <span class='no'>sigma_Sigma</span>,
   <span class='no'>alpha_sigma</span>,
   <span class='no'>kappa_sigma</span>,
+  <span class='no'>alpha_phi</span>,
+  <span class='no'>beta_phi</span>,
   <span class='no'>n_chains</span>,
   <span class='kw'>centered</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
 )</pre>
@@ -183,35 +190,54 @@ Stan functions, and computes any initial values of model parameters.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>W</th>
-      <td><p>The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.</p></td>
+      <td><p>The relative abundance data, e.g., from broad range 16S sequencing 
+with "universal" primers. Expects data (e.g., matrix, data.frame, tibble) 
+with sample identifiers in the first column. Sample identifiers must be the 
+same between W and V, and the column must have the same name in W and V.</p></td>
     </tr>
     <tr>
       <th>V</th>
-      <td><p>The absolute abundance data, e.g., from taxon-specific absolute primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.</p></td>
+      <td><p>The absolute abundance data, e.g., from taxon-specific absolute 
+primers. Expects data (e.g., matrix, data.frame, tibble) with sample 
+identifiers in the first column. Sample identifiers must be the same 
+between W and V, and the column must have the same name in W and V.</p></td>
     </tr>
     <tr>
       <th>X</th>
-      <td><p>The covariate data. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W, V, and X, and the column must have the same name in W, V, and X. If X only consists of the subject identifiers, then no covariates are used.</p></td>
+      <td><p>The covariate data. Expects data (e.g., matrix, data.frame, 
+tibble) with sample identifiers in the first column. Sample identifiers 
+must be the same between W, V, and X, and the column must have the same 
+name in W, V, and X. If X only consists of the subject identifiers, then
+ no covariates are used.</p></td>
+    </tr>
+    <tr>
+      <th>k</th>
+      <td><p>the number of batches (0 if a single batch)</p></td>
     </tr>
     <tr>
       <th>inits_lst</th>
-      <td><p>An optional list of initial values of the parameters. Must be a named list; see <code><a href='https://rdrr.io/pkg/rstan/man/stan.html'>stan</a></code>.</p></td>
+      <td><p>An optional list of initial values of the parameters. 
+Must be a named list; see <code><a href='https://rdrr.io/pkg/rstan/man/stan.html'>stan</a></code>.</p></td>
     </tr>
     <tr>
       <th>sigma_beta</th>
-      <td><p>Hyperparameter specifying the prior variance on \(\beta_0\). Defaults to \(\sqrt{50}\).</p></td>
+      <td><p>Hyperparameter specifying the prior variance on 
+\(\beta_0\). Defaults to \(\sqrt{50}\).</p></td>
     </tr>
     <tr>
       <th>sigma_Sigma</th>
-      <td><p>Hyperparameter specifying the prior variance on \(\Sigma\). Defaults to \(\sqrt{50}\).</p></td>
+      <td><p>Hyperparameter specifying the prior variance on 
+\(\Sigma\). Defaults to \(\sqrt{50}\).</p></td>
     </tr>
     <tr>
       <th>alpha_sigma</th>
-      <td><p>Hyperparameter specifying the shape parameter of the prior distribution on \(\sigma_e\). Defaults to 2.</p></td>
+      <td><p>Hyperparameter specifying the shape parameter of the 
+prior distribution on \(\sigma_e\). Defaults to 2.</p></td>
     </tr>
     <tr>
       <th>kappa_sigma</th>
-      <td><p>Hyperparameter specifying the scale parameter of the prior distribution on \(\sigma_e\). Defaults to 1.</p></td>
+      <td><p>Hyperparameter specifying the scale parameter of the
+prior distribution on \(\sigma_e\). Defaults to 1.</p></td>
     </tr>
     <tr>
       <th>W_mat</th>
@@ -232,7 +258,8 @@ Stan functions, and computes any initial values of model parameters.</p>
     
 <ul>
 <li><p><code>make_paramedic_tibbles</code>: Make tibbles from entered data</p></li>
-<li><p><code>make_paramedic_stan_data</code>: Make data and initial values lists to pass to stan</p></li>
+<li><p><code>make_paramedic_stan_data</code>: Make data and initial values lists to
+pass to stan</p></li>
 </ul>
 
   </div>

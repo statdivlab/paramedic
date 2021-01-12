@@ -9,7 +9,7 @@ predict_paramedic(
   V,
   X = V[, 1, drop = FALSE],
   beta_0,
-  beta_1 = array(0, dim = c(nrow(beta_0), nrow(V), ncol(X))),
+  beta_1 = array(0, dim = c(nrow(beta_0), ncol(X) - 1, ncol(W) - 1)),
   Sigma,
   sigma_e = matrix(0, nrow = nrow(Sigma), ncol = ncol(Sigma)),
   phi = matrix(1, nrow = nrow(Sigma), ncol = nrow(X)),

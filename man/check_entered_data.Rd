@@ -47,23 +47,38 @@ make_paramedic_stan_data(
 )
 }
 \arguments{
-\item{W}{The relative abundance data, e.g., from broad range 16S sequencing with "universal" primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.}
+\item{W}{The relative abundance data, e.g., from broad range 16S sequencing 
+with "universal" primers. Expects data (e.g., matrix, data.frame, tibble) 
+with sample identifiers in the first column. Sample identifiers must be the 
+same between W and V, and the column must have the same name in W and V.}
 
-\item{V}{The absolute abundance data, e.g., from taxon-specific absolute primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.}
+\item{V}{The absolute abundance data, e.g., from taxon-specific absolute 
+primers. Expects data (e.g., matrix, data.frame, tibble) with sample 
+identifiers in the first column. Sample identifiers must be the same 
+between W and V, and the column must have the same name in W and V.}
 
-\item{X}{The covariate data. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W, V, and X, and the column must have the same name in W, V, and X. If X only consists of the subject identifiers, then no covariates are used.}
+\item{X}{The covariate data. Expects data (e.g., matrix, data.frame, 
+tibble) with sample identifiers in the first column. Sample identifiers 
+must be the same between W, V, and X, and the column must have the same 
+name in W, V, and X. If X only consists of the subject identifiers, then
+ no covariates are used.}
 
 \item{k}{the number of batches (0 if a single batch)}
 
-\item{inits_lst}{An optional list of initial values of the parameters. Must be a named list; see \code{\link[rstan]{stan}}.}
+\item{inits_lst}{An optional list of initial values of the parameters. 
+Must be a named list; see \code{\link[rstan]{stan}}.}
 
-\item{sigma_beta}{Hyperparameter specifying the prior variance on \eqn{\beta_0}. Defaults to \eqn{\sqrt{50}}.}
+\item{sigma_beta}{Hyperparameter specifying the prior variance on 
+\eqn{\beta_0}. Defaults to \eqn{\sqrt{50}}.}
 
-\item{sigma_Sigma}{Hyperparameter specifying the prior variance on \eqn{\Sigma}. Defaults to \eqn{\sqrt{50}}.}
+\item{sigma_Sigma}{Hyperparameter specifying the prior variance on 
+\eqn{\Sigma}. Defaults to \eqn{\sqrt{50}}.}
 
-\item{alpha_sigma}{Hyperparameter specifying the shape parameter of the prior distribution on \eqn{\sigma_e}. Defaults to 2.}
+\item{alpha_sigma}{Hyperparameter specifying the shape parameter of the 
+prior distribution on \eqn{\sigma_e}. Defaults to 2.}
 
-\item{kappa_sigma}{Hyperparameter specifying the scale parameter of the prior distribution on \eqn{\sigma_e}. Defaults to 1.}
+\item{kappa_sigma}{Hyperparameter specifying the scale parameter of the
+prior distribution on \eqn{\sigma_e}. Defaults to 1.}
 
 \item{W_mat}{the pre-processed matrix W}
 
@@ -72,16 +87,18 @@ make_paramedic_stan_data(
 \item{X_mat}{the pre-processed matrix X}
 }
 \description{
-Functions in \code{paramedic} expect data (W, V, and X) in matrix, data.frame, or tibble form, 
-with the first column being sample identifiers. Sample identifiers must be the same 
-between W, V, and X and the column must have the same name in W and V. This function
-checks the incoming data, transforms it into the data list that is passed to the
-Stan functions, and computes any initial values of model parameters.
+Functions in \code{paramedic} expect data (W, V, and X) in matrix, data.frame
+, or tibble form, with the first column being sample identifiers. 
+Sample identifiers must be the same between W, V, and X and the column must 
+have the same name in W and V. This function checks the incoming data, 
+transforms it into the data list that is passed to the Stan functions, and 
+computes any initial values of model parameters.
 }
 \section{Functions}{
 \itemize{
 \item \code{make_paramedic_tibbles}: Make tibbles from entered data
 
-\item \code{make_paramedic_stan_data}: Make data and initial values lists to pass to stan
+\item \code{make_paramedic_stan_data}: Make data and initial values lists to
+pass to stan
 }}
 
