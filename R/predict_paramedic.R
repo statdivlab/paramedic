@@ -1,6 +1,6 @@
 #' Generate predictions based on a paramedic model fit
 #'
-#' Predict concentrations (and efficiencies, if applicable), absolute abundances, and relative abundances based on the posterior distributions from a previously fitted model resulting from a call to \code{run_paramedic.
+#' Predict concentrations (and efficiencies, if applicable), absolute abundances, and relative abundances based on the posterior distributions from a previously fitted model resulting from a call to \code{run_paramedic}.
 #'
 #' @param W The new relative abundance data, e.g., from broad range 16S sequencing with "universal" primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.
 #' @param V The new absolute abundance data, e.g., from taxon-specific absolute primers. Expects data (e.g., matrix, data.frame, tibble) with sample identifiers in the first column. Sample identifiers must be the same between W and V, and the column must have the same name in W and V.
@@ -27,16 +27,16 @@
 #' @details Using the posterior distributions from a call to \code{run_paramedic}, generate predicted values.
 #'
 #' @examples
-#' ## load the package, read in example data
+#' # load the package, read in example data
 #' library("paramedic")
 #' data(example_16S_data)
 #' data(example_qPCR_data)
-#' ## generate a train/test split
+#' # generate a train/test split
 #' set.seed(1234)
 #' folds <- sample(1:2, size = nrow(example_16S_data), replace = TRUE)
 #'
-#' ## run paramedic (with an extremely small number of iterations, for illustration only)
-#' ## on only the first 10 taxa, and on a subset of the data
+#' # run paramedic (with an extremely small number of iterations, for illustration only)
+#' # on only the first 10 taxa, and on a subset of the data
 #' mod <- run_paramedic(W = example_16S_data[folds == 1, 1:10], 
 #' V = example_qPCR_data[folds == 1, ], n_iter = 30, n_burnin = 25, 
 #' n_chains = 1, stan_seed = 4747)
@@ -46,8 +46,10 @@
 #' beta0_post <- ext_mod$beta_0
 #' sigma_post <- ext_mod$Sigma
 #' sigmae_post <- ext_mod$sigma_e
-#' pred_mod <- predict_paramedic(beta_0 = beta0_post, Sigma = sigma_post,
-#' sigma_e = sigmae_post, ) 
+#' pred_mod <- predict_paramedic(W = example_16S_data[folds == 2, 1:10], 
+#' V = example_qPCR_data[folds == 2, ], n_iter = 75, n_burnin = 25,
+#'  beta_0 = beta0_post, Sigma = sigma_post, sigma_e = sigmae_post, 
+#'  n_chains = 1, stan_seed = 1234) 
 #'
 #' @seealso \code{\link[rstan]{stan}} and \code{\link[rstan]{sampling}} for specific usage of the \code{stan} and \code{sampling} functions; \code{\link[paramedic]{run_paramedic}} for usage of the \code{run_paramedic} function.
 #'
@@ -62,23 +64,23 @@ predict_paramedic <- function(W, V, X = V[, 1, drop = FALSE], beta_0,
                           stan_seed = 4747, alpha_sigma = 2, kappa_sigma = 1, 
                           alpha_phi = 0, beta_phi = 0, sigma_xi = 1,
                           ...) {
-    ## --------------
-    ## error messages
-    ## --------------
+    # --------------
+    # error messages
+    # --------------
     check_entered_data(W, V, X, k, alpha_sigma = alpha_sigma, 
                        kappa_sigma = kappa_sigma)
-    ## ---------------------------
-    ## pre-processing and warnings
-    ## ---------------------------
+    # ---------------------------
+    # pre-processing and warnings
+    # ---------------------------
     pre_processed_lst <- make_paramedic_tibbles(W, V, X, k, 
                                                 alpha_sigma = alpha_sigma, 
                                                 kappa_sigma = kappa_sigma)
     W_mat <- pre_processed_lst$w_mat
     V_mat <- pre_processed_lst$v_mat
     X_mat <- pre_processed_lst$x_mat
-    ## ----------------------------------------
-    ## set up the data list
-    ## ----------------------------------------
+    # ----------------------------------------
+    # set up the data list
+    # ----------------------------------------
     N <- ifelse(k > 0, dim(W_mat)[2], dim(W_mat)[1])
     N_samples <- nrow(Sigma)
     q <- ifelse(k > 0, dim(W_mat)[3], dim(W_mat)[2])
@@ -91,9 +93,9 @@ predict_paramedic <- function(W, V, X = V[, 1, drop = FALSE], beta_0,
                      phi = phi, alpha_sigma = alpha_sigma, 
                      kappa_sigma = kappa_sigma, alpha_phi = alpha_phi,
                      beta_phi = beta_phi)
-    ## ----------------------
-    ## run the Stan algorithm
-    ## ----------------------
+    # ----------------------
+    # run the Stan algorithm
+    # ----------------------
     pars <- c("mu",
               switch((alpha_sigma > 0 & kappa_sigma > 0) + 1, NULL, "e"),
               "V", "W")

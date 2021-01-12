@@ -42,11 +42,11 @@ a list containing two matrices: one with the observed absolute abundances, and t
 Return matrices of observed absolute and relative abundances, given a single dataset and a set of indices.
 }
 \examples{
-## load the package, read in example data
+# load the package, read in example data
 library("paramedic")
 data(simple_example_data)
 
-## process the example data
+# process the example data
 q <- 3
 q_obs <- 2
 processed_data <- paramedic::process_data(full_data = simple_example_data, rel_inds = 1:q,

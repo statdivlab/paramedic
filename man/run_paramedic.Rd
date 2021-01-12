@@ -73,13 +73,13 @@ We fit a hierarchical model in Stan to the data, with goal to estimate true conc
 In most cases, we suggest using the noncentered model. However, if the model does not converge in a reasonable amount of time using the noncentered model, consider trying the centered model.
 }
 \examples{
-## load the package, read in example data
+# load the package, read in example data
 library("paramedic")
 data(example_16S_data)
 data(example_qPCR_data)
 
-## run paramedic (with an extremely small number of iterations, for illustration only)
-## on only the first 10 taxa
+# run paramedic (with an extremely small number of iterations, for illustration only)
+# on only the first 10 taxa
 mod <- run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data,
 n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747)
 

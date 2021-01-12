@@ -103,7 +103,7 @@ computes any initial values of model parameters." />
       <a href="../articles/hierarchical_model_specification.html">Hierarchical model specification in `paramedic`</a>
     </li>
     <li>
-      <a href="../articles/introduction_to_paramedic.html">Introduction to paramedic</a>
+      <a href="../articles/introduction_to_paramedic.html">Introduction to `paramedic`</a>
     </li>
   </ul>
 </li>
@@ -250,6 +250,29 @@ prior distribution on \(\sigma_e\). Defaults to 1.</p></td>
     <tr>
       <th>X_mat</th>
       <td><p>the pre-processed matrix X</p></td>
+    </tr>
+    <tr>
+      <th>alpha_phi</th>
+      <td><p>Hyperparameter specifying the shape parameter of the 
+prior distribution on \(phi\) (the optional Negative Binomial 
+dispersion parameter). Defaults to 0 (in which case a Poisson distribution
+on V is used).</p></td>
+    </tr>
+    <tr>
+      <th>beta_phi</th>
+      <td><p>Hyperparameter specifying the scale parameter of the 
+prior distribution on \(phi\) (the optional Negative Binomial 
+dispersion parameter). Defaults to 0 (in which case a Poisson distribution
+on V is used).</p></td>
+    </tr>
+    <tr>
+      <th>n_chains</th>
+      <td><p>the number of chains to run</p></td>
+    </tr>
+    <tr>
+      <th>centered</th>
+      <td><p>whether or not to use the centered parameterization of the 
+stan algorithm. Defaults to <code>FALSE</code>.</p></td>
     </tr>
     </table>
 

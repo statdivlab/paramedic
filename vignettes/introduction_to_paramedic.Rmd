@@ -1,12 +1,12 @@
 ---
-title: "Introduction to paramedic"
+title: "Introduction to `paramedic`"
 author: "Brian D. Williamson and Amy D. Willis"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
     keep_md: true
 vignette: >
-  %\VignetteIndexEntry{Introduction to paramedic}
+  %\VignetteIndexEntry{Introduction to `paramedic`}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

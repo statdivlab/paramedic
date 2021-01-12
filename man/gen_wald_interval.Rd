@@ -22,21 +22,21 @@ A (1 - \eqn{\alpha})x100\% Wald-type prediction interval for each qPCR
 Return a Wald-type prediction interval for qPCR values given the estimated concentrations.
 }
 \examples{
-## load the package, read in example data
+# load the package, read in example data
 library("paramedic")
 data(example_16S_data)
 data(example_qPCR_data)
 
-## run paramedic (with an extremely small number of iterations, for illustration only)
-## on only first 10 taxa
+# run paramedic (with an extremely small number of iterations, for illustration only)
+# on only first 10 taxa
 mod <- run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data,
 n_iter = 30, n_burnin = 25, 
 n_chains = 1, stan_seed = 4747)
-## get model summary
+# get model summary
 mod_summ <- rstan::summary(mod, probs = c(0.025, 0.975))$summary
-## get samples
+# get samples
 mod_samps <- rstan::extract(mod)
-## extract relevant summaries
+# extract relevant summaries
 summs <- extract_posterior_summaries(stan_mod = mod_summ, stan_samps = mod_samps, 
 taxa_of_interest = 1:3,
 mult_num = 1, level = 0.95, interval_type = "wald")

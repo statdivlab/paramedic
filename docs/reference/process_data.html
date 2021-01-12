@@ -98,7 +98,7 @@
       <a href="../articles/hierarchical_model_specification.html">Hierarchical model specification in `paramedic`</a>
     </li>
     <li>
-      <a href="../articles/introduction_to_paramedic.html">Introduction to paramedic</a>
+      <a href="../articles/introduction_to_paramedic.html">Introduction to `paramedic`</a>
     </li>
   </ul>
 </li>
@@ -193,11 +193,11 @@
     <p>a list containing two matrices: one with the observed absolute abundances, and the other with the observed relative abundances.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>## load the package, read in example data</span>
+    <pre class="examples"><div class='input'><span class='co'># load the package, read in example data</span>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'>"paramedic"</span>)
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>simple_example_data</span>)
 
-<span class='co'>## process the example data</span>
+<span class='co'># process the example data</span>
 <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>
 <span class='no'>q_obs</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>
 <span class='no'>processed_data</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>paramedic</span><span class='kw ns'>::</span><span class='fu'>process_data</span>(<span class='kw'>full_data</span> <span class='kw'>=</span> <span class='no'>simple_example_data</span>, <span class='kw'>rel_inds</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='no'>q</span>,

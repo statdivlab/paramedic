@@ -69,22 +69,22 @@ predict_paramedic(
 An object of class \code{stanfit}.
 }
 \description{
-
+Predict concentrations (and efficiencies, if applicable), absolute abundances, and relative abundances based on the posterior distributions from a previously fitted model resulting from a call to \code{run_paramedic}.
 }
 \details{
 Using the posterior distributions from a call to \code{run_paramedic}, generate predicted values.
 }
 \examples{
-## load the package, read in example data
+# load the package, read in example data
 library("paramedic")
 data(example_16S_data)
 data(example_qPCR_data)
-## generate a train/test split
+# generate a train/test split
 set.seed(1234)
 folds <- sample(1:2, size = nrow(example_16S_data), replace = TRUE)
 
-## run paramedic (with an extremely small number of iterations, for illustration only)
-## on only the first 10 taxa, and on a subset of the data
+# run paramedic (with an extremely small number of iterations, for illustration only)
+# on only the first 10 taxa, and on a subset of the data
 mod <- run_paramedic(W = example_16S_data[folds == 1, 1:10], 
 V = example_qPCR_data[folds == 1, ], n_iter = 30, n_burnin = 25, 
 n_chains = 1, stan_seed = 4747)
@@ -94,8 +94,10 @@ ext_mod <- rstan::extract(mod)
 beta0_post <- ext_mod$beta_0
 sigma_post <- ext_mod$Sigma
 sigmae_post <- ext_mod$sigma_e
-pred_mod <- predict_paramedic(beta_0 = beta0_post, Sigma = sigma_post,
-sigma_e = sigmae_post, ) 
+pred_mod <- predict_paramedic(W = example_16S_data[folds == 2, 1:10], 
+V = example_qPCR_data[folds == 2, ], n_iter = 75, n_burnin = 25,
+ beta_0 = beta0_post, Sigma = sigma_post, sigma_e = sigmae_post, 
+ n_chains = 1, stan_seed = 1234) 
 
 }
 \seealso{

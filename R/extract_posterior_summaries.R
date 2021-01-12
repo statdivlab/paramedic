@@ -20,32 +20,32 @@
 #' }
 #'
 #' @examples
-#' ## load the package, read in example data
+#' # load the package, read in example data
 #' library("paramedic")
 #' data(example_16S_data)
 #' data(example_qPCR_data)
 #'
-#' ## run paramedic (with an extremely small number of iterations, for illustration only)
-#' ## on only the first 10 taxa
+#' # run paramedic (with an extremely small number of iterations, for illustration only)
+#' # on only the first 10 taxa
 #' mod <- run_paramedic(W = example_16S_data[, 1:10], V = example_qPCR_data,
 #' n_iter = 30, n_burnin = 25, 
 #' n_chains = 1, stan_seed = 4747)
 #'
-#' ## get summary, samples
+#' # get summary, samples
 #' mod_summ <- rstan::summary(mod, probs = c(0.025, 0.975))$summary
 #' mod_samps <- rstan::extract(mod)
 #'
-#' ## extract relevant summaries
+#' # extract relevant summaries
 #' summs <- extract_posterior_summaries(stan_mod = mod_summ, stan_samps = mod_samps, 
 #' taxa_of_interest = 1:3,
 #' mult_num = 1, level = 0.95, interval_type = "wald")
 #'
 #' @export
 extract_posterior_summaries <- function(stan_mod, stan_samps, taxa_of_interest, mult_num = 1, level = 0.95, interval_type = "wald") {
-  ## check to make sure all taxa of interest are actual taxa
+  # check to make sure all taxa of interest are actual taxa
   check_taxa <- lapply(as.list(taxa_of_interest), function(x) any(grepl(paste0(",", x, "]"), rownames(stan_mod), fixed = TRUE)))
   if (!any(unlist(check_taxa))) stop("One or more of your taxa of interest are not present in the sampling output. Please specify only taxa for which you have samples.")
-  ## get the posterior estimates
+  # get the posterior estimates
   mu_summ_lst <- lapply(as.list(taxa_of_interest), function(x) stan_mod[grepl("mu", rownames(stan_mod)) & !grepl("log", rownames(stan_mod)) & grepl(paste0(",", x, "]"), rownames(stan_mod), fixed = TRUE), c(1, 3, 4, 5)]*mult_num)
   est_lst <- lapply(mu_summ_lst, function(x) x[, 1])
   sd_lst <- lapply(mu_summ_lst, function(x) x[, 2])
@@ -55,20 +55,20 @@ extract_posterior_summaries <- function(stan_mod, stan_samps, taxa_of_interest, 
   rownames(estimates) <- as.character(1:dim(estimates)[1])
   rownames(sd) <- as.character(1:dim(sd)[1])
 
-  ## get cis
+  # get cis
   credible_intervals <- sapply(1:length(mu_summ_lst), function(x) mu_summ_lst[[x]][, c(3, 4)], simplify = "array")
   rownames(credible_intervals) <- as.character(1:dim(estimates)[1])
 
-  ## get prediction intervals
+  # get prediction intervals
   if (interval_type == "wald") {
     intervals <- sapply(1:length(taxa_of_interest), function(x) gen_wald_interval(estimates[, x], sd[, x], alpha = 1 - level), simplify = "array")
   } else if (interval_type == "quantile") {
     intervals <- sapply(1:length(taxa_of_interest), function(x) gen_quantile_interval(mu_quantiles = credible_intervals[, , x], mu_samps = stan_samps$mu[, , taxa_of_interest[x]], div_num = mult_num, alpha = 1 - level, type = "credible_quantiles"), simplify = "array")
-  } else { ## next, add quantile
+  } else { # next, add quantile
     stop("Unsupported prediction interval type. Please enter one of 'quantile' or 'wald'.")
   }
 
-  ## extract summaries of varying efficiency, if they exist
+  # extract summaries of varying efficiency, if they exist
   if (any(grepl("e", rownames(stan_mod)) & !grepl("beta", rownames(stan_mod)))) {
     e <- stan_mod[grepl("e", rownames(stan_mod)) & !grepl("beta", rownames(stan_mod)), 1]
     e_intervals <- stan_mod[grepl("e", rownames(stan_mod)) &!grepl("beta", rownames(stan_mod)), c(4, 5)]

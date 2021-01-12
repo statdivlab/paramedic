@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   hierarchical_model_specification: hierarchical_model_specification.html
   introduction_to_paramedic: introduction_to_paramedic.html
-last_built: 2021-01-12T01:43Z
+last_built: 2021-01-12T17:33Z
 urls:
   reference: https://statdivlab.github.io/paramedic/reference
   article: https://statdivlab.github.io/paramedic/articles

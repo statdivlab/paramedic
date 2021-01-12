@@ -130,6 +130,27 @@ make_paramedic_tibbles <- function(W, V, X, k, inits_lst,
 #' @param W_mat the pre-processed matrix W
 #' @param V_mat the pre-processed matrix V
 #' @param X_mat the pre-processed matrix X
+#' @param inits_lst An optional list of initial values of the parameters. 
+#' Must be a named list; see \code{\link[rstan]{stan}}.
+#' @param sigma_beta Hyperparameter specifying the prior variance on 
+#' \eqn{\beta_0}. Defaults to \eqn{\sqrt{50}}.
+#' @param sigma_Sigma Hyperparameter specifying the prior variance on 
+#' \eqn{\Sigma}. Defaults to \eqn{\sqrt{50}}.
+#' @param alpha_sigma Hyperparameter specifying the shape parameter of the 
+#' prior distribution on \eqn{\sigma_e}. Defaults to 2.
+#' @param kappa_sigma Hyperparameter specifying the scale parameter of the
+#'  prior distribution on \eqn{\sigma_e}. Defaults to 1.
+#' @param alpha_phi Hyperparameter specifying the shape parameter of the 
+#' prior distribution on \eqn{phi} (the optional Negative Binomial 
+#' dispersion parameter). Defaults to 0 (in which case a Poisson distribution
+#' on V is used).
+#' @param beta_phi Hyperparameter specifying the scale parameter of the 
+#' prior distribution on \eqn{phi} (the optional Negative Binomial 
+#' dispersion parameter). Defaults to 0 (in which case a Poisson distribution
+#' on V is used).
+#' @param n_chains the number of chains to run
+#' @param centered whether or not to use the centered parameterization of the 
+#' stan algorithm. Defaults to \code{FALSE}.
 #' @describeIn check_entered_data Make data and initial values lists to
 #'  pass to stan
 #' @importFrom stats var

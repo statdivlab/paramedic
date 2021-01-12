@@ -85,6 +85,21 @@ prior distribution on \eqn{\sigma_e}. Defaults to 1.}
 \item{V_mat}{the pre-processed matrix V}
 
 \item{X_mat}{the pre-processed matrix X}
+
+\item{alpha_phi}{Hyperparameter specifying the shape parameter of the 
+prior distribution on \eqn{phi} (the optional Negative Binomial 
+dispersion parameter). Defaults to 0 (in which case a Poisson distribution
+on V is used).}
+
+\item{beta_phi}{Hyperparameter specifying the scale parameter of the 
+prior distribution on \eqn{phi} (the optional Negative Binomial 
+dispersion parameter). Defaults to 0 (in which case a Poisson distribution
+on V is used).}
+
+\item{n_chains}{the number of chains to run}
+
+\item{centered}{whether or not to use the centered parameterization of the 
+stan algorithm. Defaults to \code{FALSE}.}
 }
 \description{
 Functions in \code{paramedic} expect data (W, V, and X) in matrix, data.frame
