@@ -1,30 +1,29 @@
-## set up the data
+# set up the data
 library("testthat")
-library("paramedic")
 
-## create some data
-## set up the data
+# create some data
+# set up the data
 q <- 3
 q_obs <- 2
 n <- 10
-## ------------------------------------------
-## set up hyperparameters for data generation
-## ------------------------------------------
+# ------------------------------------------
+# set up hyperparameters for data generation
+# ------------------------------------------
 Sigma <- diag(1, nrow = q, ncol = q)
 m_min <- 10000
 m_max <- 100000
 set.seed(4747)
 beta_init <- stats::rnorm(q, 0, sqrt(50))
-## order by abundance
+# order by abundance
 beta <- beta_init[order(beta_init, decreasing = TRUE)]
-## create the model parameters
+# create the model parameters
 e <- rep(1, q)
 m <- sample(m_min, m_max, n)
 log_mu <- MASS::mvrnorm(n, mu = beta, Sigma = Sigma)
 mu <- exp(log_mu)
-## ------------------------------------------
-## create the observed data
-## ------------------------------------------
+# ------------------------------------------
+# create the observed data
+# ------------------------------------------
 V <- matrix(NA, nrow = n, ncol = q_obs)
 for (i in 1:q_obs) {
     V[, i] <- stats::rpois(n, mu[, i])    
@@ -36,7 +35,7 @@ for (i in 1:n) {
 }
 full_data <- cbind(W, V)
 
-## process the data
+# process the data
 test_that("processing works", {
   processed_data <- paramedic::process_data(full_data = full_data, rel_inds = 1:q,
                                  abs_inds = (q + 1):(q + q_obs),
