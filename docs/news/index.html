@@ -136,7 +136,8 @@
 <h2 class="hasAnchor">
 <a href="#major-changes" class="anchor"></a>Major changes</h2>
 <ul>
-<li>added ability to obtain predictions on new data using a previously fitted model</li>
+<li>added ability to obtain predictions on new data using a previously fitted model using <code>predict_paramedic</code>
+</li>
 </ul>
 </div>
 <div id="minor-changes" class="section level2">
@@ -152,7 +153,7 @@
 <h2 class="hasAnchor">
 <a href="#major-changes-1" class="anchor"></a>Major changes</h2>
 <ul>
-<li>added ability to run analysis adjusted for batch effects by setting argument “k” to be nonzero in run_paramedic (the default is zero for data collected in a single experiment)</li>
+<li>added ability to run analysis adjusted for batch effects by setting argument <code>k</code> to be nonzero in <code>run_paramedic</code> (the default is zero for data collected in a single experiment)</li>
 <li>added new stan code for batch analysis</li>
 </ul>
 </div>
@@ -160,7 +161,7 @@
 <h2 class="hasAnchor">
 <a href="#minor-changes-1" class="anchor"></a>Minor changes</h2>
 <ul>
-<li>reorganized stan code into directories, since much of the code was shared between models; the new organization uses #include statements, and the shared code is stored in data/ (sets up data objects), parameters/ (sets up model parameters), tparameters/ (sets up transformed parameters), and model/ (sets up hierarchical model for shared parameters)</li>
+<li>reorganized stan code into directories, since much of the code was shared between models; the new organization uses <code>#include</code> statements, and the shared code is stored in <code>data/</code> (sets up data objects), <code>parameters/</code> (sets up model parameters), <code>tparameters/</code> (sets up transformed parameters), and <code>model/</code> (sets up hierarchical model for shared parameters)</li>
 </ul>
 </div>
 </div>
@@ -171,9 +172,12 @@
 <h2 class="hasAnchor">
 <a href="#major-changes-2" class="anchor"></a>Major changes</h2>
 <ul>
-<li>removed function run_paramedic_centered; the desired behavior can now be obtained by using run_paramedic with the argument “centered = TRUE”</li>
-<li>removed function no_efficiency; the desired behavior can now be obtained by using run_paramedic with arguments “alpha_sigma = 0” and “kappa_sigma = 0”</li>
-<li>removed several stan models by collapsing functionality into variable_efficiency.stan and variable_efficiency_centered.stan</li>
+<li>removed function <code>run_paramedic_centered</code>; the desired behavior can now be obtained by using <code>run_paramedic</code> with the argument <code>"centered = TRUE"</code>
+</li>
+<li>removed function <code>no_efficiency</code>; the desired behavior can now be obtained by using <code>run_paramedic</code> with arguments <code>"alpha_sigma = 0"</code> and <code>"kappa_sigma = 0"</code>
+</li>
+<li>removed several stan models by collapsing functionality into <code>variable_efficiency.stan</code> and <code>variable_efficiency_centered.stan</code>
+</li>
 </ul>
 </div>
 <div id="minor-changes-2" class="section level2">
@@ -182,7 +186,7 @@
 <ul>
 <li>updated all tests to reflect major changes</li>
 <li>added vignette discussing hierarchical model specification</li>
-<li>added a pkgdown site</li>
+<li>added a <code>pkgdown</code> site</li>
 </ul>
 </div>
 </div>
@@ -199,7 +203,7 @@
 <a href="#minor-changes-3" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>new internal functions to reduce replicating code within key functions</li>
-<li>new stan model for specifying a negative binomial distribution on V</li>
+<li>new <code>stan</code> model for specifying a negative binomial distribution on V</li>
 </ul>
 </div>
 </div>
@@ -215,7 +219,7 @@
 <h2 class="hasAnchor">
 <a href="#minor-changes-4" class="anchor"></a>Minor changes</h2>
 <ul>
-<li>update internal Stan models to use log densities and unconstrained parameters, then back-transform after sampling</li>
+<li>update internal <code>Stan</code> models to use log densities and unconstrained parameters, then back-transform after sampling</li>
 </ul>
 </div>
 </div>
