@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Process a dataset, returning observed abolute and relative abundance matrices — process_data • paramedic</title>
+<title>Draw from the posterior predictive distribution — posterior_predict.paramedic • paramedic</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,11 @@
 
 
 
-<meta property="og:title" content="Process a dataset, returning observed abolute and relative abundance matrices — process_data" />
-<meta property="og:description" content="Return matrices of observed absolute and relative abundances, given a single dataset and a set of indices." />
+<meta property="og:title" content="Draw from the posterior predictive distribution — posterior_predict.paramedic" />
+<meta property="og:description" content="Predict concentrations (and efficiencies, if applicable), 
+absolute abundances, and relative abundances based on the posterior 
+distributions from a previously fitted model resulting from a call to 
+run_paramedic." />
 
 
 
@@ -126,85 +129,120 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Process a dataset, returning observed abolute and relative abundance matrices</h1>
-    <small class="dont-index">Source: <a href='https://github.com/statdivlab/paramedic/blob/master/R/process_data.R'><code>R/process_data.R</code></a></small>
-    <div class="hidden name"><code>process_data.Rd</code></div>
+    <h1>Draw from the posterior predictive distribution</h1>
+    <small class="dont-index">Source: <a href='https://github.com/statdivlab/paramedic/blob/master/R/posterior_predict.R'><code>R/posterior_predict.R</code></a></small>
+    <div class="hidden name"><code>posterior_predict.paramedic.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Return matrices of observed absolute and relative abundances, given a single dataset and a set of indices.</p>
+    <p>Predict concentrations (and efficiencies, if applicable), 
+absolute abundances, and relative abundances based on the posterior 
+distributions from a previously fitted model resulting from a call to 
+<code>run_paramedic</code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>process_data</span>(
-  <span class='no'>full_data</span>,
-  <span class='no'>rel_inds</span>,
-  <span class='no'>abs_inds</span>,
-  <span class='no'>abs_plus_rel_inds</span>,
-  <span class='kw'>regex_thr</span> <span class='kw'>=</span> <span class='st'>"_t"</span>,
-  <span class='kw'>regex_abs</span> <span class='kw'>=</span> <span class='st'>"_cps"</span>,
-  <span class='kw'>llod</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>m_min</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
-  <span class='kw'>div_num</span> <span class='kw'>=</span> <span class='fl'>100</span>
+    <pre class="usage"><span class='co'># S3 method for paramedic</span>
+<span class='fu'>posterior_predict</span>(
+  <span class='no'>object</span>,
+  <span class='kw'>W</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>V</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>V</span>[, <span class='fl'>1</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>],
+  <span class='kw'>draws</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>alpha_sigma</span> <span class='kw'>=</span> <span class='fl'>2</span>,
+  <span class='kw'>kappa_sigma</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>alpha_phi</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>beta_phi</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>sigma_xi</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='no'>...</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>full_data</th>
-      <td><p>the full dataset, containing both absolute and relative abundances</p></td>
+      <th>object</th>
+      <td><p>An object of class <code>"paramedic"</code>, 
+resulting from a call to <code>run_paramedic</code>.</p></td>
     </tr>
     <tr>
-      <th>rel_inds</th>
-      <td><p>the indices marking the relative abundance measurements in <code>full_data</code></p></td>
+      <th>W</th>
+      <td><p>The new relative abundance data, e.g., 
+from broad range 16S sequencing with "universal" primers. 
+Expects data (e.g., matrix, data.frame, tibble) with sample identifiers 
+in the first column. Sample identifiers must be the same between W and V, 
+and the column must have the same name in W and V.</p></td>
     </tr>
     <tr>
-      <th>abs_inds</th>
-      <td><p>the indices marking the absolute abundance measurements in <code>full_data</code></p></td>
+      <th>V</th>
+      <td><p>The new absolute abundance data, e.g., from taxon-specific 
+absolute primers. Expects data (e.g., matrix, data.frame, tibble) with 
+sample identifiers in the first column. Sample identifiers must be the 
+same between W and V, and the column must have the same name in W and V.</p></td>
     </tr>
     <tr>
-      <th>abs_plus_rel_inds</th>
-      <td><p>the indices that have both absolute and relative abundance measurements</p></td>
+      <th>X</th>
+      <td><p>The new covariate data. Expects data (e.g., matrix, data.frame, 
+tibble) with sample identifiers in the first column. Sample identifiers
+ must be the same between W, V, and X, and the column must have the same 
+ name in W, V, and X. If X only consists of the subject identifiers, 
+ then no covariates are used.</p></td>
     </tr>
     <tr>
-      <th>regex_thr</th>
-      <td><p>the regular expression to identify absolute abundance threshold for each taxon-specific measurement (e.g., "_t" appended to each threshold)</p></td>
+      <th>draws</th>
+      <td><p>the number of draws to return. The default and maximum number 
+of draws is the size of the posterior sample.</p></td>
     </tr>
     <tr>
-      <th>regex_abs</th>
-      <td><p>the regular expression to identify absolute abundance measurement for each taxon-specific measurement (e.g., "_cps" appended to each measurement of copies per swab)</p></td>
+      <th>alpha_sigma</th>
+      <td><p>Hyperparameter specifying the shape parameter of the 
+prior distribution on \(\sigma_e\). Defaults to 2.</p></td>
     </tr>
     <tr>
-      <th>llod</th>
-      <td><p>the lower limit of detection for absolute abundance measurements</p></td>
+      <th>kappa_sigma</th>
+      <td><p>Hyperparameter specifying the scale parameter of the 
+prior distribution on \(\sigma_e\). Defaults to 1.</p></td>
     </tr>
     <tr>
-      <th>m_min</th>
-      <td><p>the minimum number of reads to consider</p></td>
+      <th>alpha_phi</th>
+      <td><p>Hyperparameter specifying the shape parameter of the 
+prior distribution on \(\phi\). Defaults to 0; a negative binomial 
+model can be specified if both <code>alpha_phi</code> and <code>beta_phi</code> are 
+nonzero.</p></td>
     </tr>
     <tr>
-      <th>div_num</th>
-      <td><p>the number to divide absolute abundance measurements by (to create valid R integers for use in Stan)</p></td>
+      <th>beta_phi</th>
+      <td><p>Hyperparameter specifying the rate parameter of the prior 
+distribution on \(\phi\). Defaults to 0; a negative binomial model can 
+be specified if both <code>alpha_phi</code> and <code>beta_phi</code> are nonzero.</p></td>
+    </tr>
+    <tr>
+      <th>k</th>
+      <td><p>the number of batches that the relative abundance data W were 
+analyzed in. If k = 0 (the default), then batch effects are not considered. 
+(currently not used)</p></td>
+    </tr>
+    <tr>
+      <th>sigma_xi</th>
+      <td><p>Hyperparameters specifying the variance of efficiencies 
+over batches. Only used if <code>k</code> is greater than zero. 
+Defaults to 1. (currently not used)</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Ignored</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a list containing two matrices: one with the observed absolute abundances, and the other with the observed relative abundances.</p>
+    <p>A list of <code>draws</code> by <code><a href='https://rdrr.io/r/base/nrow.html'>ncol(W)</a></code> matrices (for taxon-level 
+  parameters) or <code>draws</code> by <code><a href='https://rdrr.io/r/base/nrow.html'>nrow(W)</a></code> by <code><a href='https://rdrr.io/r/base/nrow.html'>ncol(W)</a></code> arrays 
+  (for individual-level parameters and data) of simulations from the 
+  posterior predictive distribution. Each row of the matrices, and each 
+  of the first dimension of the arrays, denotes the predictions generated 
+  using a single draw of the model parameters from the posterior distribution.</p>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># load the package, read in example data</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'>"paramedic"</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>simple_example_data</span>)
-
-<span class='co'># process the example data</span>
-<span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>
-<span class='no'>q_obs</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>
-<span class='no'>processed_data</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>paramedic</span><span class='kw ns'>::</span><span class='fu'>process_data</span>(<span class='kw'>full_data</span> <span class='kw'>=</span> <span class='no'>simple_example_data</span>, <span class='kw'>rel_inds</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='no'>q</span>,
-<span class='kw'>abs_inds</span> <span class='kw'>=</span> (<span class='no'>q</span> + <span class='fl'>1</span>):(<span class='no'>q</span> + <span class='no'>q_obs</span>),
-<span class='kw'>abs_plus_rel_inds</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='no'>q_obs</span>,
-<span class='kw'>regex_thr</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>regex_abs</span> <span class='kw'>=</span> <span class='st'>"_cps"</span>, <span class='kw'>llod</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-<span class='kw'>m_min</span> <span class='kw'>=</span> <span class='fl'>1000</span>, <span class='kw'>div_num</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

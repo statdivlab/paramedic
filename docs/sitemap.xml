@@ -25,7 +25,13 @@
     <loc>https://statdivlab.github.io/paramedic/reference/paramedic-package.html</loc>
   </url>
   <url>
+    <loc>https://statdivlab.github.io/paramedic/reference/posterior_predict.paramedic.html</loc>
+  </url>
+  <url>
     <loc>https://statdivlab.github.io/paramedic/reference/predict_paramedic.html</loc>
+  </url>
+  <url>
+    <loc>https://statdivlab.github.io/paramedic/reference/print.paramedic.html</loc>
   </url>
   <url>
     <loc>https://statdivlab.github.io/paramedic/reference/process_data.html</loc>
@@ -35,6 +41,9 @@
   </url>
   <url>
     <loc>https://statdivlab.github.io/paramedic/reference/simple_example_data.html</loc>
+  </url>
+  <url>
+    <loc>https://statdivlab.github.io/paramedic/reference/summary.paramedic.html</loc>
   </url>
   <url>
     <loc>https://statdivlab.github.io/paramedic/articles/hierarchical_model_specification.html</loc>
