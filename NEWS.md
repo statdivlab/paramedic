@@ -1,3 +1,13 @@
+# paramedic 0.1.3
+
+## Major changes
+
+* added a second option for obtaining predictions on new data using a previously fitted model: the options are now `predict_paramedic` and `posterior_predict.paramedic`. The former uses posterior draws and a Stan algorithm to generate predictions; the latter uses posterior draws and internal R functions to generate predictions. Both are expected to perform similarly.
+
+## Minor changes
+
+None
+
 # paramedic 0.1.2
 
 ## Major changes

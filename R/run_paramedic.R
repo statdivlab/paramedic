@@ -86,5 +86,5 @@ run_paramedic <- function(W, V, X = V[, 1, drop = FALSE], k = 0,
     mod <- rstan::sampling(stan_model, data = data_lst, pars = pars,
                            chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
                            init = inits_lst, ...)
-    return(mod)
+    mod
 }

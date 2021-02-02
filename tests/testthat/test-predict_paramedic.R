@@ -19,9 +19,36 @@ kappa_sigma <- 1
 alpha_phi <- 0
 beta_phi <- 0
 
+test_that("predictions from paramedic work (using posterior_predict.paramedic)", {
+    set.seed(4747)
+    expect_warning(
+        mod <- paramedic::run_paramedic(
+            W = example_16S_data[folds == 1, 1:10], 
+            V = example_qPCR_data[folds == 1, ], 
+            sigma_beta = sigma_beta, sigma_Sigma = sigma_Sigma, 
+            alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma, 
+            alpha_phi = alpha_phi, beta_phi = beta_phi, n_iter = 35, 
+            n_burnin = 25, n_chains = 1, stan_seed = 4747, 
+            control = list(adapt_delta = 0.9, max_treedepth = 15)
+        )
+    )
+    set.seed(1234)
+    pp <- posterior_predict.paramedic(mod, 
+                            W = example_16S_data[folds == 2, 1:10], 
+                            V = example_qPCR_data[folds == 2, ],
+                            alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma, 
+                            alpha_phi = alpha_phi, beta_phi = beta_phi)
+    # average over draws
+    V_means <- apply(pp$V, c(1, 2), mean)
+    expect_equal(colMeans(V_means)[1], 
+                 mean(example_qPCR_data$Gardnerella.vaginalis[folds == 2]),
+                 tolerance = 1, 
+                 scale = mean(example_qPCR_data$Gardnerella.vaginalis[folds == 2]))
+})
+
 # run paramedic (with a *very* small number of iterations, for illustration only)
 # also only on the first 10 taxa
-test_that("predictions from paramedic work", {
+test_that("predictions from paramedic work (using new stan model)", {
     expect_warning(
         mod <- paramedic::run_paramedic(
             W = example_16S_data[folds == 1, 1:10], 
