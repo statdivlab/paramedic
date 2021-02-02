@@ -40,6 +40,7 @@
 #' @param sigma_xi Hyperparameters specifying the variance of efficiencies 
 #'   over batches. Only used if \code{k} is greater than zero. 
 #'   Defaults to 1. (currently not used)
+#' @param ... Ignored
 #'   
 #' @return A list of \code{draws} by \code{ncol(W)} matrices (for taxon-level 
 #'   parameters) or \code{draws} by \code{nrow(W)} by \code{ncol(W)} arrays 
@@ -47,14 +48,16 @@
 #'   posterior predictive distribution. Each row of the matrices, and each 
 #'   of the first dimension of the arrays, denotes the predictions generated 
 #'   using a single draw of the model parameters from the posterior distribution.
-#'   
-#'  @export  
+#'  
+#' @aliases posterior_predict
+#' @export  
 posterior_predict.paramedic <- function(object, W = NULL, V = NULL, 
                                         X = V[, 1, drop = FALSE], 
                                         draws = NULL, 
                                         alpha_sigma = 2, kappa_sigma = 1, 
                                         alpha_phi = 0, beta_phi = 0, 
-                                        k = 0, sigma_xi = 1) {
+                                        k = 0, sigma_xi = 1,
+                                        ...) {
     # --------------
     # error messages
     # --------------
@@ -77,7 +80,7 @@ posterior_predict.paramedic <- function(object, W = NULL, V = NULL,
     # ---------------------------
     # extract relevant quantities 
     # ---------------------------
-    posterior_params <- get_pp_params_paramedic(object, draws = draws)
+    posterior_params <- get_pp_params_paramedic(object$stan_fit, draws = draws)
     
     draws <- get_pp_draws_paramedic(posterior_params, N = N, q = q, 
                                     q_obs = q_obs, d = d,

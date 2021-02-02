@@ -33,7 +33,7 @@ test_that("predictions from paramedic work (using posterior_predict.paramedic)",
         )
     )
     set.seed(1234)
-    pp <- posterior_predict.paramedic(mod, 
+    pp <- posterior_predict(mod, 
                             W = example_16S_data[folds == 2, 1:10], 
                             V = example_qPCR_data[folds == 2, ],
                             alpha_sigma = alpha_sigma, kappa_sigma = kappa_sigma, 

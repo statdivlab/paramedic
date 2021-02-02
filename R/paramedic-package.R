@@ -31,7 +31,7 @@
 #' @import methods
 #' @import Rcpp
 #' @import rstantools
-#' @importFrom rstan sampling
+#' @importFrom rstan sampling extract summary
 #' @importFrom magrittr %>%
 #'
 #' @references

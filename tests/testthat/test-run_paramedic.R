@@ -24,7 +24,7 @@ test_that("paramedic works", {
                                   n_iter = 35, n_burnin = 25, n_chains = 1, stan_seed = 4747,
                                   control = list(adapt_delta = 0.9, max_treedepth = 15)))
   # get model summary
-  mod_summ <- rstan::summary(mod, probs = c(0.025, 0.975))$summary
+  mod_summ <- summary(mod, probs = c(0.025, 0.975))$summary
   # check that mean of mu for taxon 1 is "close" to mean qPCR for taxon 1
   expect_equal(mean(mod_summ[grepl("mu", rownames(mod_summ)) & grepl(",1]", rownames(mod_summ)), 1]), 
                mean(example_qPCR_data$Gardnerella.vaginalis), tolerance = 1, 

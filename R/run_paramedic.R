@@ -86,5 +86,12 @@ run_paramedic <- function(W, V, X = V[, 1, drop = FALSE], k = 0,
     mod <- rstan::sampling(stan_model, data = data_lst, pars = pars,
                            chains = n_chains, iter = n_iter, warmup = n_burnin, seed = stan_seed,
                            init = inits_lst, ...)
-    mod
+    output <- list(
+        stan_fit = mod,
+        stan_data = data_lst,
+        stan_inits = inits_lst,
+        stan_model = stan_model,
+        summary = rstan::summary(mod, probs = c(0.025, 0.975))$summary
+    )
+    structure(output, class = "paramedic")
 }
