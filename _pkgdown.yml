@@ -7,10 +7,16 @@ reference:
       desc: "The core top-level function in paramedic."
       contents:
        - run_paramedic
+    - title: "Print and summarize paramedic objects"
+      desc: "Print and summary methods for objects of class paramedic."
+      contents:
+       - print.paramedic 
+       - summary.paramedic
     - title: "Make predictions on new data"
-      desc: "Using the posterior distribution from a paramedic fit, make predictions on new data."
+      desc: "Using the posterior distribution from a paramedic fit, make predictions on new data using either a Stan model or R."
       contents:
        - predict_paramedic
+       - posterior_predict.paramedic
     - title: "Process data and set up initial parameter values"
       desc: "Internal functions that ensure incoming data is valid and generates initial values to pass to stan"
       contents:
