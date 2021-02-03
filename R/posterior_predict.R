@@ -115,7 +115,7 @@ get_pp_params_paramedic <- function(object, draws = NULL) {
         sigma_e <- NULL
     }
     if (any(grepl("beta_1", names(ext_obj)))) {
-        beta_1 <- ext_obj$beta_1[samp, , drop = FALSE]
+        beta_1 <- ext_obj$beta_1[samp, , , drop = FALSE]
     } else {
         beta_1 <- NULL
     }
@@ -160,15 +160,13 @@ get_pp_draws_paramedic <- function(params, N = NULL, q = NULL, q_obs = NULL,
     } else {
         e <- matrix(1, nrow = nrow(params$beta_0), ncol = q)
     }
-    if (d > 0) {
-        mu_mean <- params$beta_0 + params$beta_1 %*% X
-    } else {
-        mu_mean <- params$beta_0
-    }
     # indidivual- and taxon-level; note first dimension is the draw,
     # second dimension is observation, third dimension is taxon
-    mu <- aperm(replicate(N, exp(.pp_gaussian(mu_mean, sqrt(params$Sigma)))), 
-                c(3, 2, 1))
+    mu <- aperm(sapply(1:N, FUN = function(i) {
+        mu_mean <- .get_mu_mean(d = d, X = X[i, , drop = FALSE], 
+                                params = params)
+        exp(.pp_gaussian(mu_mean, sqrt(params$Sigma)))
+    }, simplify = "array"), c(3, 2, 1))
     if (alpha_phi > 0 && beta_phi > 0) {
         V <- aperm(sapply(1:N, function(i) {
             .pp_neg_binomial(t(mu[i, , ]), params$phi)
@@ -205,6 +203,17 @@ get_pp_draws_paramedic <- function(params, N = NULL, q = NULL, q_obs = NULL,
         p <- softmax(log(mu[s, ]) + log(e[s, ]))
         rmultinom(1, size = M, prob = p)
     }))
+}
+.get_mu_mean <- function(d, X, params) {
+    if (d > 0) {
+        mu_mean <- params$beta_0 + t(sapply(1:dim(params$beta_1)[1], 
+                                            function(s) {
+                                                params$beta_1[s, , ] %*% t(X)
+                                            }))
+    } else {
+        mu_mean <- params$beta_0
+    }
+    mu_mean
 }
 softmax <- function(z) {
     exp(z) / sum(exp(z))
