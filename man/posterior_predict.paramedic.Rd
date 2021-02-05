@@ -13,6 +13,7 @@
   draws = NULL,
   alpha_sigma = 2,
   kappa_sigma = 1,
+  use_post_e = TRUE,
   alpha_phi = 0,
   beta_phi = 0,
   k = 0,
@@ -49,6 +50,11 @@ prior distribution on \eqn{\sigma_e}. Defaults to 2.}
 
 \item{kappa_sigma}{Hyperparameter specifying the scale parameter of the 
 prior distribution on \eqn{\sigma_e}. Defaults to 1.}
+
+\item{use_post_e}{A logical flag determining whether or not posterior samples 
+of \code{e} should be used in generating predictions; if \code{FALSE},
+uses posterior draws of \code{sigma_e} to generate predictions for 
+\code{e} (defaults to \code{TRUE}).}
 
 \item{alpha_phi}{Hyperparameter specifying the shape parameter of the 
 prior distribution on \eqn{\phi}. Defaults to 0; a negative binomial 

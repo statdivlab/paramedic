@@ -33,6 +33,7 @@
 #' @import rstantools
 #' @importFrom rstan sampling extract summary
 #' @importFrom magrittr %>%
+#' @importFrom stats rnorm rmultinorm rnbinom rpois
 #'
 #' @references
 #' Stan Development Team (2018). RStan: the R interface to Stan. R package version 2.17.4. http://mc-stan.org

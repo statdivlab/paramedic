@@ -75,7 +75,7 @@ run_paramedic." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">paramedic</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3.5</span>
       </span>
     </div>
 
@@ -150,6 +150,7 @@ distributions from a previously fitted model resulting from a call to
   <span class='kw'>draws</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>alpha_sigma</span> <span class='kw'>=</span> <span class='fl'>2</span>,
   <span class='kw'>kappa_sigma</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>use_post_e</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>alpha_phi</span> <span class='kw'>=</span> <span class='fl'>0</span>,
   <span class='kw'>beta_phi</span> <span class='kw'>=</span> <span class='fl'>0</span>,
   <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>0</span>,
@@ -202,6 +203,13 @@ prior distribution on \(\sigma_e\). Defaults to 2.</p></td>
       <th>kappa_sigma</th>
       <td><p>Hyperparameter specifying the scale parameter of the 
 prior distribution on \(\sigma_e\). Defaults to 1.</p></td>
+    </tr>
+    <tr>
+      <th>use_post_e</th>
+      <td><p>A logical flag determining whether or not posterior samples 
+of <code>e</code> should be used in generating predictions; if <code>FALSE</code>,
+uses posterior draws of <code>sigma_e</code> to generate predictions for 
+<code>e</code> (defaults to <code>TRUE</code>).</p></td>
     </tr>
     <tr>
       <th>alpha_phi</th>

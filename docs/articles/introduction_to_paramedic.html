@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">paramedic</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3.5</span>
       </span>
     </div>
 
@@ -89,7 +89,7 @@
 </h1>
                         <h4 class="author">Brian D. Williamson and Amy D. Willis</h4>
             
-            <h4 class="date">2021-02-03</h4>
+            <h4 class="date">2021-02-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/statdivlab/paramedic/blob/master/vignettes/introduction_to_paramedic.Rmd"><code>vignettes/introduction_to_paramedic.Rmd</code></a></small>
       <div class="hidden name"><code>introduction_to_paramedic.Rmd</code></div>
@@ -126,8 +126,8 @@
 ## rstan_options(auto_write = TRUE)</code></pre>
 <div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"paramedic"</span>)</pre></body></html></div>
 <pre><code>## Loading required package: Rcpp</code></pre>
-<pre><code>## paramedic version 0.1.3: Predicting Absolute and Relative Abundance by Modeling Efficiency to Derive Intervals and Concentrations</code></pre>
-<pre><code>## Package created on 2021-02-03</code></pre>
+<pre><code>## paramedic version 0.1.3.5: Predicting Absolute and Relative Abundance by Modeling Efficiency to Derive Intervals and Concentrations</code></pre>
+<pre><code>## Package created on 2021-02-05</code></pre>
 <p>Next, we load in some example data:</p>
 <div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">example_16S_data</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">example_qPCR_data</span>)</pre></body></html></div>
@@ -144,8 +144,8 @@
 <pre><code>## 
 ## SAMPLING FOR MODEL 'variable_efficiency' NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 8.9e-05 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.89 seconds.
+## Chain 1: Gradient evaluation took 8.8e-05 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.88 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -170,9 +170,9 @@
 ## Chain 1: Iteration: 28 / 30 [ 93%]  (Sampling)
 ## Chain 1: Iteration: 30 / 30 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.011514 seconds (Warm-up)
-## Chain 1:                0.001842 seconds (Sampling)
-## Chain 1:                0.013356 seconds (Total)
+## Chain 1:  Elapsed Time: 0.014939 seconds (Warm-up)
+## Chain 1:                0.001924 seconds (Sampling)
+## Chain 1:                0.016863 seconds (Total)
 ## Chain 1:</code></pre>
 <pre><code>## Warning: There were 1 chains where the estimated Bayesian Fraction of Missing Information was low. See
 ## http://mc-stan.org/misc/warnings.html#bfmi-low</code></pre>

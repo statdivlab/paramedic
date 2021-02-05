@@ -55,7 +55,7 @@ n_chains = 1, stan_seed = 4747)
 
 # get summary, samples
 mod_summ <- rstan::summary(mod, probs = c(0.025, 0.975))$summary
-mod_samps <- rstan::extract(mod)
+mod_samps <- rstan::extract(mod$stan_fit)
 
 # extract relevant summaries
 summs <- extract_posterior_summaries(stan_mod = mod_summ, stan_samps = mod_samps, 

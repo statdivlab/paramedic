@@ -21,7 +21,7 @@ test_that("extracting posterior summaries works", {
     # get model summary
     mod_summ <- rstan::summary(mod, probs = c(0.025, 0.975))$summary
     # get samples
-    mod_samps <- rstan::extract(mod)
+    mod_samps <- rstan::extract(mod$stan_fit)
   summs <- extract_posterior_summaries(stan_mod = mod_summ, stan_samps = mod_samps, taxa_of_interest = 1:3, mult_num = 1, level = 0.95, interval_type = "wald")
   # check that mean of mu for taxon 1 is "close" to mean qPCR for taxon 1; same for 2
   expect_equal(colMeans(summs$estimates)[1], mean(example_qPCR_data$Gardnerella.vaginalis), 

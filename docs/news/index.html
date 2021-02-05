@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">paramedic</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3.5</span>
       </span>
     </div>
 
@@ -129,19 +129,35 @@
       <small>Source: <a href='https://github.com/statdivlab/paramedic/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="paramedic-013" class="section level1">
-<h1 class="page-header" data-toc-text="0.1.3">
-<a href="#paramedic-013" class="anchor"></a>paramedic 0.1.3</h1>
+    <div id="paramedic-0135" class="section level1">
+<h1 class="page-header" data-toc-text="0.1.3.5">
+<a href="#paramedic-0135" class="anchor"></a>paramedic 0.1.3.5</h1>
 <div id="major-changes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#major-changes" class="anchor"></a>Major changes</h2>
-<ul>
-<li>added a second option for obtaining predictions on new data using a previously fitted model: the options are now <code>predict_paramedic</code> and <code>posterior_predict</code>. The former uses posterior draws and a Stan algorithm to generate predictions; the latter uses posterior draws and internal R functions to generate predictions. Both are expected to perform similarly.</li>
-</ul>
+<p>None</p>
 </div>
 <div id="minor-changes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#minor-changes" class="anchor"></a>Minor changes</h2>
+<ul>
+<li>Allow posterior draws of <code>e</code> to be used in predictions (with the flag <code>use_e = TRUE</code>, the new default in <code>posterior_predict</code>) or generate <code>e</code> based on posterior draws of <code>sigma_e</code> (obtained by setting <code>use_e = FALSE</code>)</li>
+</ul>
+</div>
+</div>
+    <div id="paramedic-013" class="section level1">
+<h1 class="page-header" data-toc-text="0.1.3">
+<a href="#paramedic-013" class="anchor"></a>paramedic 0.1.3</h1>
+<div id="major-changes-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#major-changes-1" class="anchor"></a>Major changes</h2>
+<ul>
+<li>added a second option for obtaining predictions on new data using a previously fitted model: the options are now <code>predict_paramedic</code> and <code>posterior_predict</code>. The former uses posterior draws and a Stan algorithm to generate predictions; the latter uses posterior draws and internal R functions to generate predictions. Both are expected to perform similarly.</li>
+</ul>
+</div>
+<div id="minor-changes-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-changes-1" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Updated return type of <code>run_paramedic</code> to class <code>paramedic</code>; added associated <code>print</code>, <code>summary</code> functions</li>
 </ul>
@@ -150,34 +166,34 @@
     <div id="paramedic-012" class="section level1">
 <h1 class="page-header" data-toc-text="0.1.2">
 <a href="#paramedic-012" class="anchor"></a>paramedic 0.1.2</h1>
-<div id="major-changes-1" class="section level2">
+<div id="major-changes-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-1" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-2" class="anchor"></a>Major changes</h2>
 <ul>
 <li>added ability to obtain predictions on new data using a previously fitted model using <code>predict_paramedic</code>
 </li>
 </ul>
 </div>
-<div id="minor-changes-1" class="section level2">
+<div id="minor-changes-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-1" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-2" class="anchor"></a>Minor changes</h2>
 <p>None</p>
 </div>
 </div>
     <div id="paramedic-011" class="section level1">
 <h1 class="page-header" data-toc-text="0.1.1">
 <a href="#paramedic-011" class="anchor"></a>paramedic 0.1.1</h1>
-<div id="major-changes-2" class="section level2">
+<div id="major-changes-3" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-2" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-3" class="anchor"></a>Major changes</h2>
 <ul>
 <li>added ability to run analysis adjusted for batch effects by setting argument <code>k</code> to be nonzero in <code>run_paramedic</code> (the default is zero for data collected in a single experiment)</li>
 <li>added new stan code for batch analysis</li>
 </ul>
 </div>
-<div id="minor-changes-2" class="section level2">
+<div id="minor-changes-3" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-2" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-3" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>reorganized stan code into directories, since much of the code was shared between models; the new organization uses <code>#include</code> statements, and the shared code is stored in <code>data/</code> (sets up data objects), <code>parameters/</code> (sets up model parameters), <code>tparameters/</code> (sets up transformed parameters), and <code>model/</code> (sets up hierarchical model for shared parameters)</li>
 </ul>
@@ -186,9 +202,9 @@
     <div id="paramedic-010" class="section level1">
 <h1 class="page-header" data-toc-text="0.1.0">
 <a href="#paramedic-010" class="anchor"></a>paramedic 0.1.0</h1>
-<div id="major-changes-3" class="section level2">
+<div id="major-changes-4" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-3" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-4" class="anchor"></a>Major changes</h2>
 <ul>
 <li>removed function <code>run_paramedic_centered</code>; the desired behavior can now be obtained by using <code>run_paramedic</code> with the argument <code>"centered = TRUE"</code>
 </li>
@@ -198,9 +214,9 @@
 </li>
 </ul>
 </div>
-<div id="minor-changes-3" class="section level2">
+<div id="minor-changes-4" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-3" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-4" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>updated all tests to reflect major changes</li>
 <li>added vignette discussing hierarchical model specification</li>
@@ -211,23 +227,6 @@
     <div id="paramedic-003900" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.3.900">
 <a href="#paramedic-003900" class="anchor"></a>paramedic 0.0.3.900</h1>
-<div id="major-changes-4" class="section level2">
-<h2 class="hasAnchor">
-<a href="#major-changes-4" class="anchor"></a>Major changes</h2>
-<p>None</p>
-</div>
-<div id="minor-changes-4" class="section level2">
-<h2 class="hasAnchor">
-<a href="#minor-changes-4" class="anchor"></a>Minor changes</h2>
-<ul>
-<li>new internal functions to reduce replicating code within key functions</li>
-<li>new <code>stan</code> model for specifying a negative binomial distribution on V</li>
-</ul>
-</div>
-</div>
-    <div id="paramedic-003" class="section level1">
-<h1 class="page-header" data-toc-text="0.0.3">
-<a href="#paramedic-003" class="anchor"></a>paramedic 0.0.3</h1>
 <div id="major-changes-5" class="section level2">
 <h2 class="hasAnchor">
 <a href="#major-changes-5" class="anchor"></a>Major changes</h2>
@@ -237,6 +236,23 @@
 <h2 class="hasAnchor">
 <a href="#minor-changes-5" class="anchor"></a>Minor changes</h2>
 <ul>
+<li>new internal functions to reduce replicating code within key functions</li>
+<li>new <code>stan</code> model for specifying a negative binomial distribution on V</li>
+</ul>
+</div>
+</div>
+    <div id="paramedic-003" class="section level1">
+<h1 class="page-header" data-toc-text="0.0.3">
+<a href="#paramedic-003" class="anchor"></a>paramedic 0.0.3</h1>
+<div id="major-changes-6" class="section level2">
+<h2 class="hasAnchor">
+<a href="#major-changes-6" class="anchor"></a>Major changes</h2>
+<p>None</p>
+</div>
+<div id="minor-changes-6" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-changes-6" class="anchor"></a>Minor changes</h2>
+<ul>
 <li>update internal <code>Stan</code> models to use log densities and unconstrained parameters, then back-transform after sampling</li>
 </ul>
 </div>
@@ -244,30 +260,30 @@
     <div id="paramedic-002" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.2">
 <a href="#paramedic-002" class="anchor"></a>paramedic 0.0.2</h1>
-<div id="major-changes-6" class="section level2">
+<div id="major-changes-7" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-6" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-7" class="anchor"></a>Major changes</h2>
 <ul>
 <li>allow an option to adjust for covariates</li>
 </ul>
 </div>
-<div id="minor-changes-6" class="section level2">
+<div id="minor-changes-7" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-6" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-7" class="anchor"></a>Minor changes</h2>
 <p>None</p>
 </div>
 </div>
     <div id="paramedic-001" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.1">
 <a href="#paramedic-001" class="anchor"></a>paramedic 0.0.1</h1>
-<div id="major-changes-7" class="section level2">
+<div id="major-changes-8" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-7" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-8" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-7" class="section level2">
+<div id="minor-changes-8" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-7" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-8" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>allow <code>run_paramedic</code> with <code>q</code> = <code>q_obs</code>
 </li>

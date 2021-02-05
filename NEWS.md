@@ -1,3 +1,13 @@
+# paramedic 0.1.3.5
+
+## Major changes
+
+None
+
+## Minor changes
+
+* Allow posterior draws of `e` to be used in predictions (with the flag `use_e = TRUE`, the new default in `posterior_predict`) or generate `e` based on posterior draws of `sigma_e` (obtained by setting `use_e = FALSE`)
+
 # paramedic 0.1.3
 
 ## Major changes

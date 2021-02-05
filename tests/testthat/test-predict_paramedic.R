@@ -61,7 +61,7 @@ test_that("predictions from paramedic work (using new stan model)", {
             )
         )
     # get posterior distributions
-    ext_mod <- rstan::extract(mod)
+    ext_mod <- rstan::extract(mod$stan_fit)
     beta0_post <- ext_mod$beta_0
     sigma_post <- ext_mod$Sigma
     sigmae_post <- ext_mod$sigma_e

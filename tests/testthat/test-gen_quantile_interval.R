@@ -21,7 +21,7 @@ test_that("quantile intervals work", {
   # get model summary
   mod_summ <- rstan::summary(mod, probs = c(0.025, 0.975))$summary
   # get samples
-  mod_samps <- rstan::extract(mod)
+  mod_samps <- rstan::extract(mod$stan_fit)
   summs <- extract_posterior_summaries(stan_mod = mod_summ, stan_samps = mod_samps, taxa_of_interest = 1:3, mult_num = 1, level = 0.95, interval_type = "quantile")
   # check that I have proper dimension of intervals
   expect_equal(dim(summs$pred_intervals), c(dim(example_16S_data)[1], 2, length(1:3)))

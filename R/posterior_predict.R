@@ -27,6 +27,10 @@
 #'   prior distribution on \eqn{\sigma_e}. Defaults to 2.
 #' @param kappa_sigma Hyperparameter specifying the scale parameter of the 
 #'   prior distribution on \eqn{\sigma_e}. Defaults to 1.
+#' @param use_post_e A logical flag determining whether or not posterior samples 
+#'   of \code{e} should be used in generating predictions; if \code{FALSE},
+#'   uses posterior draws of \code{sigma_e} to generate predictions for 
+#'   \code{e} (defaults to \code{TRUE}).
 #' @param alpha_phi Hyperparameter specifying the shape parameter of the 
 #'   prior distribution on \eqn{\phi}. Defaults to 0; a negative binomial 
 #'   model can be specified if both \code{alpha_phi} and \code{beta_phi} are 
@@ -54,7 +58,8 @@
 posterior_predict.paramedic <- function(object, W = NULL, V = NULL, 
                                         X = V[, 1, drop = FALSE], 
                                         draws = NULL, 
-                                        alpha_sigma = 2, kappa_sigma = 1, 
+                                        alpha_sigma = 2, kappa_sigma = 1,
+                                        use_post_e = TRUE,
                                         alpha_phi = 0, beta_phi = 0, 
                                         k = 0, sigma_xi = 1,
                                         ...) {
@@ -87,6 +92,7 @@ posterior_predict.paramedic <- function(object, W = NULL, V = NULL,
                                     X = X_mat, M = M,
                                     alpha_sigma = alpha_sigma, 
                                     kappa_sigma = kappa_sigma, 
+                                    use_post_e = use_post_e,
                                     alpha_phi = alpha_phi, 
                                     beta_phi = beta_phi)
     structure(draws, class = c("ppd", class(draws)))
@@ -111,8 +117,10 @@ get_pp_params_paramedic <- function(object, draws = NULL) {
     Sigma <- ext_obj$Sigma[samp, , drop = FALSE]
     if (any(grepl("sigma_e", names(ext_obj)))) {
         sigma_e <- ext_obj$sigma_e[samp]
+        e <- ext_obj$e[samp, ]
     } else {
         sigma_e <- NULL
+        e <- NULL
     }
     if (any(grepl("beta_1", names(ext_obj)))) {
         beta_1 <- ext_obj$beta_1[samp, , , drop = FALSE]
@@ -124,8 +132,8 @@ get_pp_params_paramedic <- function(object, draws = NULL) {
     } else {
         phi <- NULL
     }
-    list(beta_0 = beta_0, Sigma = Sigma, sigma_e = sigma_e, beta_1 = beta_1,
-         phi = phi)
+    list(beta_0 = beta_0, Sigma = Sigma, sigma_e = sigma_e, e = e, 
+         beta_1 = beta_1, phi = phi)
 }
 
 # Draw from posterior predictive distribution
@@ -140,6 +148,9 @@ get_pp_params_paramedic <- function(object, draws = NULL) {
 #   prior distribution on \eqn{\sigma_e}. Defaults to 2.
 # @param kappa_sigma Hyperparameter specifying the scale parameter of the 
 #   prior distribution on \eqn{\sigma_e}. Defaults to 1.
+# @param use_post_e A logical flag; if TRUE, use posterior draws from e; if 
+#               FALSE, use posterior draws from sigma_e to generate e.
+#               Defaults to TRUE.
 # @param alpha_phi Hyperparameter specifying the shape parameter of the 
 #   prior distribution on \eqn{\phi}. Defaults to 0; a negative binomial 
 #   model can be specified if both \code{alpha_phi} and \code{beta_phi} are 
@@ -151,12 +162,17 @@ get_pp_draws_paramedic <- function(params, N = NULL, q = NULL, q_obs = NULL,
                                    d = 0,
                                    X = NULL, M = NULL,
                                    alpha_sigma = 2, kappa_sigma = 1, 
+                                   use_post_e = TRUE,
                                    alpha_phi = 0, beta_phi = 0) {
     # taxon-level
     if (alpha_sigma > 0 && kappa_sigma > 0) {
-        e <- exp(.pp_gaussian(matrix(0, nrow = length(params$sigma_e),
-                                     ncol = q), 
-                              sqrt(params$sigma_e))) 
+        if (use_post_e) {
+            e <- params$e
+        } else {
+            e <- exp(.pp_gaussian(matrix(0, nrow = length(params$sigma_e),
+                                         ncol = q), 
+                                  sqrt(params$sigma_e)))     
+        }
     } else {
         e <- matrix(1, nrow = nrow(params$beta_0), ncol = q)
     }
