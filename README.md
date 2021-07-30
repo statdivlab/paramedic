@@ -64,14 +64,14 @@ stan_mod <- run_paramedic(W = example_16S_data[, 1:8], V = example_qPCR_data,
                       n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
                       control = list(adapt_delta = 0.85, max_treedepth = 15),
                       verbose = FALSE)
-stan_mod_summ <- summary(stan_mod, probs = c(0.025, 0.975))$summary
-stan_mod_samps <- extract(stan_mod)
+stan_mod_summ <- summary(stan_mod$stan_fit, probs = c(0.025, 0.975))$summary
+stan_mod_samps <- extract(stan_mod$stan_fit)
 
 ## -------------------------------------------------------------
 ## Extract posterior estimates for the taxon missing abolute abundance data
 ## -------------------------------------------------------------
 posterior_summaries <- extract_posterior_summaries(stan_mod_summ, stan_mod_samps,
-                                                   taxa_of_interest = 9, mult_num = 1,
+                                                   taxa_of_interest = 7, mult_num = 1,
                                                    level = 0.95, interval_type = "wald")
 
 ## -------------------------------------------------------------
