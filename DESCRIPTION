@@ -1,6 +1,6 @@
 Package: paramedic
 Title: Predicting Absolute and Relative Abundance by Modeling Efficiency to Derive Intervals and Concentrations
-Version: 0.1.3.5
+Version: 0.1.3.6
 Authors@R:
     c(person(given = "Brian D.",
              family = "Williamson",
