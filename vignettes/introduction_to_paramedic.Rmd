@@ -92,3 +92,25 @@ This output shows that we have point estimates for the true concentration of eac
 ## Specifying different hierarchical models
 
 For details on the hierarchical modelling options available in `paramedic`, see [the vignette on hierarchical model specificaion](hierarchical_model_specification.html).
+
+## Running analyses in parallel
+
+`RStan` supports parallelization, which we can use within `paramedic` to speed up computation. In the following example, we re-analyze the data referenced above, but run the models in parallel. Depending on the number of cores on your machine, this can result in significant reductions in computation time.
+
+```{r run-paramedic-parallel}
+# parallel::detectCores() will run with multiple cores if available
+# follow the steps in the RStan documentation
+# (https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started#how-to-use-rstan)
+options(mc.cores = parallel::detectCores())
+rstan_options(auto_write = TRUE)
+## -------------------------------------------------------------
+## Obtain estimates of concentration for the first seven taxa
+## -------------------------------------------------------------
+## this is a small number of iterations, only for illustration
+## also, shows how to use control parameters for rstan::stan
+mod <- paramedic::run_paramedic(W = example_16S_data[, 1:8], V = example_qPCR_data,
+    n_iter = 30, n_burnin = 25, n_chains = 1, stan_seed = 4747,
+    control = list(max_treedepth = 15))
+mod_summ <- summary(mod$stan_fit, probs = c(0.025, 0.975))$summary
+mod_samps <- extract(mod$stan_fit)
+```
