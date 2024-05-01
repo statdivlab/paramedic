@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,23 +33,17 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">paramedic</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.3.6</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -67,8 +63,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/statdivlab/paramedic/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="https://github.com/statdivlab/paramedic/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -82,149 +78,262 @@
 
       
 
-      </header><script src="introduction_to_paramedic_files/header-attrs-2.4/header-attrs.js"></script><script src="introduction_to_paramedic_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Introduction to <code>paramedic</code>
 </h1>
-                        <h4 class="author">Brian D. Williamson and Amy D. Willis</h4>
+                        <h4 data-toc-skip class="author">Brian D.
+Williamson and Amy D. Willis</h4>
             
-            <h4 class="date">2021-06-28</h4>
+            <h4 data-toc-skip class="date">2024-05-01</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/statdivlab/paramedic/blob/master/vignettes/introduction_to_paramedic.Rmd"><code>vignettes/introduction_to_paramedic.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/statdivlab/paramedic/blob/HEAD/vignettes/introduction_to_paramedic.Rmd" class="external-link"><code>vignettes/introduction_to_paramedic.Rmd</code></a></small>
       <div class="hidden name"><code>introduction_to_paramedic.Rmd</code></div>
 
     </div>
 
     
     
-<div id="introduction" class="section level2">
-<h2 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h2>
-<p><code>paramedic</code> is a <code>R</code> package for estimating microbial concentration. <code>paramedic</code> uses information from 16S count data (compositional data on all taxa) and absolute data on a subset of taxa (e.g., qPCR or flow cytometry) to estimate the absolute abundance of all taxa. The method accounts for differing taxon detection efficiencies between the two methods, and produces prediction and confidence intervals as well as point estimates of the absolute abundance of all taxa.</p>
-<p>The author and maintainer of the <code>paramedic</code> package is <a href="https://bdwilliamson.github.io/">Brian Williamson</a>. For details on the method, check out <a href="https://www.biorxiv.org/content/10.1101/761486v1">our preprint</a>.</p>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
+<p><code>paramedic</code> is a <code>R</code> package for estimating
+microbial concentration. <code>paramedic</code> uses information from
+16S count data (compositional data on all taxa) and absolute data on a
+subset of taxa (e.g., qPCR or flow cytometry) to estimate the absolute
+abundance of all taxa. The method accounts for differing taxon detection
+efficiencies between the two methods, and produces prediction and
+confidence intervals as well as point estimates of the absolute
+abundance of all taxa.</p>
+<p>The author and maintainer of the <code>paramedic</code> package is <a href="https://bdwilliamson.github.io/" class="external-link">Brian Williamson</a>. For details
+on the method, check out <a href="https://pubmed.ncbi.nlm.nih.gov/34048057/" class="external-link">our paper</a>.</p>
 </div>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
-<p>Currently, the package may only be downloaded and installed from GitHub using the <code>devtools</code> package. Type the following commands in your R console to install <code>devtools</code> and <code>paramedic</code> as needed:</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"># install.packages("devtools")
-# devtools::install_github("statdivlab/paramedic@main")</pre></body></html></div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>Currently, the package may only be downloaded and installed from
+GitHub using the <code>devtools</code> package. Type the following
+commands in your R console to install <code>devtools</code> and
+<code>paramedic</code> as needed:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="co"># devtools::install_github("statdivlab/paramedic@main")</span></span></code></pre></div>
 </div>
-<div id="quick-start" class="section level2">
-<h2 class="hasAnchor">
-<a href="#quick-start" class="anchor"></a>Quick Start</h2>
-<p>This section should serve as a quick guide to using the <code>paramedic</code> package – we will cover the main functions using a data example.</p>
-<p>First, load the <code>paramedic</code> and <code>rstan</code> packages:</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"rstan"</span>)</pre></body></html></div>
-<pre><code>## Loading required package: StanHeaders</code></pre>
-<pre><code>## Loading required package: ggplot2</code></pre>
-<pre><code>## rstan (Version 2.21.2, GitRev: 2e1f913d3ca3)</code></pre>
-<pre><code>## For execution on a local, multicore CPU with excess RAM we recommend calling
-## options(mc.cores = parallel::detectCores()).
-## To avoid recompilation of unchanged Stan programs, we recommend calling
-## rstan_options(auto_write = TRUE)</code></pre>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"paramedic"</span>)</pre></body></html></div>
-<pre><code>## Loading required package: Rcpp</code></pre>
-<pre><code>## paramedic version 0.1.3.5: Predicting Absolute and Relative Abundance by Modeling Efficiency to Derive Intervals and Concentrations</code></pre>
-<pre><code>## Package created on 2021-06-28</code></pre>
+<div class="section level2">
+<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+</h2>
+<p>This section should serve as a quick guide to using the
+<code>paramedic</code> package – we will cover the main functions using
+a data example.</p>
+<p>First, load the <code>paramedic</code> and <code>rstan</code>
+packages:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://mc-stan.org/rstan/" class="external-link">"rstan"</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: package 'rstan' was built under R version 4.3.2</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required package: StanHeaders</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: package 'StanHeaders' was built under R version 4.3.2</span></span></code></pre>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## rstan version 2.32.5 (Stan version 2.32.2)</span></span></code></pre>
+<pre><code><span><span class="co">## For execution on a local, multicore CPU with excess RAM we recommend calling</span></span>
+<span><span class="co">## options(mc.cores = parallel::detectCores()).</span></span>
+<span><span class="co">## To avoid recompilation of unchanged Stan programs, we recommend calling</span></span>
+<span><span class="co">## rstan_options(auto_write = TRUE)</span></span>
+<span><span class="co">## For within-chain threading using `reduce_sum()` or `map_rect()` Stan functions,</span></span>
+<span><span class="co">## change `threads_per_chain` option:</span></span>
+<span><span class="co">## rstan_options(threads_per_chain = 1)</span></span></code></pre>
+<pre><code><span><span class="co">## Do not specify '-march=native' in 'LOCAL_CPPFLAGS' or a Makevars file</span></span></code></pre>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://statdivlab.github.io/paramedic">"paramedic"</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Loading required package: Rcpp</span></span></code></pre>
+<pre><code><span><span class="co">## paramedic version 0.1.3.5: Predicting Absolute and Relative Abundance by Modeling</span></span>
+<span><span class="co">## Efficiency to Derive Intervals and Concentrations</span></span></code></pre>
+<pre><code><span><span class="co">## Package created on 2023-12-26</span></span></code></pre>
 <p>Next, we load in some example data:</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">example_16S_data</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">example_qPCR_data</span>)</pre></body></html></div>
-<p><code>example_16S_data</code> is a matrix of <code>q = 433</code> taxa observed from 16S sequencing in <code>n = 20</code> samples. We do not have primers to observe the concentration of all taxa, but we can do this for <code>q_obs = 7</code> taxa. The observed concentration of the 7 taxa in the 20 samples (in 16S gene copies per unit volume) is in <code>example_qPCR_data</code>. These data mimic data observed by the University of Washington (UW) Sexually Transmitted Infections Cooperative Research Center (STICRC).</p>
-<p>We are now ready to estimate concentrations. We pass the data to <code>run_paramedic</code>, the workhorse function of the package:</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="co">## -------------------------------------------------------------</span>
-<span class="co">## Obtain estimates of concentration for the first seven taxa</span>
-<span class="co">## -------------------------------------------------------------</span>
-<span class="co">## this is a small number of iterations, only for illustration</span>
-<span class="co">## also, shows how to use control parameters for rstan::stan</span>
-<span class="no">mod</span> <span class="kw">&lt;-</span> <span class="kw pkg">paramedic</span><span class="kw ns">::</span><span class="fu"><a href="../reference/run_paramedic.html">run_paramedic</a></span>(<span class="kw">W</span> <span class="kw">=</span> <span class="no">example_16S_data</span>[, <span class="fl">1</span>:<span class="fl">8</span>], <span class="kw">V</span> <span class="kw">=</span> <span class="no">example_qPCR_data</span>,
-    <span class="kw">n_iter</span> <span class="kw">=</span> <span class="fl">30</span>, <span class="kw">n_burnin</span> <span class="kw">=</span> <span class="fl">25</span>, <span class="kw">n_chains</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">stan_seed</span> <span class="kw">=</span> <span class="fl">4747</span>,
-    <span class="kw">control</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">max_treedepth</span> <span class="kw">=</span> <span class="fl">15</span>))</pre></body></html></div>
-<pre><code>## 
-## SAMPLING FOR MODEL 'variable_efficiency' NOW (CHAIN 1).
-## Chain 1: 
-## Chain 1: Gradient evaluation took 8.5e-05 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.85 seconds.
-## Chain 1: Adjust your expectations accordingly!
-## Chain 1: 
-## Chain 1: 
-## Chain 1: WARNING: There aren't enough warmup iterations to fit the
-## Chain 1:          three stages of adaptation as currently configured.
-## Chain 1:          Reducing each adaptation stage to 15%/75%/10% of
-## Chain 1:          the given number of warmup iterations:
-## Chain 1:            init_buffer = 3
-## Chain 1:            adapt_window = 20
-## Chain 1:            term_buffer = 2
-## Chain 1: 
-## Chain 1: Iteration:  1 / 30 [  3%]  (Warmup)
-## Chain 1: Iteration:  3 / 30 [ 10%]  (Warmup)
-## Chain 1: Iteration:  6 / 30 [ 20%]  (Warmup)
-## Chain 1: Iteration:  9 / 30 [ 30%]  (Warmup)
-## Chain 1: Iteration: 12 / 30 [ 40%]  (Warmup)
-## Chain 1: Iteration: 15 / 30 [ 50%]  (Warmup)
-## Chain 1: Iteration: 18 / 30 [ 60%]  (Warmup)
-## Chain 1: Iteration: 21 / 30 [ 70%]  (Warmup)
-## Chain 1: Iteration: 24 / 30 [ 80%]  (Warmup)
-## Chain 1: Iteration: 26 / 30 [ 86%]  (Sampling)
-## Chain 1: Iteration: 28 / 30 [ 93%]  (Sampling)
-## Chain 1: Iteration: 30 / 30 [100%]  (Sampling)
-## Chain 1: 
-## Chain 1:  Elapsed Time: 0.010518 seconds (Warm-up)
-## Chain 1:                0.001636 seconds (Sampling)
-## Chain 1:                0.012154 seconds (Total)
-## Chain 1:</code></pre>
-<pre><code>## Warning: There were 1 chains where the estimated Bayesian Fraction of Missing Information was low. See
-## http://mc-stan.org/misc/warnings.html#bfmi-low</code></pre>
-<pre><code>## Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
-<pre><code>## Warning: The largest R-hat is 1.9, indicating chains have not mixed.
-## Running the chains for more iterations may help. See
-## http://mc-stan.org/misc/warnings.html#r-hat</code></pre>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">mod_summ</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">mod</span>$<span class="no">stan_fit</span>, <span class="kw">probs</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>))$<span class="no">summary</span>
-<span class="no">mod_samps</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://mc-stan.org/rstan/reference/stanfit-method-extract.html">extract</a></span>(<span class="no">mod</span>$<span class="no">stan_fit</span>)</pre></body></html></div>
-<p>The output from <code>run_paramedic</code> may be manipulated as any output from <code><a href="https://mc-stan.org/rstan/reference/stan.html">rstan::stan</a></code> might; however, there are certain posterior summaries that are of particular interest in this problem, namely the posterior mean estimates of concentrations and efficiencies, along with interval estimates for these quantities. The next function extracts these point and interval estimators:</p>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="co">## -------------------------------------------------------------</span>
-<span class="co">## Extract posterior estimates for the first three taxa</span>
-<span class="co">## -------------------------------------------------------------</span>
-<span class="no">summs</span> <span class="kw">&lt;-</span> <span class="kw pkg">paramedic</span><span class="kw ns">::</span><span class="fu"><a href="../reference/extract_posterior_summaries.html">extract_posterior_summaries</a></span>(<span class="kw">stan_mod</span> <span class="kw">=</span> <span class="no">mod_summ</span>,
-    <span class="kw">stan_samps</span> <span class="kw">=</span> <span class="no">mod_samps</span>,
-    <span class="kw">taxa_of_interest</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">3</span>, <span class="kw">mult_num</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">level</span> <span class="kw">=</span> <span class="fl">0.95</span>,
-    <span class="kw">interval_type</span> <span class="kw">=</span> <span class="st">"wald"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">example_16S_data</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">example_qPCR_data</span><span class="op">)</span></span></code></pre></div>
+<p><code>example_16S_data</code> is a matrix of <code>q = 433</code>
+taxa observed from 16S sequencing in <code>n = 20</code> samples. We do
+not have primers to observe the concentration of all taxa, but we can do
+this for <code>q_obs = 7</code> taxa. The observed concentration of the
+7 taxa in the 20 samples (in 16S gene copies per unit volume) is in
+<code>example_qPCR_data</code>. These data mimic data observed by the
+University of Washington (UW) Sexually Transmitted Infections
+Cooperative Research Center (STICRC).</p>
+<p>We are now ready to estimate concentrations. We pass the data to
+<code>run_paramedic</code>, the workhorse function of the package:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## -------------------------------------------------------------</span></span>
+<span><span class="co">## Obtain estimates of concentration for the first seven taxa</span></span>
+<span><span class="co">## -------------------------------------------------------------</span></span>
+<span><span class="co">## this is a small number of iterations, only for illustration</span></span>
+<span><span class="co">## also, shows how to use control parameters for rstan::stan</span></span>
+<span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu">paramedic</span><span class="fu">::</span><span class="fu"><a href="../reference/run_paramedic.html">run_paramedic</a></span><span class="op">(</span>W <span class="op">=</span> <span class="va">example_16S_data</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span>, V <span class="op">=</span> <span class="va">example_qPCR_data</span>,</span>
+<span>    n_iter <span class="op">=</span> <span class="fl">30</span>, n_burnin <span class="op">=</span> <span class="fl">25</span>, n_chains <span class="op">=</span> <span class="fl">1</span>, stan_seed <span class="op">=</span> <span class="fl">4747</span>,</span>
+<span>    control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>max_treedepth <span class="op">=</span> <span class="fl">15</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## SAMPLING FOR MODEL 'variable_efficiency' NOW (CHAIN 1).</span></span>
+<span><span class="co">## Chain 1: </span></span>
+<span><span class="co">## Chain 1: Gradient evaluation took 0.000154 seconds</span></span>
+<span><span class="co">## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 1.54 seconds.</span></span>
+<span><span class="co">## Chain 1: Adjust your expectations accordingly!</span></span>
+<span><span class="co">## Chain 1: </span></span>
+<span><span class="co">## Chain 1: </span></span>
+<span><span class="co">## Chain 1: WARNING: There aren't enough warmup iterations to fit the</span></span>
+<span><span class="co">## Chain 1:          three stages of adaptation as currently configured.</span></span>
+<span><span class="co">## Chain 1:          Reducing each adaptation stage to 15%/75%/10% of</span></span>
+<span><span class="co">## Chain 1:          the given number of warmup iterations:</span></span>
+<span><span class="co">## Chain 1:            init_buffer = 3</span></span>
+<span><span class="co">## Chain 1:            adapt_window = 20</span></span>
+<span><span class="co">## Chain 1:            term_buffer = 2</span></span>
+<span><span class="co">## Chain 1: </span></span>
+<span><span class="co">## Chain 1: Iteration:  1 / 30 [  3%]  (Warmup)</span></span>
+<span><span class="co">## Chain 1: Iteration:  3 / 30 [ 10%]  (Warmup)</span></span>
+<span><span class="co">## Chain 1: Iteration:  6 / 30 [ 20%]  (Warmup)</span></span>
+<span><span class="co">## Chain 1: Iteration:  9 / 30 [ 30%]  (Warmup)</span></span>
+<span><span class="co">## Chain 1: Iteration: 12 / 30 [ 40%]  (Warmup)</span></span>
+<span><span class="co">## Chain 1: Iteration: 15 / 30 [ 50%]  (Warmup)</span></span>
+<span><span class="co">## Chain 1: Iteration: 18 / 30 [ 60%]  (Warmup)</span></span>
+<span><span class="co">## Chain 1: Iteration: 21 / 30 [ 70%]  (Warmup)</span></span>
+<span><span class="co">## Chain 1: Iteration: 24 / 30 [ 80%]  (Warmup)</span></span>
+<span><span class="co">## Chain 1: Iteration: 26 / 30 [ 86%]  (Sampling)</span></span>
+<span><span class="co">## Chain 1: Iteration: 28 / 30 [ 93%]  (Sampling)</span></span>
+<span><span class="co">## Chain 1: Iteration: 30 / 30 [100%]  (Sampling)</span></span>
+<span><span class="co">## Chain 1: </span></span>
+<span><span class="co">## Chain 1:  Elapsed Time: 0.019 seconds (Warm-up)</span></span>
+<span><span class="co">## Chain 1:                0.002 seconds (Sampling)</span></span>
+<span><span class="co">## Chain 1:                0.021 seconds (Total)</span></span>
+<span><span class="co">## Chain 1:</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: There were 1 chains where the estimated Bayesian Fraction of Missing Information was low. See</span></span>
+<span><span class="co">## https://mc-stan.org/misc/warnings.html#bfmi-low</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: Examine the pairs() plot to diagnose sampling problems</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: The largest R-hat is 1.9, indicating chains have not mixed.</span></span>
+<span><span class="co">## Running the chains for more iterations may help. See</span></span>
+<span><span class="co">## https://mc-stan.org/misc/warnings.html#r-hat</span></span></code></pre>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mod_summ</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mod</span><span class="op">$</span><span class="va">stan_fit</span>, probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.975</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">summary</span></span>
+<span><span class="va">mod_samps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://mc-stan.org/rstan/reference/stanfit-method-extract.html" class="external-link">extract</a></span><span class="op">(</span><span class="va">mod</span><span class="op">$</span><span class="va">stan_fit</span><span class="op">)</span></span></code></pre></div>
+<p>The output from <code>run_paramedic</code> may be manipulated as any
+output from <code><a href="https://mc-stan.org/rstan/reference/stan.html" class="external-link">rstan::stan</a></code> might; however, there are certain
+posterior summaries that are of particular interest in this problem,
+namely the posterior mean estimates of concentrations and efficiencies,
+along with interval estimates for these quantities. The next function
+extracts these point and interval estimators:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## -------------------------------------------------------------</span></span>
+<span><span class="co">## Extract posterior estimates for the first three taxa</span></span>
+<span><span class="co">## -------------------------------------------------------------</span></span>
+<span><span class="va">summs</span> <span class="op">&lt;-</span> <span class="fu">paramedic</span><span class="fu">::</span><span class="fu"><a href="../reference/extract_posterior_summaries.html">extract_posterior_summaries</a></span><span class="op">(</span>stan_mod <span class="op">=</span> <span class="va">mod_summ</span>,</span>
+<span>    stan_samps <span class="op">=</span> <span class="va">mod_samps</span>,</span>
+<span>    taxa_of_interest <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, mult_num <span class="op">=</span> <span class="fl">1</span>, level <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>    interval_type <span class="op">=</span> <span class="st">"wald"</span><span class="op">)</span></span></code></pre></div>
 <p>and we may finally print them out:</p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="co">## -------------------------------------------------------------</span>
-<span class="co">## Print out the posterior mean efficiencies and concentrations</span>
-<span class="co">## -------------------------------------------------------------</span>
-<span class="no">summs</span>$<span class="no">estimates</span></pre></body></html></div>
-<pre><code>##            [,1]         [,2]         [,3]
-## 1  3.332132e-01 3.689357e+02 2.106022e-01
-## 2  1.298799e-01 2.284346e+02 6.373446e-02
-## 3  1.555831e+00 1.455176e+02 1.036781e+00
-## 4  2.461307e+01 2.225623e-03 1.729249e-02
-## 5  7.215584e+01 4.040974e+01 7.283377e-01
-## 6  2.593184e+02 1.042068e+00 2.322630e-02
-## 7  4.024012e+01 8.902963e-03 2.728638e-02
-## 8  1.487867e-03 2.225860e-03 1.564062e+00
-## 9  4.014350e-01 7.589127e+03 1.876758e-03
-## 10 2.479431e-04 2.225652e-03 1.943784e+00
-## 11 1.200725e+02 3.636011e+02 6.481326e+00
-## 12 3.687596e+02 3.899757e+01 8.026380e+00
-## 13 3.305934e-04 8.645593e+03 2.069066e-05
-## 14 4.439689e-02 2.225763e-03 3.342122e+00
-## 15 1.652900e-04 4.451806e-03 3.650459e+00
-## 16 7.306072e+00 4.452018e-03 1.588019e+00
-## 17 1.821682e+02 8.459541e-02 4.385349e-01
-## 18 2.479394e-04 2.225623e-03 1.193138e-06
-## 19 3.305873e-04 2.225753e-03 1.112984e+00
-## 20 5.347797e-01 4.451798e-03 2.236127e+00</code></pre>
-<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">summs</span>$<span class="no">est_efficiency</span></pre></body></html></div>
-<pre><code>##      e[1]      e[2]      e[3]      e[4]      e[5]      e[6]      e[7]   sigma_e 
-## 0.1815300 0.1583407 0.1388907 0.5119174 0.2135972 0.1740900 1.7257625 3.2414754</code></pre>
-<p>This output shows that we have point estimates for the true concentration of each taxon within each participant, and the efficiencies of each taxon comparing br16S to qPCR.</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## -------------------------------------------------------------</span></span>
+<span><span class="co">## Print out the posterior mean efficiencies and concentrations</span></span>
+<span><span class="co">## -------------------------------------------------------------</span></span>
+<span><span class="va">summs</span><span class="op">$</span><span class="va">estimates</span></span></code></pre></div>
+<pre><code><span><span class="co">##            [,1]         [,2]         [,3]</span></span>
+<span><span class="co">## 1  3.332132e-01 3.689357e+02 2.106022e-01</span></span>
+<span><span class="co">## 2  1.298799e-01 2.284346e+02 6.373446e-02</span></span>
+<span><span class="co">## 3  1.555831e+00 1.455176e+02 1.036781e+00</span></span>
+<span><span class="co">## 4  2.461307e+01 2.225623e-03 1.729249e-02</span></span>
+<span><span class="co">## 5  7.215584e+01 4.040974e+01 7.283377e-01</span></span>
+<span><span class="co">## 6  2.593184e+02 1.042068e+00 2.322630e-02</span></span>
+<span><span class="co">## 7  4.024012e+01 8.902963e-03 2.728638e-02</span></span>
+<span><span class="co">## 8  1.487867e-03 2.225860e-03 1.564062e+00</span></span>
+<span><span class="co">## 9  4.014350e-01 7.589127e+03 1.876758e-03</span></span>
+<span><span class="co">## 10 2.479431e-04 2.225652e-03 1.943784e+00</span></span>
+<span><span class="co">## 11 1.200725e+02 3.636011e+02 6.481326e+00</span></span>
+<span><span class="co">## 12 3.687596e+02 3.899757e+01 8.026380e+00</span></span>
+<span><span class="co">## 13 3.305934e-04 8.645593e+03 2.069066e-05</span></span>
+<span><span class="co">## 14 4.439689e-02 2.225763e-03 3.342122e+00</span></span>
+<span><span class="co">## 15 1.652900e-04 4.451806e-03 3.650459e+00</span></span>
+<span><span class="co">## 16 7.306072e+00 4.452018e-03 1.588019e+00</span></span>
+<span><span class="co">## 17 1.821682e+02 8.459541e-02 4.385349e-01</span></span>
+<span><span class="co">## 18 2.479394e-04 2.225623e-03 1.193138e-06</span></span>
+<span><span class="co">## 19 3.305873e-04 2.225753e-03 1.112984e+00</span></span>
+<span><span class="co">## 20 5.347797e-01 4.451798e-03 2.236127e+00</span></span></code></pre>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">summs</span><span class="op">$</span><span class="va">est_efficiency</span></span></code></pre></div>
+<pre><code><span><span class="co">##      e[1]      e[2]      e[3]      e[4]      e[5]      e[6]      e[7]   sigma_e </span></span>
+<span><span class="co">## 0.1815300 0.1583407 0.1388907 0.5119174 0.2135972 0.1740900 1.7257625 3.2414754</span></span></code></pre>
+<p>This output shows that we have point estimates for the true
+concentration of each taxon within each participant, and the
+efficiencies of each taxon comparing br16S to qPCR.</p>
 </div>
-<div id="specifying-different-hierarchical-models" class="section level2">
-<h2 class="hasAnchor">
-<a href="#specifying-different-hierarchical-models" class="anchor"></a>Specifying different hierarchical models</h2>
-<p>For details on the hierarchical modelling options available in <code>paramedic</code>, see <a href="hierarchical_model_specification.html">the vignette on hierarchical model specificaion</a>.</p>
+<div class="section level2">
+<h2 id="specifying-different-hierarchical-models">Specifying different hierarchical models<a class="anchor" aria-label="anchor" href="#specifying-different-hierarchical-models"></a>
+</h2>
+<p>For details on the hierarchical modelling options available in
+<code>paramedic</code>, see <a href="hierarchical_model_specification.html">the vignette on
+hierarchical model specificaion</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="running-analyses-in-parallel">Running analyses in parallel<a class="anchor" aria-label="anchor" href="#running-analyses-in-parallel"></a>
+</h2>
+<p><code>RStan</code> supports parallelization, which we can use within
+<code>paramedic</code> to speed up computation. In the following
+example, we re-analyze the data referenced above, but run the models in
+parallel. Depending on the number of cores on your machine, this can
+result in significant reductions in computation time.</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># parallel::detectCores() will run with multiple cores if available</span></span>
+<span><span class="co"># follow the steps in the RStan documentation</span></span>
+<span><span class="co"># (https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started#how-to-use-rstan)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://mc-stan.org/rstan/reference/rstan_options.html" class="external-link">rstan_options</a></span><span class="op">(</span>auto_write <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">## -------------------------------------------------------------</span></span>
+<span><span class="co">## Obtain estimates of concentration for the first seven taxa</span></span>
+<span><span class="co">## -------------------------------------------------------------</span></span>
+<span><span class="co">## this is a small number of iterations, only for illustration</span></span>
+<span><span class="co">## also, shows how to use control parameters for rstan::stan</span></span>
+<span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu">paramedic</span><span class="fu">::</span><span class="fu"><a href="../reference/run_paramedic.html">run_paramedic</a></span><span class="op">(</span>W <span class="op">=</span> <span class="va">example_16S_data</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span>, V <span class="op">=</span> <span class="va">example_qPCR_data</span>,</span>
+<span>    n_iter <span class="op">=</span> <span class="fl">30</span>, n_burnin <span class="op">=</span> <span class="fl">25</span>, n_chains <span class="op">=</span> <span class="fl">1</span>, stan_seed <span class="op">=</span> <span class="fl">4747</span>,</span>
+<span>    control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>max_treedepth <span class="op">=</span> <span class="fl">15</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## SAMPLING FOR MODEL 'variable_efficiency' NOW (CHAIN 1).</span></span>
+<span><span class="co">## Chain 1: </span></span>
+<span><span class="co">## Chain 1: Gradient evaluation took 0.000174 seconds</span></span>
+<span><span class="co">## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 1.74 seconds.</span></span>
+<span><span class="co">## Chain 1: Adjust your expectations accordingly!</span></span>
+<span><span class="co">## Chain 1: </span></span>
+<span><span class="co">## Chain 1: </span></span>
+<span><span class="co">## Chain 1: WARNING: There aren't enough warmup iterations to fit the</span></span>
+<span><span class="co">## Chain 1:          three stages of adaptation as currently configured.</span></span>
+<span><span class="co">## Chain 1:          Reducing each adaptation stage to 15%/75%/10% of</span></span>
+<span><span class="co">## Chain 1:          the given number of warmup iterations:</span></span>
+<span><span class="co">## Chain 1:            init_buffer = 3</span></span>
+<span><span class="co">## Chain 1:            adapt_window = 20</span></span>
+<span><span class="co">## Chain 1:            term_buffer = 2</span></span>
+<span><span class="co">## Chain 1: </span></span>
+<span><span class="co">## Chain 1: Iteration:  1 / 30 [  3%]  (Warmup)</span></span>
+<span><span class="co">## Chain 1: Iteration:  3 / 30 [ 10%]  (Warmup)</span></span>
+<span><span class="co">## Chain 1: Iteration:  6 / 30 [ 20%]  (Warmup)</span></span>
+<span><span class="co">## Chain 1: Iteration:  9 / 30 [ 30%]  (Warmup)</span></span>
+<span><span class="co">## Chain 1: Iteration: 12 / 30 [ 40%]  (Warmup)</span></span>
+<span><span class="co">## Chain 1: Iteration: 15 / 30 [ 50%]  (Warmup)</span></span>
+<span><span class="co">## Chain 1: Iteration: 18 / 30 [ 60%]  (Warmup)</span></span>
+<span><span class="co">## Chain 1: Iteration: 21 / 30 [ 70%]  (Warmup)</span></span>
+<span><span class="co">## Chain 1: Iteration: 24 / 30 [ 80%]  (Warmup)</span></span>
+<span><span class="co">## Chain 1: Iteration: 26 / 30 [ 86%]  (Sampling)</span></span>
+<span><span class="co">## Chain 1: Iteration: 28 / 30 [ 93%]  (Sampling)</span></span>
+<span><span class="co">## Chain 1: Iteration: 30 / 30 [100%]  (Sampling)</span></span>
+<span><span class="co">## Chain 1: </span></span>
+<span><span class="co">## Chain 1:  Elapsed Time: 0.019 seconds (Warm-up)</span></span>
+<span><span class="co">## Chain 1:                0.002 seconds (Sampling)</span></span>
+<span><span class="co">## Chain 1:                0.021 seconds (Total)</span></span>
+<span><span class="co">## Chain 1:</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: There were 1 chains where the estimated Bayesian Fraction of Missing Information was low. See</span></span>
+<span><span class="co">## https://mc-stan.org/misc/warnings.html#bfmi-low</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: Examine the pairs() plot to diagnose sampling problems</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: The largest R-hat is 1.9, indicating chains have not mixed.</span></span>
+<span><span class="co">## Running the chains for more iterations may help. See</span></span>
+<span><span class="co">## https://mc-stan.org/misc/warnings.html#r-hat</span></span></code></pre>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mod_summ</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mod</span><span class="op">$</span><span class="va">stan_fit</span>, probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.975</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">summary</span></span>
+<span><span class="va">mod_samps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://mc-stan.org/rstan/reference/stanfit-method-extract.html" class="external-link">extract</a></span><span class="op">(</span><span class="va">mod</span><span class="op">$</span><span class="va">stan_fit</span><span class="op">)</span></span></code></pre></div>
 </div>
   </div>
 
@@ -239,11 +348,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Brian D. Williamson, James Hughes, Amy Willis.</p>
+  <p></p>
+<p>Developed by Brian D. Williamson, James Hughes, Amy Willis.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
@@ -251,6 +362,8 @@
 
   
 
+
+  
 
   </body>
 </html>

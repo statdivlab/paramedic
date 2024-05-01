@@ -1,7 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://statdivlab.github.io/paramedic/404.html</loc>
+  </url>
+  <url>
+    <loc>https://statdivlab.github.io/paramedic/articles/hierarchical_model_specification.html</loc>
+  </url>
+  <url>
+    <loc>https://statdivlab.github.io/paramedic/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://statdivlab.github.io/paramedic/articles/introduction_to_paramedic.html</loc>
+  </url>
+  <url>
+    <loc>https://statdivlab.github.io/paramedic/authors.html</loc>
+  </url>
+  <url>
     <loc>https://statdivlab.github.io/paramedic/index.html</loc>
+  </url>
+  <url>
+    <loc>https://statdivlab.github.io/paramedic/LICENSE-text.html</loc>
+  </url>
+  <url>
+    <loc>https://statdivlab.github.io/paramedic/LICENSE.html</loc>
+  </url>
+  <url>
+    <loc>https://statdivlab.github.io/paramedic/news/index.html</loc>
   </url>
   <url>
     <loc>https://statdivlab.github.io/paramedic/reference/check_entered_data.html</loc>
@@ -20,6 +44,9 @@
   </url>
   <url>
     <loc>https://statdivlab.github.io/paramedic/reference/gen_wald_interval.html</loc>
+  </url>
+  <url>
+    <loc>https://statdivlab.github.io/paramedic/reference/index.html</loc>
   </url>
   <url>
     <loc>https://statdivlab.github.io/paramedic/reference/paramedic-package.html</loc>
@@ -44,11 +71,5 @@
   </url>
   <url>
     <loc>https://statdivlab.github.io/paramedic/reference/summary.paramedic.html</loc>
-  </url>
-  <url>
-    <loc>https://statdivlab.github.io/paramedic/articles/hierarchical_model_specification.html</loc>
-  </url>
-  <url>
-    <loc>https://statdivlab.github.io/paramedic/articles/introduction_to_paramedic.html</loc>
   </url>
 </urlset>

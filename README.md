@@ -12,7 +12,7 @@
 
 ## Introduction
 
-`paramedic` is a R package for estimating microbial concentration. `paramedic` uses information from 16S count data (compositional data on all taxa) and absolute data on a subset of taxa (e.g., qPCR or flow cytometry) to estimate the absolute abundance of all taxa. The method accounts for differing taxon detection efficiencies between the two methods, and produces prediction and confidence intervals as well as point estimates of the absolute abundance of all taxa. Check out [the paper](https://onlinelibrary.wiley.com/doi/10.1111/biom.13503) for more details.
+`paramedic` is a R package for estimating microbial concentration. `paramedic` uses information from 16S count data (compositional data on all taxa) and absolute data on a subset of taxa (e.g., qPCR or flow cytometry) to estimate the absolute abundance of all taxa. The method accounts for differing taxon detection efficiencies between the two methods, and produces prediction and confidence intervals as well as point estimates of the absolute abundance of all taxa. Check out [the paper](https://onlinelibrary.wiley.com/doi/10.1111/biom.13503) (also available [here](https://pubmed.ncbi.nlm.nih.gov/34048057/)) for more details.
 
 ------------------------------
 
