@@ -12,7 +12,7 @@
 #' @return An object of class \code{paramedic}. See Details for more information
 #'
 #' @details A \code{paramedic} object is a list containing the following elements:
-#' \itemize{
+#' \describe{
 #'  \item{estimates}{ - the point estimates of qPCR (a matrix with dimension sample size by number of taxa).}
 #'  \item{pred_intervals}{ - predction intervals for qPCR (an array with dimension sample size by 2 by number of taxa).}
 #'  \item{est_efficiency}{ - point estimates for estimated varying efficiency, if varying efficiency was modeled (a vector of length number of taxa); otherwise, NA.}

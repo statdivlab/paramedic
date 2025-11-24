@@ -39,7 +39,7 @@ NeedsCompilation: yes
 SystemRequirements: GNU make
 URL: https://statdivlab.github.io/paramedic, https://github.com/statdivlab/paramedic
 BugReports: https://github.com/statdivlab/paramedic/issues
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.2
 Suggests:
     testthat (>= 2.1.0),
     knitr,

@@ -52,6 +52,8 @@
 #'   posterior predictive distribution. Each row of the matrices, and each 
 #'   of the first dimension of the arrays, denotes the predictions generated 
 #'   using a single draw of the model parameters from the posterior distribution.
+#'   
+#' @importFrom stats rmultinom rnbinom rnorm rpoi
 #'  
 #' @aliases posterior_predict
 #' @export  
